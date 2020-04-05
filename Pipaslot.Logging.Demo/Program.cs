@@ -19,6 +19,10 @@ namespace Pipaslot.Logging.Demo
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddRequestLogger(LogLevel.Trace);
+                });
     }
 }

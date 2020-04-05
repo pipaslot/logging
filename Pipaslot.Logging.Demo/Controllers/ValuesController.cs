@@ -29,8 +29,7 @@ namespace Pipaslot.Logging.Demo.Controllers
             return "Completed";
         }
         
-
-        [HttpGet]
+        [HttpGet("no-logging")]
         public ActionResult<string> PerformActionWithoutLogging()
         {
             _serviceLevel1.PerformOperationWithoutLogging();

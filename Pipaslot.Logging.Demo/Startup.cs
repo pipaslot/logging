@@ -34,23 +34,11 @@ namespace Pipaslot.Logging.Demo
             services.AddTransient<ServiceLevel1>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            // Logging with own logger implementation
-            services.AddLogger(LogLevel.Trace, s => new WriterCollection()
-            {
-                new RequestWriter(Path.Combine(Directory.GetCurrentDirectory(),"logs"), "{Date}-requests.log"),
-                //new FlatWriter(logSettings.RootDirectory, logSettings.ApplicationName + "{Date}-service1.log", typeof(ServiceLevel1).FullName, Constants.Constant.Logging.Personalizations, LogLevel.Debug),
-                //new FlatWriter(logSettings.RootDirectory, logSettings.ApplicationName + "{Date}-errors.log", LogLevel.Error),
-                //new ProcessWriter(logSettings.RootDirectory, logSettings.ApplicationName + "{Date}-processes-{Id}.log"),
-                //new SendWriter(s.GetService<EmailSender>(), LogLevel.Critical)
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, LoggerProvider loggerProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddProvider(loggerProvider);
-            
             app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
             app.UseMvc();
