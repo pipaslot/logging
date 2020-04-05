@@ -22,10 +22,18 @@ namespace Pipaslot.Logging.WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> Get()
+        public ActionResult<string> PerformActionWithLogging()
         {
-            _serviceLevel1.PerformOperation();
+            _serviceLevel1.PerformOperationWithLogging();
             _logger.LogDebug("Service called");
+            return "Completed";
+        }
+        
+
+        [HttpGet]
+        public ActionResult<string> PerformActionWithoutLogging()
+        {
+            _serviceLevel1.PerformOperationWithoutLogging();
             return "Completed";
         }
 
