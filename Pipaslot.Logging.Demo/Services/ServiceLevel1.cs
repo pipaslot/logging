@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.WebApp.Services
+namespace Pipaslot.Logging.Demo.Services
 {
     public class ServiceLevel1
     {

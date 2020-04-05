@@ -12,10 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.WebApp.Services;
+using Pipaslot.Logging.Demo.Services;
 using Pipaslot.Logging.Writers;
 
-namespace Pipaslot.Logging.WebApp
+namespace Pipaslot.Logging.Demo
 {
     public class Startup
     {

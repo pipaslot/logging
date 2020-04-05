@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Pipaslot.Logging.WebApp": {
+    "Pipaslot.Logging.Demo": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/values",

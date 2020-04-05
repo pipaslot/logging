@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pipaslot.Logging.WebApp\Pipaslot.Logging.WebApp.csproj" />
+    <ProjectReference Include="..\Pipaslot.Logging.Demo\Pipaslot.Logging.Demo.csproj" />
   </ItemGroup>
 
 </Project>

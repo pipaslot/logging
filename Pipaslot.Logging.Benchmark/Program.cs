@@ -4,8 +4,8 @@ using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Pipaslot.Logging.WebApp;
-using Pipaslot.Logging.WebApp.Controllers;
+using Pipaslot.Logging.Demo;
+using Pipaslot.Logging.Demo.Controllers;
 
 namespace Pipaslot.Logging.Benchmark
 {
@@ -13,7 +13,7 @@ namespace Pipaslot.Logging.Benchmark
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<ApiBenchmark>();
+            BenchmarkRunner.Run<ApiBenchmark>();
             Console.WriteLine("Benchmark finished");
             Console.ReadLine();
         }

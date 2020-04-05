@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Pipaslot.Logging.WebApp.Services;
+using Pipaslot.Logging.Demo.Services;
 
-namespace Pipaslot.Logging.WebApp.Controllers
+namespace Pipaslot.Logging.Demo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

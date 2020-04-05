@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.WebApp
+namespace Pipaslot.Logging.Demo
 {
     public class Program
     {
