@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.Writers;
@@ -17,6 +18,7 @@ namespace Pipaslot.Logging
 
         public LoggerProvider(IHttpContextAccessor httpContextAccessor, IWriter requestWriter, LogLevel enabledLogLevel)
         {
+            Debug.Assert(httpContextAccessor != null, nameof(httpContextAccessor) + " != null");
             _httpContextAccessor = httpContextAccessor;
             _requestWriter = requestWriter;
             _enabledLogLevel = enabledLogLevel;

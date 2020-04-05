@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Pipaslot.Logging.WebApp.Services;
 
 namespace Pipaslot.Logging.WebApp.Controllers
 {
@@ -10,36 +12,22 @@ namespace Pipaslot.Logging.WebApp.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
+        private readonly ILogger<ValuesController> _logger;
+        private readonly ServiceLevel1 _serviceLevel1;
+
+        public ValuesController(ILogger<ValuesController> logger, ServiceLevel1 serviceLevel1)
+        {
+            _logger = logger;
+            _serviceLevel1 = serviceLevel1;
+        }
+
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            _serviceLevel1.PerformOperation();
+            _logger.LogDebug("Service called");
+            return "Completed";
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

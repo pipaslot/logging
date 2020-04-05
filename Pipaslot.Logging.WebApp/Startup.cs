@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.WebApp.Services;
+using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging.WebApp
 {
@@ -26,21 +30,28 @@ namespace Pipaslot.Logging.WebApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddTransient<ServiceLevel1>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            // Logging with own logger implementation
+            services.AddLogger(LogLevel.Trace, s => new WriterCollection()
+            {
+                new RequestWriter(Path.Combine(Directory.GetCurrentDirectory(),"logs"), "{Date}-requests.log"),
+                //new FlatWriter(logSettings.RootDirectory, logSettings.ApplicationName + "{Date}-service1.log", typeof(ServiceLevel1).FullName, Constants.Constant.Logging.Personalizations, LogLevel.Debug),
+                //new FlatWriter(logSettings.RootDirectory, logSettings.ApplicationName + "{Date}-errors.log", LogLevel.Error),
+                //new ProcessWriter(logSettings.RootDirectory, logSettings.ApplicationName + "{Date}-processes-{Id}.log"),
+                //new SendWriter(s.GetService<EmailSender>(), LogLevel.Critical)
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, LoggerProvider loggerProvider)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
+            loggerFactory.AddProvider(loggerProvider);
+            
+            app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
