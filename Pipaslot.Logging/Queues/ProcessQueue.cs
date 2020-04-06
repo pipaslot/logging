@@ -73,7 +73,7 @@ namespace Pipaslot.Logging.Queues
         }
         private bool IsCLI(string traceIdentifier)
         {
-            return traceIdentifier?.StartsWith("CLI:") ?? false;
+            return traceIdentifier?.StartsWith(Constrants.CliTraceIdentifierPrefix) ?? false;
         }
 
         private StreamWriter GetStream(string id)

@@ -78,7 +78,7 @@ namespace Pipaslot.Logging
         {
             var process = System.Diagnostics.Process.GetCurrentProcess();
 
-            return $"CLI:{process.Id}:{process.StartTime:HHmmss}";
+            return $"{Constrants.CliTraceIdentifierPrefix}{process.Id}:{process.StartTime:HHmmss}";
         }
 
         public void Dispose()
