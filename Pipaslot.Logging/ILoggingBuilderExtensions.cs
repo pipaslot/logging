@@ -76,9 +76,9 @@ namespace Pipaslot.Logging
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)
         {
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            if (builder.Services.All(s => s.ImplementationType != typeof(LoggerProvider)))
+            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider)))
             {
-                builder.Services.AddSingleton<ILoggerProvider, LoggerProvider>();
+                builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();
             }
         }
     }

@@ -7,13 +7,13 @@ using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {
-    public class Logger : ILogger, IDisposable
+    public class PipaslotLogger : ILogger, IDisposable
     {
         private readonly IEnumerable<IWriter> _writers;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _categoryName;
 
-        public Logger(IEnumerable<IWriter> writers, IHttpContextAccessor httpContextAccessor, string categoryName)
+        public PipaslotLogger(IEnumerable<IWriter> writers, IHttpContextAccessor httpContextAccessor, string categoryName)
         {
             _writers = writers;
             _httpContextAccessor = httpContextAccessor;

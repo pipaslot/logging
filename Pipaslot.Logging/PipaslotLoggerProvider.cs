@@ -8,14 +8,14 @@ using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {
-    public class LoggerProvider : ILoggerProvider
+    public class PipaslotLoggerProvider : ILoggerProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IWriter> _writers;
         
-        private readonly ConcurrentDictionary<string, Logger> _sessions = new ConcurrentDictionary<string, Logger>();
+        private readonly ConcurrentDictionary<string, PipaslotLogger> _sessions = new ConcurrentDictionary<string, PipaslotLogger>();
 
-        public LoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IWriter> writers)
+        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IWriter> writers)
         {
             Debug.Assert(httpContextAccessor != null, nameof(httpContextAccessor) + " != null");
             _httpContextAccessor = httpContextAccessor;
@@ -41,7 +41,7 @@ namespace Pipaslot.Logging
                 return logger;
             }
 
-            var session = new Logger(_writers, _httpContextAccessor, categoryName);
+            var session = new PipaslotLogger(_writers, _httpContextAccessor, categoryName);
             if (_sessions.TryAdd(categoryName, session))
             {
                 return session;

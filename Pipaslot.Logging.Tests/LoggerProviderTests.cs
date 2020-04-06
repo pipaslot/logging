@@ -12,7 +12,7 @@ namespace Pipaslot.Logging.Tests
         public void CreateLogger_DuplicateCategoryName_ReturnsTheSameLogger(string category)
         {
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            var sut = new LoggerProvider(httpContextAccessorMock.Object, new IWriter[0]);
+            var sut = new PipaslotLoggerProvider(httpContextAccessorMock.Object, new IWriter[0]);
 
             var logger1 = sut.CreateLogger(category);
             var logger2 = sut.CreateLogger(category);
