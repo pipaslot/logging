@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using Pipaslot.Logging.Writers;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {

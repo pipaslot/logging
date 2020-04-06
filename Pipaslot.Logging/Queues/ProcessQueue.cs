@@ -8,18 +8,18 @@ using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Groups;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     /// Log all processes together
     /// </summary>
-    public class ProcessWriter : IWriter
+    public class ProcessQueue : IQueue
     {
         public WriterSetting Setting { get; set; }
         protected readonly LogGroupCollection LogGroups = new LogGroupCollection();
         private readonly object _fileLock = new object();
         private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
-        public ProcessWriter(WriterSetting setting)
+        public ProcessQueue(WriterSetting setting)
         {
             Setting = setting;
             if (!Directory.Exists(setting.Path))
@@ -28,7 +28,7 @@ namespace Pipaslot.Logging.Writers
             }
         }
 
-        public ProcessWriter(string path, string filename) : this(new WriterSetting(path, filename))
+        public ProcessQueue(string path, string filename) : this(new WriterSetting(path, filename))
         {
         }
 

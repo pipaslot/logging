@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Groups;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging.Queues
 {
-    public abstract class WriterBase : IWriter
+    public abstract class QueueBase : IQueue
     {
         protected readonly LogGroupCollection LogGroups = new LogGroupCollection();
         private readonly LogGroupFormatter _formatter = new LogGroupFormatter();

@@ -4,16 +4,16 @@ using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Groups;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging.Queues
 {
-    public class SendWriter : IWriter
+    public class SendQueue : IQueue
     {
         private readonly LogGroupCollection _logGroups = new LogGroupCollection();
         private readonly ILogSender _logSender;
         private readonly LogLevel _logLevel;
         private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
 
-        public SendWriter(ILogSender logSender, LogLevel logLevel)
+        public SendQueue(ILogSender logSender, LogLevel logLevel)
         {
             this._logSender = logSender;
             _logLevel = logLevel;

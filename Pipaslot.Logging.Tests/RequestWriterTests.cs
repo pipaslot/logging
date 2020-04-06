@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using Pipaslot.Logging.Writers;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging.Tests
 {

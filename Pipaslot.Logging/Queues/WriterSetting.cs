@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging.Queues
 {
     public class WriterSetting 
     {

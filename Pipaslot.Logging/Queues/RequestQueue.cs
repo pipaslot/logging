@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     /// Logs all separated requests
     /// </summary>
-    public class RequestWriter : WriterBase
+    public class RequestQueue : QueueBase
     {
-        public RequestWriter(string path, string filename) : this(new WriterSetting(path, filename))
+        public RequestQueue(string path, string filename) : this(new WriterSetting(path, filename))
         {
         }
         
-        public RequestWriter(WriterSetting setting) 
+        public RequestQueue(WriterSetting setting) 
         {
             Writer = new FileLogWriter(setting);
             LogLevel = setting.LogLevel;

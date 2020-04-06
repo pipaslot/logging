@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     /// Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    public class FlatWriter : WriterBase
+    public class FlatQueue : QueueBase
     {
         
         /// <summary>
@@ -17,20 +17,20 @@ namespace Pipaslot.Logging.Writers
         /// </summary>
         private readonly Dictionary<string, string[]> _classesAndMethods = new Dictionary<string, string[]>();
         
-        public FlatWriter(WriterSetting setting, string className, params string[] methodNames) : this(setting)
+        public FlatQueue(WriterSetting setting, string className, params string[] methodNames) : this(setting)
         {
             _classesAndMethods.Add(className, methodNames.ToArray());
         }
         
-        public FlatWriter(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        public FlatQueue(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
         {
             _classesAndMethods.Add(className, methodNames.ToArray());
         }
 
-        public FlatWriter(string path, string filename, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        public FlatQueue(string path, string filename, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
         {
         }
-        public FlatWriter(WriterSetting setting)
+        public FlatQueue(WriterSetting setting)
         {
             Writer = new FileLogWriter(setting);
             LogLevel = setting.LogLevel;

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
-using Pipaslot.Logging.Writers;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
     public class PipaslotLogger : ILogger, IDisposable
     {
-        private readonly IEnumerable<IWriter> _writers;
+        private readonly IEnumerable<IQueue> _writers;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _categoryName;
 
-        public PipaslotLogger(IEnumerable<IWriter> writers, IHttpContextAccessor httpContextAccessor, string categoryName)
+        public PipaslotLogger(IEnumerable<IQueue> writers, IHttpContextAccessor httpContextAccessor, string categoryName)
         {
             _writers = writers;
             _httpContextAccessor = httpContextAccessor;

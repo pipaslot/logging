@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Pipaslot.Logging.Writers;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
     public class PipaslotLoggerProvider : ILoggerProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEnumerable<IWriter> _writers;
+        private readonly IEnumerable<IQueue> _writers;
         
         private readonly ConcurrentDictionary<string, PipaslotLogger> _sessions = new ConcurrentDictionary<string, PipaslotLogger>();
 
-        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IWriter> writers)
+        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IQueue> writers)
         {
             Debug.Assert(httpContextAccessor != null, nameof(httpContextAccessor) + " != null");
             _httpContextAccessor = httpContextAccessor;
