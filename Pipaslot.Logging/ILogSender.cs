@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging
 {
     public interface ILogSender
     {
