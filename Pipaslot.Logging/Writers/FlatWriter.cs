@@ -11,27 +11,43 @@ namespace Pipaslot.Logging.Writers
     /// </summary>
     public class FlatWriter : WriterBase
     {
-        public FlatWriter(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : base(new WriterSetting(path, filename))
+        
+        /// <summary>
+        /// Definition of classes and their methods to be tracked
+        /// </summary>
+        private readonly Dictionary<string, string[]> _classesAndMethods = new Dictionary<string, string[]>();
+        
+        public FlatWriter(WriterSetting setting, string className, params string[] methodNames) : this(setting)
         {
-            Setting.ClassesAndMethods.Add(className, methodNames.ToArray());
-            Setting.LogLevel = logLevel;
+            _classesAndMethods.Add(className, methodNames.ToArray());
+        }
+        
+        public FlatWriter(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        {
+            _classesAndMethods.Add(className, methodNames.ToArray());
         }
 
-        public FlatWriter(string path, string filename, LogLevel logLevel = LogLevel.Information) : base(new WriterSetting(path, filename))
+        public FlatWriter(string path, string filename, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
         {
-            Setting.LogLevel = logLevel;
+        }
+        public FlatWriter(WriterSetting setting)
+        {
+            MessageWriter = new LogMessageFileWriter(setting);
+            LogLevel = setting.LogLevel;
         }
 
+        protected override ILogMessageWriter MessageWriter { get; }
+        protected override LogLevel LogLevel { get; }
 
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)
         {
-            if (Setting.ClassesAndMethods.Count == 0)
+            if (_classesAndMethods.Count == 0)
             {
                 return true;
             }
-            if (Setting.ClassesAndMethods.ContainsKey(categoryName))
+            if (_classesAndMethods.ContainsKey(categoryName))
             {
-                var methodNames = Setting.ClassesAndMethods[categoryName];
+                var methodNames = _classesAndMethods[categoryName];
                 if (methodNames.Length == 0 || methodNames.Contains(memberName))
                 {
                     return true;
@@ -42,14 +58,14 @@ namespace Pipaslot.Logging.Writers
 
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            if (Setting.ClassesAndMethods.Count == 0)
+            if (_classesAndMethods.Count == 0)
             {
                 return true;
             }
             var ics = state as IncreaseScopeState;
-            if (Setting.ClassesAndMethods.ContainsKey(categoryName) && ics != null)
+            if (_classesAndMethods.ContainsKey(categoryName) && ics != null)
             {
-                var methodNames = Setting.ClassesAndMethods[categoryName];
+                var methodNames = _classesAndMethods[categoryName];
                 if (methodNames.Length == 0 || methodNames.Contains(ics.CallerMemberName))
                 {
                     return true;

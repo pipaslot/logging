@@ -4,17 +4,22 @@ using Microsoft.Extensions.Logging;
 namespace Pipaslot.Logging.Writers
 {
     /// <summary>
-    /// Loggs all separated requests
+    /// Logs all separated requests
     /// </summary>
     public class RequestWriter : WriterBase
     {
-        public RequestWriter(WriterSetting setting) : base(setting)
+        public RequestWriter(string path, string filename) : this(new WriterSetting(path, filename))
         {
+        }
+        
+        public RequestWriter(WriterSetting setting) 
+        {
+            MessageWriter = new LogMessageFileWriter(setting);
+            LogLevel = setting.LogLevel;
         }
 
-        public RequestWriter(string path, string filename) : base(new WriterSetting(path, filename))
-        {
-        }
+        protected override ILogMessageWriter MessageWriter { get; }
+        protected override LogLevel LogLevel { get; }
 
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)
         {

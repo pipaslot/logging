@@ -14,19 +14,8 @@ namespace Pipaslot.Logging.Writers
 {
     public abstract class WriterBase : IWriter
     {
-        protected readonly WriterSetting Setting;
         protected readonly LoggedQueueCollection _queues = new LoggedQueueCollection();
-        private readonly object _fileLock = new object();
         private readonly QueueFormatter _formatter = new QueueFormatter();
-
-        protected WriterBase(WriterSetting setting)
-        {
-            Setting = setting;
-            if (!Directory.Exists(setting.Path))
-            {
-                Directory.CreateDirectory(setting.Path);
-            }
-        }
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
@@ -58,8 +47,8 @@ namespace Pipaslot.Logging.Writers
             // Log or finish
             if (depth <= 0)
             {
-                var log = _formatter.FormatRequest(queue, traceIdentifier, Setting.LogLevel);
-                WriteToFile(log);
+                var log = _formatter.FormatRequest(queue, traceIdentifier, LogLevel);
+                MessageWriter.WriteToFile(log);
 
                 // Remove request history from memory
                 _queues.Remove(traceIdentifier);
@@ -69,7 +58,8 @@ namespace Pipaslot.Logging.Writers
                 queue.Logs.Add(new LoggedQueue.Log(categoryName, severity, message, state, depth));
             }
         }
-
+        protected abstract ILogMessageWriter MessageWriter { get; }
+        protected abstract LogLevel LogLevel { get; }
         protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state);
         protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state);
 
@@ -97,40 +87,14 @@ namespace Pipaslot.Logging.Writers
 
             return "";
         }
-
-        private StreamWriter GetStream()
-        {
-            var fileName = Regex.Replace(Setting.Filename, "{date}", DateTime.Now.ToString("yyyyMMdd"), RegexOptions.IgnoreCase);
-            var path = Path.Combine(Setting.Path, fileName);
-
-            if (File.Exists(path))
-            {
-                return File.AppendText(path);
-            }
-            return File.CreateText(path);
-        }
-
-        private void WriteToFile(string log)
-        {
-            if (!string.IsNullOrWhiteSpace(log))
-            {
-                lock (_fileLock)
-                {
-                    using (var stream = GetStream())
-                    {
-                        stream.WriteLine(log);
-                    }
-                }
-            }
-        }
        
         public virtual void Dispose()
         {
             //write all remaining logs
             foreach (var pair in _queues.GetAllQueues())
             {
-                var log = _formatter.FormatRequest(pair.Value, pair.Key, Setting.LogLevel);
-                WriteToFile(log);
+                var log = _formatter.FormatRequest(pair.Value, pair.Key, LogLevel);
+                MessageWriter.WriteToFile(log);
             }
 
             _queues.Dispose();

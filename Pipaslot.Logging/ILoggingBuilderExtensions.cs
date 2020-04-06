@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,46 +11,49 @@ using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {
-    public static class ILoggingBuilderExtensions
+    public static class LoggingBuilderExtensions
     {
         /// <summary>
         /// Log all messages grouped by HTTP requests into file
         /// </summary>
-        public static void AddRequestLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel, string fileSuffix = "-requests")
+        public static void AddRequestLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel,
+            string fileSuffix = "-requests")
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.TryAddSingleton<ILoggerProvider, LoggerProvider>();
-            builder.Services.AddSingleton<IWriter>(s => new RequestWriter(directory, "{Date}" + fileSuffix + ".log"));
+            builder.AddPipaslotLoggerProvider();
+            builder.Services.AddSingleton<IWriter>(s =>
+                new RequestWriter(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
         }
 
         /// <summary>
         /// Log single message with specified log level. Useful when you need separate only errors or critical failures
         /// </summary>
-        public static void AddFlatLogger(this ILoggingBuilder builder, string directory, string fileSuffix, LogLevel logLevel)
+        public static void AddFlatLogger(this ILoggingBuilder builder, string directory, string fileSuffix,
+            LogLevel logLevel)
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.TryAddSingleton<ILoggerProvider, LoggerProvider>();
-            builder.Services.AddSingleton<IWriter>(s => new FlatWriter(directory, "{Date}" + fileSuffix + ".log"));
+            builder.AddPipaslotLoggerProvider();
+            builder.Services.AddSingleton<IWriter>(s =>
+                new FlatWriter(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
         }
-        
+
         /// <summary>
         /// Log single message with specified log level and class or methods. Useful when you need separate specific procedure
         /// </summary>
-        public static void AddCallLogger(this ILoggingBuilder builder, string directory, string fileSuffix, LogLevel logLevel, string className, params string[] methodNames)
+        public static void AddCallLogger(this ILoggingBuilder builder, string directory, string fileSuffix,
+            LogLevel logLevel, string className, params string[] methodNames)
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.TryAddSingleton<ILoggerProvider, LoggerProvider>();
-            builder.Services.AddSingleton<IWriter>(s => new FlatWriter(directory, "{Date}" + fileSuffix + ".log", className, methodNames));
+            builder.AddPipaslotLoggerProvider();
+            builder.Services.AddSingleton<IWriter>(s =>
+                new FlatWriter(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel), className,
+                    methodNames));
         }
 
         /// <summary>
         /// Sends every message by provider log sender. Useful when you need send notifications about critical errors
         /// </summary>
         public static void AddSendMailLogger<TLogSender>(this ILoggingBuilder builder, LogLevel logLevel)
-        where TLogSender : class, ILogSender
+            where TLogSender : class, ILogSender
         {
-            builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.TryAddSingleton<ILoggerProvider, LoggerProvider>();
+            builder.AddPipaslotLoggerProvider();
             builder.Services.TryAddSingleton<TLogSender>();
             builder.Services.AddSingleton<IWriter>(s =>
             {
@@ -61,11 +65,21 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs.
         /// </summary>
-        public static void AddProcessLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel, string fileSuffix = "-process-{Id}")
+        public static void AddProcessLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel,
+            string fileSuffix = "-process-{Id}")
+        {
+            builder.AddPipaslotLoggerProvider();
+            builder.Services.AddSingleton<IWriter>(s =>
+                new ProcessWriter(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
+        }
+
+        private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)
         {
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.Services.TryAddSingleton<ILoggerProvider, LoggerProvider>();
-            builder.Services.AddSingleton<IWriter>(s => new ProcessWriter(directory, "{Date}" + fileSuffix + ".log"));
+            if (builder.Services.All(s => s.ImplementationType != typeof(LoggerProvider)))
+            {
+                builder.Services.AddSingleton<ILoggerProvider, LoggerProvider>();
+            }
         }
     }
 }

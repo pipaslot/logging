@@ -21,10 +21,15 @@ namespace Pipaslot.Logging
             _httpContextAccessor = httpContextAccessor;
             _writers = writers;
         }
+        
         public void Dispose()
         {
-            //Do nothing
+            foreach (var logger in _sessions.Values)
+            {
+                logger.Dispose();
+            }
         }
+        
         /// <summary>
         /// Create logger for every scope. All these scopes has shared writers
         /// </summary>

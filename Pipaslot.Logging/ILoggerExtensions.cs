@@ -6,7 +6,7 @@ using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
 {
-    public static class ILoggerExtensions
+    public static class LoggerExtensions
     {
         /// <summary>
         /// Start logging method action in separated scope. Logs caller class and method
