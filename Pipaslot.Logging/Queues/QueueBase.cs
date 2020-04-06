@@ -18,7 +18,7 @@ namespace Pipaslot.Logging.Queues
         private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {
+        {//TODO Check log level
             var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity, message, state);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null)

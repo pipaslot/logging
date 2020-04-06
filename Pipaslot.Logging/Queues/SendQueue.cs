@@ -20,7 +20,7 @@ namespace Pipaslot.Logging.Queues
         }
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {
+        {//TODO Check log level
             var queue = _logGroups.GetQueue(traceIdentifier, true);
             if (queue == null)
             {

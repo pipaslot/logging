@@ -22,12 +22,12 @@ namespace Pipaslot.Logging.Queues
         protected override LogLevel LogLevel { get; }
 
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)
-        {
+        {//TODO Check log level
             return true;
         }
 
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {
+        {//TODO Check log level
             return categoryName == "Microsoft.AspNetCore.Hosting.Internal.WebHost";
         }
     }

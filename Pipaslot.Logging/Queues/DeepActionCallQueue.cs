@@ -37,11 +37,11 @@ namespace Pipaslot.Logging.Queues
 
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)
         {
-            return true;
+            return true;//TODO Check log level
         }
 
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {
+        {//TODO Check log level
             var ics = state as IncreaseScopeState;
             if(_classesAndMethods.ContainsKey(categoryName) && ics != null)
             {
