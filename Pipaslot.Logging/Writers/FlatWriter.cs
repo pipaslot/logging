@@ -32,11 +32,11 @@ namespace Pipaslot.Logging.Writers
         }
         public FlatWriter(WriterSetting setting)
         {
-            MessageWriter = new LogMessageFileWriter(setting);
+            Writer = new FileLogWriter(setting);
             LogLevel = setting.LogLevel;
         }
 
-        protected override ILogMessageWriter MessageWriter { get; }
+        protected override ILogWriter Writer { get; }
         protected override LogLevel LogLevel { get; }
 
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)

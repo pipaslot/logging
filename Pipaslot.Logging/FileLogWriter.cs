@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using Pipaslot.Logging.Writers;
 
-namespace Pipaslot.Logging.Writers
+namespace Pipaslot.Logging
 {
-    public class LogMessageFileWriter : ILogMessageWriter
+    public class FileLogWriter : ILogWriter
     {
         private readonly object _fileLock = new object();
         private readonly WriterSetting _setting;
 
-        public LogMessageFileWriter(WriterSetting setting)
+        public FileLogWriter(WriterSetting setting)
         {
             _setting = setting;
             if (!Directory.Exists(setting.Path))
@@ -18,7 +19,7 @@ namespace Pipaslot.Logging.Writers
             }
         }
 
-        public void WriteToFile(string log)
+        public void WriteLog(string log)
         {
             if (!string.IsNullOrWhiteSpace(log))
             {
