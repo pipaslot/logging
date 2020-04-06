@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Writers
 {
     public class SendWriter : IWriter
     {
-        protected readonly LoggedQueueCollection _queues = new LoggedQueueCollection();
+        private readonly LoggedQueueCollection _queues = new LoggedQueueCollection();
         private readonly ILogSender _logSender;
         private readonly LogLevel _logLevel;
         private readonly QueueFormatter _formatter = new QueueFormatter();
@@ -44,7 +44,7 @@ namespace Pipaslot.Logging.Writers
                 if (queue.Logs.Any(l => (int)l.Severity >= (int)_logLevel))
                 {
                     var log = _formatter.FormatRequest(queue, traceIdentifier, LogLevel.Trace);
-                    _logSender.SendLogAsync(log);
+                    _logSender.SendLog(log);
                 }
                 // Remove request history from memory
                 _queues.Remove(traceIdentifier);
@@ -76,7 +76,7 @@ namespace Pipaslot.Logging.Writers
         {
             if (!string.IsNullOrWhiteSpace(log))
             {
-                _logSender.SendLogAsync(log);
+                _logSender.SendLog(log);
             }
         }
     }
