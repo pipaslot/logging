@@ -19,13 +19,13 @@ namespace Pipaslot.Logging
             }
         }
 
-        public void WriteLog(string log)
+        public void WriteLog(string log, DateTime dateTime, string traceIdentifier)
         {
             if (!string.IsNullOrWhiteSpace(log))
             {
                 lock (_fileLock)
                 {
-                    using (var stream = GetStream())
+                    using (var stream = GetStream(dateTime, traceIdentifier))
                     {
                         stream.WriteLine(log);
                     }
@@ -33,10 +33,11 @@ namespace Pipaslot.Logging
             }
         }
 
-        private StreamWriter GetStream()
+        private StreamWriter GetStream(DateTime dateTime, string traceIdentifier)
         {
-            var fileName = Regex.Replace(_setting.Filename, "{date}", DateTime.Now.ToString("yyyyMMdd"),
-                RegexOptions.IgnoreCase);
+            var id = traceIdentifier?.Replace(":", "-") ?? "";
+            var fileName = Regex.Replace(_setting.Filename, "{date}", dateTime.ToString("yyyyMMdd"), RegexOptions.IgnoreCase);
+            fileName = Regex.Replace(fileName, "{id}", id, RegexOptions.IgnoreCase);
             var path = Path.Combine(_setting.Path, fileName);
 
             if (File.Exists(path))
