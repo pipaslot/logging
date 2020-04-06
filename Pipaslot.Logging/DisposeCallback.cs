@@ -3,13 +3,13 @@
 namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Operation/Task tracker 
+    /// Action call when hitting dispose block
     /// </summary>
-    public class Operation : IDisposable
+    public class DisposeCallback : IDisposable
     {
         private readonly Action _onDispose;
 
-        public Operation(Action onDispose)
+        public DisposeCallback(Action onDispose)
         {
             _onDispose = onDispose;
         }

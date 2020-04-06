@@ -58,7 +58,7 @@ namespace Pipaslot.Logging
                 var level = state != null ? LogLevel.Debug : LogLevel.Trace;
                 Write(level, "", new IncreaseScopeState("", state));
             }
-            return new Operation(() =>
+            return new DisposeCallback(() =>
             {
                 Write(LogLevel.Trace, "", new DecreaseScopeState());
             });
