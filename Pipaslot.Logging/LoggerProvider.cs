@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -10,18 +11,15 @@ namespace Pipaslot.Logging
     public class LoggerProvider : ILoggerProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IWriter _requestWriter;
-        private readonly LogLevel _enabledLogLevel;
+        private readonly IEnumerable<IWriter> _writers;
+        
+        private readonly ConcurrentDictionary<string, Logger> _sessions = new ConcurrentDictionary<string, Logger>();
 
-        private readonly Dictionary<string, Logger> _sessions = new Dictionary<string, Logger>();
-        private readonly object _lock = new object();
-
-        public LoggerProvider(IHttpContextAccessor httpContextAccessor, IWriter requestWriter, LogLevel enabledLogLevel)
+        public LoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IWriter> writers)
         {
             Debug.Assert(httpContextAccessor != null, nameof(httpContextAccessor) + " != null");
             _httpContextAccessor = httpContextAccessor;
-            _requestWriter = requestWriter;
-            _enabledLogLevel = enabledLogLevel;
+            _writers = writers;
         }
         public void Dispose()
         {
@@ -32,16 +30,20 @@ namespace Pipaslot.Logging
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
-            lock (_lock)
+            // Reduce logger allocations
+            if (_sessions.TryGetValue(categoryName, out var logger))
             {
-                if (_sessions.ContainsKey(categoryName))
-                {
-                    return _sessions[categoryName];
-                }
+                return logger;
+            }
 
-                var session = new Logger(_requestWriter, _httpContextAccessor, _enabledLogLevel, categoryName);
-                _sessions.Add(categoryName, session);
+            var session = new Logger(_writers, _httpContextAccessor, categoryName);
+            if (_sessions.TryAdd(categoryName, session))
+            {
                 return session;
+            }
+            else
+            {
+                return _sessions[categoryName];
             }
         }
     }

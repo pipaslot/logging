@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
@@ -6,19 +7,16 @@ using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {
-    //TODO replace by writers
     public class Logger : ILogger, IDisposable
     {
-        private readonly IWriter _writer;
+        private readonly IEnumerable<IWriter> _writers;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly LogLevel _enabledLogLevel;
         private readonly string _categoryName;
 
-        public Logger(IWriter writer, IHttpContextAccessor httpContextAccessor, LogLevel enabledLogLevel, string categoryName)
+        public Logger(IEnumerable<IWriter> writers, IHttpContextAccessor httpContextAccessor, string categoryName)
         {
-            _writer = writer;
+            _writers = writers;
             _httpContextAccessor = httpContextAccessor;
-            _enabledLogLevel = enabledLogLevel;
             _categoryName = categoryName;
         }
 
@@ -44,10 +42,9 @@ namespace Pipaslot.Logging
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            var enabled = (int)_enabledLogLevel;
-            var requested = (int)logLevel;
-            return requested >= enabled;
+            return true;
         }
+
 
         public IDisposable BeginScope<TState>(TState state)
         {
@@ -70,10 +67,10 @@ namespace Pipaslot.Logging
         private void Write<TState>(LogLevel severity, string message, TState state)
         {
             var context = _httpContextAccessor.HttpContext;
-            if (IsEnabled(severity))
+            var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
+            foreach (var writer in _writers)
             {
-                var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
-                _writer.Write(identifier, _categoryName, severity, message, state);
+                writer.Write(identifier, _categoryName, severity, message, state);
             }
         }
 
@@ -86,7 +83,10 @@ namespace Pipaslot.Logging
 
         public void Dispose()
         {
-            _writer.Dispose();
+            foreach (var writer in _writers)
+            {
+                writer.Dispose();
+            }
         }
     }
 }

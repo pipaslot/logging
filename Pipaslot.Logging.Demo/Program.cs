@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Pipaslot.Logging.Demo.Controllers;
 
 namespace Pipaslot.Logging.Demo
 {
@@ -22,7 +22,12 @@ namespace Pipaslot.Logging.Demo
                 .UseStartup<Startup>()
                 .ConfigureLogging(builder =>
                 {
-                    builder.AddRequestLogger(LogLevel.Trace);
+                    var logDir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+                    builder.AddRequestLogger(logDir, LogLevel.Trace);
+                    builder.AddFlatLogger(logDir, "-errors", LogLevel.Error);
+                    builder.AddProcessLogger(logDir, LogLevel.Trace);
+                    builder.AddCallLogger(logDir, "-controllers", LogLevel.Debug, nameof(ValuesController));
+                    //TODO SendLogger
                 });
     }
 }

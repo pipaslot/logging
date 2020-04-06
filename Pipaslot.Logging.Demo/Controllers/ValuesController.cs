@@ -25,7 +25,7 @@ namespace Pipaslot.Logging.Demo.Controllers
         public ActionResult<string> PerformActionWithLogging()
         {
             _serviceLevel1.PerformOperationWithLogging();
-            _logger.LogDebug("Service called");
+            _logger.LogError("Fake error from controller");
             return "Completed";
         }
         
