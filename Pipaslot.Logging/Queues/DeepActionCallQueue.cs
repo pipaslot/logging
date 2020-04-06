@@ -9,24 +9,24 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Logging for defined classes/scopes and their methods. Involves also all deeper logging
     /// </summary>
-    public class DeepQueue : QueueBase
+    public class DeepActionCallQueue : QueueBase
     {
         /// <summary>
         /// Definition of classes and their methods to be tracked
         /// </summary>
         private readonly Dictionary<string, string[]> _classesAndMethods = new Dictionary<string, string[]>();
         
-        public DeepQueue(string path, string filename, Dictionary<string, string[]> classesAndMethods) : this(new WriterSetting(path, filename))
+        public DeepActionCallQueue(string path, string filename, Dictionary<string, string[]> classesAndMethods) : this(new WriterSetting(path, filename))
         {
             _classesAndMethods = classesAndMethods ?? new Dictionary<string, string[]>();;
         }
 
-        public DeepQueue(string path, string filename, string className, string[] methodNames = null, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        public DeepActionCallQueue(string path, string filename, string className, string[] methodNames = null, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
         {
             _classesAndMethods.Add(className, methodNames ?? new string[0]);
         }
         
-        public DeepQueue(WriterSetting setting)
+        public DeepActionCallQueue(WriterSetting setting)
         {
             Writer = new FileLogWriter(setting);
             LogLevel = setting.LogLevel;

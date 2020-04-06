@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace Pipaslot.Logging.Queues
 {
+    [Obsolete]
     public class WriterSetting 
     {
         public string Path { get; }

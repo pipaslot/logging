@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
@@ -9,11 +10,11 @@ namespace Pipaslot.Logging
     public static class LoggerExtensions
     {
         /// <summary>
-        /// Start logging method action in separated scope. Logs caller class and method
+        /// Start logging action in separated scope. Caller class and method will be logged.
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="state"></param>
-        /// <param name="memberName"></param>
+        /// <param name="state">Additional state data to be logged</param>
+        /// <param name="memberName">Caller method name provided by compiler</param>
         /// <returns></returns>
         public static IDisposable BeginMethod(this ILogger logger, object state = null,
             [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
@@ -21,19 +22,22 @@ namespace Pipaslot.Logging
             var scopeState = new IncreaseScopeState(memberName, state);
             return logger.BeginScope(scopeState);
         }
-
-        /// <summary>
-        /// Start logging method action in separated scope. Logs caller class and method
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="state"></param>
-        /// <param name="memberName"></param>
-        /// <returns></returns>
-        public static IDisposable BeginNamedMethod(this ILogger logger, string memberName, object state = null)
-        {
-            var scopeState = new IncreaseScopeState(memberName, state);
-            return logger.BeginScope(scopeState);
-        }
+// TODO Implement
+//        /// <summary>
+//        /// Start invocation logging in separated scope specified by unique name.
+//        /// </summary>
+//        /// <see cref="Pipaslot.Logging.LoggingBuilderExtensions.AddCallLogger"/>
+//        /// <seealso cref="DeepActionCallQueue"/>
+//        /// <seealso cref="FlatActionCallQueue"/>
+//        /// <param name="logger"></param>
+//        /// <param name="uniqueIdentifier">Unique call identifier</param>
+//        /// <param name="state">Additional state data to be logged</param>
+//        /// <returns></returns>
+//        public static IDisposable BeginAction(this ILogger logger, string uniqueIdentifier, object state = null)
+//        {
+//            var scopeState = new IncreaseActionScopeState(uniqueIdentifier, state);
+//            return logger.BeginScope(scopeState);
+//        }
 
         public static void LogTraceWithData(this ILogger logger, string message, object data, Exception ex = null)
         {

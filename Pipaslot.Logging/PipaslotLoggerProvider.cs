@@ -11,15 +11,15 @@ namespace Pipaslot.Logging
     public class PipaslotLoggerProvider : ILoggerProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEnumerable<IQueue> _writers;
+        private readonly IEnumerable<IQueue> _queues;
         
         private readonly ConcurrentDictionary<string, PipaslotLogger> _sessions = new ConcurrentDictionary<string, PipaslotLogger>();
 
-        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IQueue> writers)
+        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IQueue> queues)
         {
             Debug.Assert(httpContextAccessor != null, nameof(httpContextAccessor) + " != null");
             _httpContextAccessor = httpContextAccessor;
-            _writers = writers;
+            _queues = queues;
         }
         
         public void Dispose()
@@ -41,7 +41,7 @@ namespace Pipaslot.Logging
                 return logger;
             }
 
-            var session = new PipaslotLogger(_writers, _httpContextAccessor, categoryName);
+            var session = new PipaslotLogger(_queues, _httpContextAccessor, categoryName);
             if (_sessions.TryAdd(categoryName, session))
             {
                 return session;

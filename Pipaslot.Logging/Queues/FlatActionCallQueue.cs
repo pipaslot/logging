@@ -9,7 +9,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    public class FlatQueue : QueueBase
+    public class FlatActionCallQueue : QueueBase
     {
         
         /// <summary>
@@ -17,20 +17,20 @@ namespace Pipaslot.Logging.Queues
         /// </summary>
         private readonly Dictionary<string, string[]> _classesAndMethods = new Dictionary<string, string[]>();
         
-        public FlatQueue(WriterSetting setting, string className, params string[] methodNames) : this(setting)
+        public FlatActionCallQueue(WriterSetting setting, string className, params string[] methodNames) : this(setting)
         {
             _classesAndMethods.Add(className, methodNames.ToArray());
         }
         
-        public FlatQueue(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        public FlatActionCallQueue(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
         {
             _classesAndMethods.Add(className, methodNames.ToArray());
         }
 
-        public FlatQueue(string path, string filename, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        public FlatActionCallQueue(string path, string filename, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
         {
         }
-        public FlatQueue(WriterSetting setting)
+        public FlatActionCallQueue(WriterSetting setting)
         {
             Writer = new FileLogWriter(setting);
             LogLevel = setting.LogLevel;

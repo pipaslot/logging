@@ -9,13 +9,13 @@ namespace Pipaslot.Logging
 {
     public class PipaslotLogger : ILogger, IDisposable
     {
-        private readonly IEnumerable<IQueue> _writers;
+        private readonly IEnumerable<IQueue> _queues;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _categoryName;
 
-        public PipaslotLogger(IEnumerable<IQueue> writers, IHttpContextAccessor httpContextAccessor, string categoryName)
+        public PipaslotLogger(IEnumerable<IQueue> queues, IHttpContextAccessor httpContextAccessor, string categoryName)
         {
-            _writers = writers;
+            _queues = queues;
             _httpContextAccessor = httpContextAccessor;
             _categoryName = categoryName;
         }
@@ -68,7 +68,7 @@ namespace Pipaslot.Logging
         {
             var context = _httpContextAccessor.HttpContext;
             var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
-            foreach (var writer in _writers)
+            foreach (var writer in _queues)
             {
                 writer.Write(identifier, _categoryName, severity, message, state);
             }
@@ -83,7 +83,7 @@ namespace Pipaslot.Logging
 
         public void Dispose()
         {
-            foreach (var writer in _writers)
+            foreach (var writer in _queues)
             {
                 writer.Dispose();
             }

@@ -32,7 +32,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
+                new FlatActionCallQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel), className,
+                new FlatActionCallQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel), className,
                     methodNames));
         }
 
