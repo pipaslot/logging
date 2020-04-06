@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Groups
 {
-    public class Queue
+    public class LogGroup
     {
         public DateTimeOffset Time { get; } = DateTimeOffset.Now;
 

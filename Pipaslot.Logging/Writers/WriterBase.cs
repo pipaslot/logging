@@ -8,19 +8,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Pipaslot.Logging.States;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Groups;
 
 namespace Pipaslot.Logging.Writers
 {
     public abstract class WriterBase : IWriter
     {
-        protected readonly QueueCollection _queues = new QueueCollection();
-        private readonly QueueFormatter _formatter = new QueueFormatter();
+        protected readonly LogGroupCollection LogGroups = new LogGroupCollection();
+        private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
             var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity, message, state);
-            var queue = _queues.GetQueue(traceIdentifier, canCreate);
+            var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null)
             {
                 // Log should be ommited
@@ -51,11 +51,11 @@ namespace Pipaslot.Logging.Writers
                 Writer.WriteLog(log);
 
                 // Remove request history from memory
-                _queues.Remove(traceIdentifier);
+                LogGroups.Remove(traceIdentifier);
             }
             else
             {
-                queue.Logs.Add(new Queue.Log(categoryName, severity, message, state, depth));
+                queue.Logs.Add(new LogGroup.Log(categoryName, severity, message, state, depth));
             }
         }
         protected abstract ILogWriter Writer { get; }
@@ -63,7 +63,7 @@ namespace Pipaslot.Logging.Writers
         protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state);
         protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state);
 
-        private string GetLastMethodInCurrentScope<TState>(Queue queue, string categoryName, TState state)
+        private string GetLastMethodInCurrentScope<TState>(LogGroup logGroup, string categoryName, TState state)
         {
             var scopeState = state as IncreaseScopeState;
             if (scopeState != null)
@@ -74,7 +74,7 @@ namespace Pipaslot.Logging.Writers
                     return name;
                 }
             }
-            var lastIncreaseScopeLog = queue.Logs.LastOrDefault(l => l.State is IncreaseScopeState);
+            var lastIncreaseScopeLog = logGroup.Logs.LastOrDefault(l => l.State is IncreaseScopeState);
 
             if (lastIncreaseScopeLog != null && lastIncreaseScopeLog.CategoryName == categoryName)
             {
@@ -91,13 +91,13 @@ namespace Pipaslot.Logging.Writers
         public virtual void Dispose()
         {
             //write all remaining logs
-            foreach (var pair in _queues.GetAllQueues())
+            foreach (var pair in LogGroups.GetAllQueues())
             {
                 var log = _formatter.FormatRequest(pair.Value, pair.Key, LogLevel);
                 Writer.WriteLog(log);
             }
 
-            _queues.Dispose();
+            LogGroups.Dispose();
         }
     }
 }

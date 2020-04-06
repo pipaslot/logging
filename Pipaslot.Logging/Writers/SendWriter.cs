@@ -2,16 +2,16 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Groups;
 
 namespace Pipaslot.Logging.Writers
 {
     public class SendWriter : IWriter
     {
-        private readonly QueueCollection _queues = new QueueCollection();
+        private readonly LogGroupCollection _logGroups = new LogGroupCollection();
         private readonly ILogSender _logSender;
         private readonly LogLevel _logLevel;
-        private readonly QueueFormatter _formatter = new QueueFormatter();
+        private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
 
         public SendWriter(ILogSender logSender, LogLevel logLevel)
         {
@@ -21,7 +21,7 @@ namespace Pipaslot.Logging.Writers
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            var queue = _queues.GetQueue(traceIdentifier, true);
+            var queue = _logGroups.GetQueue(traceIdentifier, true);
             if (queue == null)
             {
                 // Log should be ommited
@@ -47,11 +47,11 @@ namespace Pipaslot.Logging.Writers
                     _logSender.SendLog(log);
                 }
                 // Remove request history from memory
-                _queues.Remove(traceIdentifier);
+                _logGroups.Remove(traceIdentifier);
             }
             else
             {
-                queue.Logs.Add(new Queue.Log(categoryName, severity, message, state, depth));
+                queue.Logs.Add(new LogGroup.Log(categoryName, severity, message, state, depth));
             }
         }
 
@@ -59,7 +59,7 @@ namespace Pipaslot.Logging.Writers
         {
             //write all remaining logs
             var sb = new StringBuilder();
-            foreach (var pair in _queues.GetAllQueues())
+            foreach (var pair in _logGroups.GetAllQueues())
             {
                 if (pair.Value.Logs.Any(l => (int)l.Severity >= (int)_logLevel))
                 {
@@ -69,7 +69,7 @@ namespace Pipaslot.Logging.Writers
             }
             Send(sb.ToString());
 
-            _queues.Dispose();
+            _logGroups.Dispose();
         }
 
         private void Send(string log)
