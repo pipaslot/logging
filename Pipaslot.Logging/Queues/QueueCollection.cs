@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Pipaslot.Logging.Writers.Queues
+namespace Pipaslot.Logging.Queues
 {
-    public class LoggedQueueCollection : IDisposable
+    public class QueueCollection : IDisposable
     {
         private readonly object _queueLock = new object();
-        private readonly Dictionary<string, LoggedQueue> _queues = new Dictionary<string, LoggedQueue>();
+        private readonly Dictionary<string, Queue> _queues = new Dictionary<string, Queue>();
 
         public void Remove(string traceIdentifier)
         {
@@ -16,18 +16,24 @@ namespace Pipaslot.Logging.Writers.Queues
             }
         }
         /// <returns>Can be null if can not create a new queue</returns>
-        public LoggedQueue GetQueue(string traceIdentifier, bool canCreate)
+        public Queue GetQueue(string traceIdentifier, bool canCreate)
         {
+            //TODO benchmark single request access, multiple request access
+            //TODO benchmark using ConcurrentDictionary instead
+            if (_queues.TryGetValue(traceIdentifier, out var queue))
+            {
+                return queue;
+            }
             lock (_queueLock)
             {
-                if (_queues.ContainsKey(traceIdentifier))
+                if (_queues.TryGetValue(traceIdentifier, out var queue2))
                 {
-                    return _queues[traceIdentifier];
+                    return queue2;
                 }
 
                 if (canCreate)
                 {
-                    var request = new LoggedQueue();
+                    var request = new Queue();
                     _queues.Add(traceIdentifier, request);
                     return request;
                 }
@@ -36,7 +42,7 @@ namespace Pipaslot.Logging.Writers.Queues
             }
         }
 
-        public Dictionary<string, LoggedQueue> GetAllQueues()
+        public Dictionary<string, Queue> GetAllQueues()
         {
             lock (_queueLock)
             {

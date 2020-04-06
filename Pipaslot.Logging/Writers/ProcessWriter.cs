@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
-using Pipaslot.Logging.Writers.Queues;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging.Writers
 {
@@ -16,7 +16,7 @@ namespace Pipaslot.Logging.Writers
     public class ProcessWriter : IWriter
     {
         public WriterSetting Setting { get; set; }
-        protected readonly LoggedQueueCollection _queues = new LoggedQueueCollection();
+        protected readonly QueueCollection _queues = new QueueCollection();
         private readonly object _fileLock = new object();
         private readonly QueueFormatter _formatter = new QueueFormatter();
         public ProcessWriter(WriterSetting setting)
@@ -58,7 +58,7 @@ namespace Pipaslot.Logging.Writers
                 logStepToFile = false;
             }
 
-            var logRow = new LoggedQueue.Log(categoryName, severity, message, state, depth);
+            var logRow = new Queue.Log(categoryName, severity, message, state, depth);
             if (logStepToFile)
             {
                 var previousDepth = queue.Logs.LastOrDefault()?.Depth ?? 0;

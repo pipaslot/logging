@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Pipaslot.Logging.States;
-using Pipaslot.Logging.Writers.Queues;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging.Writers
 {
     public abstract class WriterBase : IWriter
     {
-        protected readonly LoggedQueueCollection _queues = new LoggedQueueCollection();
+        protected readonly QueueCollection _queues = new QueueCollection();
         private readonly QueueFormatter _formatter = new QueueFormatter();
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
@@ -55,7 +55,7 @@ namespace Pipaslot.Logging.Writers
             }
             else
             {
-                queue.Logs.Add(new LoggedQueue.Log(categoryName, severity, message, state, depth));
+                queue.Logs.Add(new Queue.Log(categoryName, severity, message, state, depth));
             }
         }
         protected abstract ILogWriter Writer { get; }
@@ -63,7 +63,7 @@ namespace Pipaslot.Logging.Writers
         protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state);
         protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state);
 
-        private string GetLastMethodInCurrentScope<TState>(LoggedQueue queue, string categoryName, TState state)
+        private string GetLastMethodInCurrentScope<TState>(Queue queue, string categoryName, TState state)
         {
             var scopeState = state as IncreaseScopeState;
             if (scopeState != null)

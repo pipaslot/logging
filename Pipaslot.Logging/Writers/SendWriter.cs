@@ -2,13 +2,13 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
-using Pipaslot.Logging.Writers.Queues;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging.Writers
 {
     public class SendWriter : IWriter
     {
-        private readonly LoggedQueueCollection _queues = new LoggedQueueCollection();
+        private readonly QueueCollection _queues = new QueueCollection();
         private readonly ILogSender _logSender;
         private readonly LogLevel _logLevel;
         private readonly QueueFormatter _formatter = new QueueFormatter();
@@ -51,7 +51,7 @@ namespace Pipaslot.Logging.Writers
             }
             else
             {
-                queue.Logs.Add(new LoggedQueue.Log(categoryName, severity, message, state, depth));
+                queue.Logs.Add(new Queue.Log(categoryName, severity, message, state, depth));
             }
         }
 

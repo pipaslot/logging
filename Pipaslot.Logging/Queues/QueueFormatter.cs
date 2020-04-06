@@ -4,11 +4,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Pipaslot.Logging.States;
 
-namespace Pipaslot.Logging.Writers.Queues
+namespace Pipaslot.Logging.Queues
 {
-    internal class QueueFormatter
+    public class QueueFormatter
     {
-        public string FormatRequest(LoggedQueue queue, string requestIdentifier, LogLevel logSinceLevel)
+        public string FormatRequest(Queue queue, string requestIdentifier, LogLevel logSinceLevel)
         {
             var sb = new StringBuilder();
             sb.Append(queue.Time);
@@ -68,7 +68,7 @@ namespace Pipaslot.Logging.Writers.Queues
         }
 
 
-        public string FormatRecord(int previousDepth, int currentDepth, LoggedQueue.Log log)
+        public string FormatRecord(int previousDepth, int currentDepth, Queue.Log log)
         {
             var sb = new StringBuilder();
             sb.Append(log.Time.ToString("HH:mm:ss.fff"));
