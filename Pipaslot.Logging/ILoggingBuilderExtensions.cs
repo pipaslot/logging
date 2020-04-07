@@ -21,7 +21,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new RequestQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
+                new RequestQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel));
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
+                new FlatActionCallQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel));
         }
 
         /// <summary>
@@ -43,7 +43,8 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel), className,
+                new FlatActionCallQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel,
+                    className,
                     methodNames));
         }
 
@@ -70,7 +71,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new ProcessQueue(new WriterSetting(directory, "{Date}" + fileSuffix + ".log", logLevel)));
+                new ProcessQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel));
         }
 
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)

@@ -11,40 +11,35 @@ namespace Pipaslot.Logging.Queues
     /// </summary>
     public class FlatActionCallQueue : QueueBase
     {
-        
         /// <summary>
         /// Definition of classes and their methods to be tracked
         /// </summary>
         private readonly Dictionary<string, string[]> _classesAndMethods = new Dictionary<string, string[]>();
-        
-        public FlatActionCallQueue(WriterSetting setting, string className, params string[] methodNames) : this(setting)
+
+        public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel, string className, params string[] methodNames)
+            : this(writer, logLevel)
         {
-            _classesAndMethods.Add(className, methodNames.ToArray());
-        }
-        
-        public FlatActionCallQueue(string path, string filename, string className, string[] methodNames, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
-        {
-            _classesAndMethods.Add(className, methodNames.ToArray());
+            _classesAndMethods.Add(className, methodNames);
         }
 
-        public FlatActionCallQueue(string path, string filename, LogLevel logLevel = LogLevel.Information) : this(new WriterSetting(path, filename, logLevel))
+        public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel)
         {
-        }
-        public FlatActionCallQueue(WriterSetting setting)
-        {
-            Writer = new FileLogWriter(setting);
-            LogLevel = setting.LogLevel;
+            Writer = writer;
+            LogLevel = logLevel;
         }
 
         protected override ILogWriter Writer { get; }
         protected override LogLevel LogLevel { get; }
 
-        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)
-        {//TODO Check log level
+        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName,
+            LogLevel severity, string message, TState state)
+        {
+            //TODO Check log level
             if (_classesAndMethods.Count == 0)
             {
                 return true;
             }
+
             if (_classesAndMethods.ContainsKey(categoryName))
             {
                 var methodNames = _classesAndMethods[categoryName];
@@ -53,15 +48,19 @@ namespace Pipaslot.Logging.Queues
                     return true;
                 }
             }
+
             return false;
         }
 
-        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {//TODO Check log level
+        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
+            LogLevel severity, string message, TState state)
+        {
+            //TODO Check log level
             if (_classesAndMethods.Count == 0)
             {
                 return true;
             }
+
             var ics = state as IncreaseScopeState;
             if (_classesAndMethods.ContainsKey(categoryName) && ics != null)
             {
@@ -71,8 +70,8 @@ namespace Pipaslot.Logging.Queues
                     return true;
                 }
             }
+
             return false;
         }
-
     }
 }

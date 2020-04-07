@@ -15,35 +15,34 @@ namespace Pipaslot.Logging.Queues
     /// </summary>
     public class ProcessQueue : IQueue
     {
-        public WriterSetting Setting { get; set; }
-        protected readonly LogGroupCollection LogGroups = new LogGroupCollection();
-        private readonly object _fileLock = new object();
+        private readonly LogGroupCollection _logGroups = new LogGroupCollection();
         private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
-        public ProcessQueue(WriterSetting setting)
+        private readonly ILogWriter _writer;
+        private readonly LogLevel _logLevel;
+
+        public ProcessQueue(ILogWriter writer, LogLevel logLevel)
         {
-            Setting = setting;
-            if (!Directory.Exists(setting.Path))
-            {
-                Directory.CreateDirectory(setting.Path);
-            }
+            _writer = writer;
+            _logLevel = logLevel;
         }
 
-        public ProcessQueue(string path, string filename) : this(new WriterSetting(path, filename))
-        {
-        }
 
-        public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {//TODO Check log level
+        public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
+            TState state)
+        {
+            //TODO Check log level
             if (!IsCLI(traceIdentifier))
             {
                 return;
             }
-            var queue = LogGroups.GetQueue(traceIdentifier, true);
+
+            var queue = _logGroups.GetQueue(traceIdentifier, true);
             if (queue == null)
             {
                 // Log should be ommited
                 return;
             }
+
             // Update depth
             var depth = queue.Depth;
             var stateType = typeof(TState);
@@ -63,50 +62,24 @@ namespace Pipaslot.Logging.Queues
             {
                 var previousDepth = queue.Logs.LastOrDefault()?.Depth ?? 0;
                 var log = _formatter.FormatRecord(previousDepth, depth, logRow);
-                WriteToFile(traceIdentifier, log);
+                _writer.WriteLog(log, logRow.Time.DateTime, traceIdentifier);
                 if (previousDepth <= 0)
                 {
                     queue.Logs.Clear();
                 }
             }
+
             queue.Logs.Add(logRow);
         }
+
         private bool IsCLI(string traceIdentifier)
         {
             return traceIdentifier?.StartsWith(Constrants.CliTraceIdentifierPrefix) ?? false;
         }
 
-        private StreamWriter GetStream(string id)
-        {
-            var formattedId = id.Replace(":", "-");
-            var fileName = Regex.Replace(Setting.Filename, "{date}", DateTime.Now.ToString("yyyyMMdd"), RegexOptions.IgnoreCase);
-            fileName = Regex.Replace(fileName, "{id}", formattedId, RegexOptions.IgnoreCase);
-            var path = Path.Combine(Setting.Path, fileName);
-
-            if (File.Exists(path))
-            {
-                return File.AppendText(path);
-            }
-            return File.CreateText(path);
-        }
-
-        protected void WriteToFile(string id, string log)
-        {
-            if (!string.IsNullOrWhiteSpace(log))
-            {
-                lock (_fileLock)
-                {
-                    using (var stream = GetStream(id))
-                    {
-                        stream.WriteLine(log);
-                    }
-                }
-            }
-        }
-
         public void Dispose()
         {
-            LogGroups.Dispose();
+            _logGroups.Dispose();
         }
     }
 }

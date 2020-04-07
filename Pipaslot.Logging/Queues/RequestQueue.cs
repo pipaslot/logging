@@ -8,26 +8,26 @@ namespace Pipaslot.Logging.Queues
     /// </summary>
     public class RequestQueue : QueueBase
     {
-        public RequestQueue(string path, string filename) : this(new WriterSetting(path, filename))
+        public RequestQueue(ILogWriter writer, LogLevel logLevel)
         {
-        }
-        
-        public RequestQueue(WriterSetting setting) 
-        {
-            Writer = new FileLogWriter(setting);
-            LogLevel = setting.LogLevel;
+            Writer = writer;
+            LogLevel = logLevel;
         }
 
         protected override ILogWriter Writer { get; }
         protected override LogLevel LogLevel { get; }
 
-        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName, LogLevel severity, string message, TState state)
-        {//TODO Check log level
+        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName,
+            LogLevel severity, string message, TState state)
+        {
+            //TODO Check log level
             return true;
         }
 
-        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
-        {//TODO Check log level
+        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
+            LogLevel severity, string message, TState state)
+        {
+            //TODO Check log level
             return categoryName == "Microsoft.AspNetCore.Hosting.Internal.WebHost";
         }
     }

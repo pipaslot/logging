@@ -7,15 +7,17 @@ namespace Pipaslot.Logging
 {
     public class FileLogWriter : ILogWriter
     {
+        private readonly string _path;
+        private readonly string _filename;
         private readonly object _fileLock = new object();
-        private readonly WriterSetting _setting;
 
-        public FileLogWriter(WriterSetting setting)
+        public FileLogWriter(string path, string filename)
         {
-            _setting = setting;
-            if (!Directory.Exists(setting.Path))
+            _path = path;
+            _filename = filename;
+            if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(setting.Path);
+                Directory.CreateDirectory(path);
             }
         }
 
@@ -36,9 +38,9 @@ namespace Pipaslot.Logging
         private StreamWriter GetStream(DateTime dateTime, string traceIdentifier)
         {
             var id = traceIdentifier?.Replace(":", "-") ?? "";
-            var fileName = Regex.Replace(_setting.Filename, "{date}", dateTime.ToString("yyyyMMdd"), RegexOptions.IgnoreCase);
+            var fileName = Regex.Replace(_filename, "{date}", dateTime.ToString("yyyyMMdd"), RegexOptions.IgnoreCase);
             fileName = Regex.Replace(fileName, "{id}", id, RegexOptions.IgnoreCase);
-            var path = Path.Combine(_setting.Path, fileName);
+            var path = Path.Combine(_path, fileName);
 
             if (File.Exists(path))
             {
