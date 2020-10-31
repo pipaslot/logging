@@ -35,21 +35,7 @@ namespace Pipaslot.Logging
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
-            // Reduce logger allocations
-            if (_sessions.TryGetValue(categoryName, out var logger))
-            {
-                return logger;
-            }
-
-            var session = new PipaslotLogger(_queues, _httpContextAccessor, categoryName);
-            if (_sessions.TryAdd(categoryName, session))
-            {
-                return session;
-            }
-            else
-            {
-                return _sessions[categoryName];
-            }
+            return _sessions.GetOrAdd(categoryName, name => new PipaslotLogger(_queues, _httpContextAccessor, categoryName));
         }
     }
 }
