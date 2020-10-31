@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,8 +13,9 @@ namespace Pipaslot.Logging.Demo
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(builder =>
                 {
                     var logDir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
@@ -29,9 +25,7 @@ namespace Pipaslot.Logging.Demo
                     builder.AddCallLogger(logDir, "-controllers", LogLevel.Debug, nameof(ValuesController));
                     //TODO SendLogger
                 })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+        }
     }
 }

@@ -13,8 +13,7 @@ namespace Pipaslot.Logging.Demo.Services
 
         public void PerformOperationWithLogging()
         {
-            using (_logger.BeginMethod())
-            {
+            using (_logger.BeginMethod()){
                 _logger.LogInformation("Operation performed");
             }
         }

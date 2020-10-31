@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.Demo.Services;
 
@@ -28,13 +24,12 @@ namespace Pipaslot.Logging.Demo.Controllers
             _logger.LogError("Fake error from controller");
             return "Completed";
         }
-        
+
         [HttpGet("no-logging")]
         public ActionResult<string> PerformActionWithoutLogging()
         {
             _serviceLevel1.PerformOperationWithoutLogging();
             return "Completed";
         }
-
     }
 }
