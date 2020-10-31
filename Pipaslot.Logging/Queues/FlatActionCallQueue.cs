@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Pipaslot.Logging.States;
 
@@ -16,6 +14,8 @@ namespace Pipaslot.Logging.Queues
         /// </summary>
         private readonly HashSet<string> _classesAndMethods = new HashSet<string>();
 
+        private LogLevel _logLevel;
+
         public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel, string className)
             : this(writer, logLevel)
         {
@@ -25,16 +25,14 @@ namespace Pipaslot.Logging.Queues
         public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel)
         {
             Writer = writer;
-            LogLevel = logLevel;
+            _logLevel = logLevel;
         }
 
         protected override ILogWriter Writer { get; }
-        protected override LogLevel LogLevel { get; }
 
-        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, 
+        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName,
             LogLevel severity, string message, TState state)
         {
-            //TODO Check log level
             if (_classesAndMethods.Count == 0){
                 return true;
             }
@@ -49,14 +47,16 @@ namespace Pipaslot.Logging.Queues
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
             LogLevel severity, string message, TState state)
         {
-            //TODO Check log level
-            if (_classesAndMethods.Count == 0){
-                return true;
-            }
+            if (_logLevel >= severity){
+                //TODO Check log level
+                if (_classesAndMethods.Count == 0){
+                    return true;
+                }
 
-            var ics = state as IncreaseScopeState;
-            if (_classesAndMethods.Contains(categoryName) && ics != null){
-                return true;
+                var ics = state as IncreaseScopeState;
+                if (_classesAndMethods.Contains(categoryName) && ics != null){
+                    return true;
+                }
             }
 
             return false;

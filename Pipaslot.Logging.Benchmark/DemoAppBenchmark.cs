@@ -34,7 +34,7 @@ namespace Pipaslot.Logging.Benchmark
             services.AddTransient<ValuesController>();
             
             var lb = new LoggingBuilder(services);
-            lb.AddRequestLogger(Directory.GetCurrentDirectory(),LogLevel.Trace);
+            lb.AddRequestLogger(Directory.GetCurrentDirectory());
 
             return services.BuildServiceProvider();
         }

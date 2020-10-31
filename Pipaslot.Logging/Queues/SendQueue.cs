@@ -43,7 +43,7 @@ namespace Pipaslot.Logging.Queues
             {
                 if (queue.Logs.Any(l => (int)l.Severity >= (int)_logLevel))
                 {
-                    var log = _formatter.FormatRequest(queue, traceIdentifier, LogLevel.Trace);
+                    var log = _formatter.FormatRequest(queue, traceIdentifier);
                     _logSender.SendLog(log);
                 }
                 // Remove request history from memory
@@ -63,7 +63,7 @@ namespace Pipaslot.Logging.Queues
             {
                 if (pair.Value.Logs.Any(l => (int)l.Severity >= (int)_logLevel))
                 {
-                    var log = _formatter.FormatRequest(pair.Value, pair.Key, LogLevel.Trace);
+                    var log = _formatter.FormatRequest(pair.Value, pair.Key);
                     sb.AppendLine(log);
                 }
             }

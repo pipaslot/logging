@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Groups
 {
     public class LogGroupFormatter
     {
-        public string FormatRequest(LogGroup logGroup, string requestIdentifier, LogLevel logSinceLevel)
+        public string FormatRequest(LogGroup logGroup, string requestIdentifier)
         {
             var sb = new StringBuilder();
             sb.Append(logGroup.Time);
@@ -23,10 +23,6 @@ namespace Pipaslot.Logging.Groups
                 if (log.Depth < previousDepth)
                 {
                     // Decreasing depth - ignore this case
-                }
-                else if ((int)log.Severity < (int)logSinceLevel)
-                {
-                    // Log message has too low severity
                 }
                 else if (first && log.CategoryName == "Microsoft.AspNetCore.Hosting.Internal.WebHost")
                 {

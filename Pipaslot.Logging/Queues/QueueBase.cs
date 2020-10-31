@@ -50,7 +50,7 @@ namespace Pipaslot.Logging.Queues
             // Log or finish
             if (depth <= 0)
             {
-                var log = _formatter.FormatRequest(queue, traceIdentifier, LogLevel);
+                var log = _formatter.FormatRequest(queue, traceIdentifier);
                 Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
 
                 // Remove request history from memory
@@ -63,7 +63,6 @@ namespace Pipaslot.Logging.Queues
         }
 
         protected abstract ILogWriter Writer { get; }
-        protected abstract LogLevel LogLevel { get; }
 
         protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, 
             LogLevel severity, string message, TState state);
@@ -102,7 +101,7 @@ namespace Pipaslot.Logging.Queues
             //write all remaining logs
             foreach (var pair in LogGroups.GetAllQueues())
             {
-                var log = _formatter.FormatRequest(pair.Value, pair.Key, LogLevel);
+                var log = _formatter.FormatRequest(pair.Value, pair.Key);
                 Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
             }
 

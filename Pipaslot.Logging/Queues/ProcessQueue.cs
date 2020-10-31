@@ -18,14 +18,11 @@ namespace Pipaslot.Logging.Queues
         private readonly LogGroupCollection _logGroups = new LogGroupCollection();
         private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
         private readonly ILogWriter _writer;
-        private readonly LogLevel _logLevel;
 
-        public ProcessQueue(ILogWriter writer, LogLevel logLevel)
+        public ProcessQueue(ILogWriter writer)
         {
             _writer = writer;
-            _logLevel = logLevel;
         }
-
 
         public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
             TState state)

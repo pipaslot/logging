@@ -16,12 +16,11 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Log all messages grouped by HTTP requests into file
         /// </summary>
-        public static void AddRequestLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel,
-            string fileSuffix = "-requests")
+        public static void AddRequestLogger(this ILoggingBuilder builder, string directory, string fileSuffix = "-requests")
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new RequestQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel));
+                new RequestQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log")));
         }
 
         /// <summary>
@@ -64,12 +63,11 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs. Every thread will have own log file
         /// </summary>
-        public static void AddProcessLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel,
-            string fileSuffix = "-process-{Id}")
+        public static void AddProcessLogger(this ILoggingBuilder builder, string directory, string fileSuffix = "-process-{Id}")
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new ProcessQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel));
+                new ProcessQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log")));
         }
 
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)
