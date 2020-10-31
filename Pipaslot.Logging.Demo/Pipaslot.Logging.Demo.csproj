@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Pipaslot.Logging\Pipaslot.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pipaslot.Logging\Pipaslot.Logging.csproj" />
+    <Folder Include="logs" />
   </ItemGroup>
 
 </Project>

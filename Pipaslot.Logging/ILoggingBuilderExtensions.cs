@@ -64,7 +64,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        /// Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs.
+        /// Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs. Every thread will have own log file
         /// </summary>
         public static void AddProcessLogger(this ILoggingBuilder builder, string directory, LogLevel logLevel,
             string fileSuffix = "-process-{Id}")
