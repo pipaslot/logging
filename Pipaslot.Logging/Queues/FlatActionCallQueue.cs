@@ -14,12 +14,12 @@ namespace Pipaslot.Logging.Queues
         /// <summary>
         /// Definition of classes and their methods to be tracked
         /// </summary>
-        private readonly Dictionary<string, string[]> _classesAndMethods = new Dictionary<string, string[]>();
+        private readonly HashSet<string> _classesAndMethods = new HashSet<string>();
 
-        public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel, string className, params string[] methodNames)
+        public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel, string className)
             : this(writer, logLevel)
         {
-            _classesAndMethods.Add(className, methodNames);
+            _classesAndMethods.Add(className);
         }
 
         public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel)
@@ -31,22 +31,16 @@ namespace Pipaslot.Logging.Queues
         protected override ILogWriter Writer { get; }
         protected override LogLevel LogLevel { get; }
 
-        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName,
+        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, 
             LogLevel severity, string message, TState state)
         {
             //TODO Check log level
-            if (_classesAndMethods.Count == 0)
-            {
+            if (_classesAndMethods.Count == 0){
                 return true;
             }
 
-            if (_classesAndMethods.ContainsKey(categoryName))
-            {
-                var methodNames = _classesAndMethods[categoryName];
-                if (methodNames.Length == 0 || methodNames.Contains(memberName))
-                {
-                    return true;
-                }
+            if (_classesAndMethods.Contains(categoryName)){
+                return true;
             }
 
             return false;
@@ -56,19 +50,13 @@ namespace Pipaslot.Logging.Queues
             LogLevel severity, string message, TState state)
         {
             //TODO Check log level
-            if (_classesAndMethods.Count == 0)
-            {
+            if (_classesAndMethods.Count == 0){
                 return true;
             }
 
             var ics = state as IncreaseScopeState;
-            if (_classesAndMethods.ContainsKey(categoryName) && ics != null)
-            {
-                var methodNames = _classesAndMethods[categoryName];
-                if (methodNames.Length == 0 || methodNames.Contains(ics.CallerMemberName))
-                {
-                    return true;
-                }
+            if (_classesAndMethods.Contains(categoryName) && ics != null){
+                return true;
             }
 
             return false;

@@ -39,13 +39,11 @@ namespace Pipaslot.Logging
         /// Log single message with specified log level and class or methods. Useful when you need separate specific procedure
         /// </summary>
         public static void AddCallLogger(this ILoggingBuilder builder, string directory, string fileSuffix,
-            LogLevel logLevel, string className, params string[] methodNames)
+            LogLevel logLevel, string className)
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel,
-                    className,
-                    methodNames));
+                new FlatActionCallQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel, className));
         }
 
         /// <summary>

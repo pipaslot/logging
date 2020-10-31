@@ -29,10 +29,8 @@ namespace Pipaslot.Logging.Queues
                 return;
             }
 
-            // Get current scope method name
-            var lastMemberName = GetLastMethodInCurrentScope(queue, categoryName, state);
             // Check if can be written for current scope and method
-            if (!CanWrite(traceIdentifier, categoryName, lastMemberName, severity, message, state))
+            if (!CanWrite(traceIdentifier, categoryName, severity, message, state))
             {
                 return;
             }
@@ -67,7 +65,7 @@ namespace Pipaslot.Logging.Queues
         protected abstract ILogWriter Writer { get; }
         protected abstract LogLevel LogLevel { get; }
 
-        protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, string memberName,
+        protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, 
             LogLevel severity, string message, TState state);
 
         protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,

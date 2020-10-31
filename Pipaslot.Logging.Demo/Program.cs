@@ -20,8 +20,8 @@ namespace Pipaslot.Logging.Demo
                 {
                     var logDir = Path.Combine(Directory.GetCurrentDirectory(), "logs");
                     builder.AddRequestLogger(logDir, LogLevel.Trace);
-                    //builder.AddFlatLogger(logDir, "-errors", LogLevel.Error);
-                    //builder.AddProcessLogger(logDir, LogLevel.Trace);
+                    builder.AddFlatLogger(logDir, "-errors", LogLevel.Error);
+                    builder.AddProcessLogger(logDir, LogLevel.Trace);
                     builder.AddCallLogger(logDir, "-controllers", LogLevel.Debug, nameof(ValuesController));
                     //TODO SendLogger
                 })
