@@ -9,8 +9,4 @@
     <ProjectReference Include="..\Pipaslot.Logging\Pipaslot.Logging.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="logs" />
-  </ItemGroup>
-
 </Project>

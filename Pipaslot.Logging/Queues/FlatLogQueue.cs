@@ -34,12 +34,14 @@ namespace Pipaslot.Logging.Queues
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName,
             LogLevel severity, string message, TState state)
         {
-            if (_classesAndMethods.Count == 0){
-                return true;
-            }
+            if (_logLevel <= severity){
+                if (_classesAndMethods.Count == 0){
+                    return true;
+                }
 
-            if (_classesAndMethods.Contains(categoryName)){
-                return true;
+                if (_classesAndMethods.Contains(categoryName)){
+                    return true;
+                }
             }
 
             return false;
@@ -48,7 +50,7 @@ namespace Pipaslot.Logging.Queues
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
             LogLevel severity, TState state)
         {
-            if (_logLevel >= severity){
+            if (_logLevel <= severity){
                 if (_classesAndMethods.Count == 0){
                     return true;
                 }
