@@ -2,18 +2,16 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.States;
-using Enumerable = System.Linq.Enumerable;
 
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
-    /// Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
+    ///     Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
     public class TreeQueue : QueueBase
     {
         /// <summary>
-        /// Definition of classes and their methods to be tracked
+        ///     Definition of classes and their methods to be tracked
         /// </summary>
         private readonly HashSet<string> _classes = new HashSet<string>();
 

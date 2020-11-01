@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Pipaslot.Logging.States;
 using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
 {
     public class PipaslotLogger : ILogger, IDisposable
     {
-        private readonly IEnumerable<IQueue> _queues;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _categoryName;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEnumerable<IQueue> _queues;
 
         public PipaslotLogger(IEnumerable<IQueue> queues, IHttpContextAccessor httpContextAccessor, string categoryName)
         {
@@ -21,19 +21,23 @@ namespace Pipaslot.Logging
             _categoryName = categoryName;
         }
 
+        public void Dispose()
+        {
+            foreach (var writer in _queues){
+                writer.Dispose();
+            }
+        }
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             var message = eventId.Name;
-            if (exception != null && formatter != null){
-                message = formatter(state, exception) + "\n" + exception.ToString();
-            }
-            else if (exception != null){
-                message = exception.ToString();
-            }
+            if (exception != null && formatter != null)
+                message = formatter(state, exception) + "\n" + exception;
+            else if (exception != null) message = exception.ToString();
 
             if (string.IsNullOrWhiteSpace(message)){
                 message = state.ToString();
-                state = default(TState);
+                state = default;
             }
 
             Write(logLevel, message, state);
@@ -47,12 +51,10 @@ namespace Pipaslot.Logging
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            if (state is IState){
+            if (state is IState)
                 WriteScopeChange(state);
-            }
-            else{
+            else
                 WriteScopeChange(new IncreaseScopeState("", state));
-            }
 
             return new DisposeCallback(() => { WriteScopeChange(new DecreaseScopeState()); });
         }
@@ -65,7 +67,7 @@ namespace Pipaslot.Logging
                 writer.WriteLog(identifier, _categoryName, severity, message, state);
             }
         }
-        
+
         private void WriteScopeChange<TState>(TState state)
         {
             var context = _httpContextAccessor.HttpContext;
@@ -77,16 +79,9 @@ namespace Pipaslot.Logging
 
         private string GetProcessIdentifier()
         {
-            var process = System.Diagnostics.Process.GetCurrentProcess();
+            var process = Process.GetCurrentProcess();
 
             return $"{Constrants.CliTraceIdentifierPrefix}{process.Id}:{process.StartTime:HHmmss}";
-        }
-
-        public void Dispose()
-        {
-            foreach (var writer in _queues){
-                writer.Dispose();
-            }
         }
     }
 }

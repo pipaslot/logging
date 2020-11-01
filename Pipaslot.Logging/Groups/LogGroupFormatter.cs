@@ -17,39 +17,33 @@ namespace Pipaslot.Logging.Groups
 
             var previousDepth = 0;
             var rows = 0;
-            foreach (var log in logGroup.Logs)
-            {
-                if(log.ShouldBeWritten)
-                {
+            foreach (var log in logGroup.Logs){
+                if (log.ShouldBeWritten){
                     sb.AppendLine(FormatRecord(previousDepth, log.Depth, log));
                     rows++;
                 }
+
                 previousDepth = log.Depth;
             }
-            if (rows > 0)
-            {
-                return sb.ToString();
-            }
+
+            if (rows > 0) return sb.ToString();
 
             return "";
         }
-        
+
         protected string FormatSeverity(LogLevel severity)
         {
             var codes = new Dictionary<LogLevel, string>
             {
-                {LogLevel.Trace, "[TRC]" },
-                {LogLevel.Debug, "[DEB]" },
-                {LogLevel.Information, "[INF]" },
-                {LogLevel.Warning, "[WRN]" },
-                {LogLevel.Error, "[ERR]" },
-                {LogLevel.Critical, "[FTL]" },
-                {LogLevel.None, "     " }
+                {LogLevel.Trace, "[TRC]"},
+                {LogLevel.Debug, "[DEB]"},
+                {LogLevel.Information, "[INF]"},
+                {LogLevel.Warning, "[WRN]"},
+                {LogLevel.Error, "[ERR]"},
+                {LogLevel.Critical, "[FTL]"},
+                {LogLevel.None, "     "}
             };
-            if (codes.ContainsKey(severity))
-            {
-                return codes[severity];
-            }
+            if (codes.ContainsKey(severity)) return codes[severity];
             return "[INF]";
         }
 
@@ -62,15 +56,11 @@ namespace Pipaslot.Logging.Groups
             sb.Append(FormatSeverity(log.Severity));
             sb.Append(" ");
             sb.Append(FormatDepth(previousDepth, currentDepth));
-            if (log.State != null && log.State is IState state)
-            {
-                sb.Append(state.FormatMessage(log.CategoryName, log.Message));
-            }
+            if (log.State != null && log.State is IState state) sb.Append(state.FormatMessage(log.CategoryName, log.Message));
             sb.Append(log.Message);
 
 
-            if (log.State != null && !(log.State is IState))
-            {
+            if (log.State != null && !(log.State is IState)){
                 var serializedData = Serialize(log.State);
                 sb.Append(" ");
                 sb.Append(serializedData);
@@ -82,25 +72,16 @@ namespace Pipaslot.Logging.Groups
         protected string FormatDepth(int previousDepth, int currentDepth)
         {
             var sb = new StringBuilder();
-            for (var i = 2; i < currentDepth; i++)
-            {
+            for (var i = 2; i < currentDepth; i++){
                 sb.Append("| ");
             }
 
-            if (previousDepth < currentDepth)
-            {
-                if (currentDepth > 1){
-                    sb.Append("+ ");
-                }
+            if (previousDepth < currentDepth){
+                if (currentDepth > 1) sb.Append("+ ");
             }
             else if (previousDepth > currentDepth)
-            {
                 sb.Append("/ ");
-            }
-            else if (currentDepth > 1)
-            {
-                sb.Append("| ");
-            }
+            else if (currentDepth > 1) sb.Append("| ");
 
             return sb.ToString();
         }

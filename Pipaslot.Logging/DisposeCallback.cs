@@ -3,7 +3,7 @@
 namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Action call when hitting dispose block
+    ///     Action call when hitting dispose block
     /// </summary>
     public class DisposeCallback : IDisposable
     {

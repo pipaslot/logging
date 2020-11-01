@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
-    /// Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
+    ///     Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
     public class FlatQueue : QueueBase
     {

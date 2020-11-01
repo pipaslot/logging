@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Pipaslot.Logging.States
+﻿namespace Pipaslot.Logging.States
 {
-    interface IState
+    internal interface IState
     {
+        bool HasData { get; }
+
         //TODO Get rid of formatting
         string FormatMessage(string categoryName, string message);
-
-        bool HasData { get; }
     }
 }

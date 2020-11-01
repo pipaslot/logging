@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Pipaslot.Logging
+﻿namespace Pipaslot.Logging
 {
     public class PipaslotLoggerOptions
     {

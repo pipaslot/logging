@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
-    /// Logs all separated requests
+    ///     Logs all separated requests
     /// </summary>
     public class RequestQueue : QueueBase
     {
@@ -16,7 +15,7 @@ namespace Pipaslot.Logging.Queues
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, 
+        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName,
             LogLevel severity, string message, TState state)
         {
             return true;

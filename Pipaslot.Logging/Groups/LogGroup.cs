@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
@@ -8,9 +7,8 @@ namespace Pipaslot.Logging.Groups
 {
     public class LogGroup
     {
-        public DateTimeOffset Time { get; } = DateTimeOffset.Now;
-
         private readonly List<Log> _logs = new List<Log>();
+        public DateTimeOffset Time { get; } = DateTimeOffset.Now;
         public IReadOnlyCollection<Log> Logs => _logs;
 
         public int Depth => Logs.LastOrDefault()?.Depth ?? 0;
@@ -22,13 +20,6 @@ namespace Pipaslot.Logging.Groups
 
         public class Log
         {
-            public string CategoryName { get; }
-            public LogLevel Severity { get; }
-            public string Message { get; }
-            public object State { get; }
-            public int Depth { get; }
-            public DateTimeOffset Time { get; } = DateTimeOffset.Now;
-            public bool ShouldBeWritten { get; }
             public Log(string categoryName, LogLevel severity, string message, object state, int depth, bool shouldBeWritten)
             {
                 CategoryName = categoryName;
@@ -38,6 +29,14 @@ namespace Pipaslot.Logging.Groups
                 Depth = depth;
                 ShouldBeWritten = shouldBeWritten;
             }
+
+            public string CategoryName { get; }
+            public LogLevel Severity { get; }
+            public string Message { get; }
+            public object State { get; }
+            public int Depth { get; }
+            public DateTimeOffset Time { get; } = DateTimeOffset.Now;
+            public bool ShouldBeWritten { get; }
         }
     }
 }

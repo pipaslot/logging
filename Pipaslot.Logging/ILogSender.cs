@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace Pipaslot.Logging
+﻿namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Service for sending LogGroups through network
+    ///     Service for sending LogGroups through network
     /// </summary>
     public interface ILogSender
     {

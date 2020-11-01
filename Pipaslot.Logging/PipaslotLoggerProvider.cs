@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
@@ -23,17 +20,16 @@ namespace Pipaslot.Logging
             _httpContextAccessor = httpContextAccessor;
             _queues = queues;
         }
-        
+
         public void Dispose()
         {
-            foreach (var logger in _sessions.Values)
-            {
+            foreach (var logger in _sessions.Values){
                 logger.Dispose();
             }
         }
-        
+
         /// <summary>
-        /// Create logger for every scope. All these scopes has shared writers
+        ///     Create logger for every scope. All these scopes has shared writers
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
