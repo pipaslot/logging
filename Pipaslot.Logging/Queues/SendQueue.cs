@@ -12,12 +12,10 @@ namespace Pipaslot.Logging.Queues
         // private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
         // private readonly LogGroupCollection _logGroups = new LogGroupCollection();
         private readonly LogLevel _logLevel;
-        //private readonly ILogSender _logSender;
 
         public SendQueue(IOptions<PipaslotLoggerOptions> options, LogLevel logLevel, ILogSender logSender) : base(options)
         {
             _logLevel = logLevel;
-            //_logSender = logSender;
             Writer = new LogWriterToLogSenderAdapter(logSender);
         }
 
@@ -92,7 +90,7 @@ namespace Pipaslot.Logging.Queues
 
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            return _logLevel <= severity;
+            return true;
         }
     }
 }
