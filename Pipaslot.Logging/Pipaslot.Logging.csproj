@@ -6,12 +6,15 @@
     <Title>Request Logging</Title>
     <Authors>Petr Stipek</Authors>
     <Description>Structured HTTP request logger. Supports multiple file writers for grouped by requests, priorities, service calls or threads. Contains adapter for sending for notifications.</Description>
-    <PackageLicenseUrl>https://github.com/pipaslot/logging/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RepositoryUrl>https://github.com/pipaslot/logging</RepositoryUrl>
     <PackageVersion>1.1.0</PackageVersion>
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DocumentationFile>bin\Release\Pipaslot.Logging.xml</DocumentationFile>
