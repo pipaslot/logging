@@ -18,7 +18,6 @@ namespace Pipaslot.Logging.Queues
         protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, 
             LogLevel severity, string message, TState state)
         {
-            //TODO Check log level
             return true;
         }
 

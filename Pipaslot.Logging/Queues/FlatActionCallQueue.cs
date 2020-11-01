@@ -48,7 +48,6 @@ namespace Pipaslot.Logging.Queues
             LogLevel severity, string message, TState state)
         {
             if (_logLevel >= severity){
-                //TODO Check log level
                 if (_classesAndMethods.Count == 0){
                     return true;
                 }

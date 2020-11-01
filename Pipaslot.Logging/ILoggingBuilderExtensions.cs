@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
@@ -16,33 +17,31 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Log all messages grouped by HTTP requests into file
         /// </summary>
-        public static void AddRequestLogger(this ILoggingBuilder builder, string directory, string fileSuffix = "-requests")
+        public static void AddRequestLogger(this ILoggingBuilder builder, string fileSuffix = "-requests")
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new RequestQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log")));
+                new RequestQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log")));
         }
 
         /// <summary>
         /// Log single message with specified log level. Useful when you need separate only errors or critical failures
         /// </summary>
-        public static void AddFlatLogger(this ILoggingBuilder builder, string directory, string fileSuffix,
-            LogLevel logLevel)
+        public static void AddFlatLogger(this ILoggingBuilder builder, string fileSuffix, LogLevel logLevel)
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel));
+                new FlatActionCallQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel));
         }
 
         /// <summary>
         /// Log single message with specified log level and class or methods. Useful when you need separate specific procedure
         /// </summary>
-        public static void AddCallLogger(this ILoggingBuilder builder, string directory, string fileSuffix,
-            LogLevel logLevel, string className)
+        public static void AddCallLogger(this ILoggingBuilder builder, string fileSuffix, LogLevel logLevel, string className)
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log"), logLevel, className));
+                new FlatActionCallQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, className));
         }
 
         /// <summary>
@@ -63,16 +62,17 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs. Every thread will have own log file
         /// </summary>
-        public static void AddProcessLogger(this ILoggingBuilder builder, string directory, string fileSuffix = "-process-{Id}")
+        public static void AddProcessLogger(this ILoggingBuilder builder, string fileSuffix = "-process-{Id}")
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new ProcessQueue(new FileLogWriter(directory, "{Date}" + fileSuffix + ".log")));
+                new ProcessQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log")));
         }
 
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)
         {
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.Services.TryAddSingleton<IOptions<PipaslotLoggerOptions>, DefaultPipaslotLoggerOptions>();
             if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider)))
             {
                 builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();

@@ -19,25 +19,9 @@ namespace Pipaslot.Logging
         public static IDisposable BeginMethod(this ILogger logger, object state = null,
             [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
         {
-            var scopeState = new IncreaseScopeState(memberName, state);
+            var scopeState = new IncreaseMethodState(memberName, state);
             return logger.BeginScope(scopeState);
         }
-// TODO Implement
-//        /// <summary>
-//        /// Start invocation logging in separated scope specified by unique name.
-//        /// </summary>
-//        /// <see cref="Pipaslot.Logging.LoggingBuilderExtensions.AddCallLogger"/>
-//        /// <seealso cref="DeepActionCallQueue"/>
-//        /// <seealso cref="FlatActionCallQueue"/>
-//        /// <param name="logger"></param>
-//        /// <param name="uniqueIdentifier">Unique call identifier</param>
-//        /// <param name="state">Additional state data to be logged</param>
-//        /// <returns></returns>
-//        public static IDisposable BeginAction(this ILogger logger, string uniqueIdentifier, object state = null)
-//        {
-//            var scopeState = new IncreaseActionScopeState(uniqueIdentifier, state);
-//            return logger.BeginScope(scopeState);
-//        }
 
         public static void LogTraceWithData(this ILogger logger, string message, object data, Exception ex = null)
         {
