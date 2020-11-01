@@ -43,7 +43,7 @@ namespace Pipaslot.Logging
         /// <summary>
         ///     Log single message with specified log level and class or methods. Useful when you need separate specific procedure
         /// </summary>
-        public static void AddTreeLogger(this ILoggingBuilder builder, string fileSuffix, string className)
+        public static void AddTreeLogger(this ILoggingBuilder builder, string fileSuffix, params string[] namespaceOrClass)
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
@@ -51,7 +51,7 @@ namespace Pipaslot.Logging
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<ILogWriterFactory>();
                 var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
-                return new TreeQueue(writer, options, className);
+                return new TreeQueue(writer, options, namespaceOrClass);
             });
         }
 

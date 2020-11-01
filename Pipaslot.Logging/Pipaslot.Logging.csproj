@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>Request Logging</Title>
+    <Authors>Petr Stipek</Authors>
+    <Description>Structured HTTP request logger. Supports multiple file writers for grouped by requests, priorities, service calls or threads. Contains adapter for sending for notifications.</Description>
+    <PackageLicenseUrl>https://github.com/pipaslot/logging/blob/main/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/pipaslot/logging</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
