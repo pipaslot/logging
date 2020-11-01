@@ -18,8 +18,8 @@ namespace Pipaslot.Logging.Demo
             return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(builder =>
                 {
-                    builder.AddRequestLogger();
-                    //builder.AddFlatLogger("-errors", LogLevel.Error);
+                    //builder.AddRequestLogger();
+                    builder.AddFlatLogger("-errors", LogLevel.Error);
                     //builder.AddProcessLogger();
                     //builder.AddCallLogger( "-controllers", LogLevel.Information, nameof(ValuesController));
                     //TODO SendLogger

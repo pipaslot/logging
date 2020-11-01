@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     /// Logs all separated requests
     /// </summary>
-    public class RequestQueue : QueueBase
+    public class RequestLogQueue : QueueBase
     {
-        public RequestQueue(ILogWriter writer)
+        public RequestLogQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
         }
@@ -21,8 +22,7 @@ namespace Pipaslot.Logging.Queues
             return true;
         }
 
-        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
-            LogLevel severity, string message, TState state)
+        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, TState state)
         {
             return !traceIdentifier.StartsWith(Constrants.CliTraceIdentifierPrefix);
         }

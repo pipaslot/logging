@@ -21,7 +21,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new RequestQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log")));
+                new RequestLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>()));
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel));
+                new FlatActionCallLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, s.GetService<IOptions<PipaslotLoggerOptions>>()));
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatActionCallQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, className));
+                new FlatActionCallLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, s.GetService<IOptions<PipaslotLoggerOptions>>(), className));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new ProcessQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log")));
+                new ProcessQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>()));
         }
 
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)

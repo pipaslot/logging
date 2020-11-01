@@ -1,27 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Pipaslot.Logging.States;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Groups;
+using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging.Queues
 {
     public abstract class QueueBase : IQueue
     {
         protected readonly LogGroupCollection LogGroups = new LogGroupCollection();
-        private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
+        protected readonly LogGroupFormatter Formatter = new LogGroupFormatter();
+        private readonly IOptions<PipaslotLoggerOptions> _options;
 
-        public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
+        protected QueueBase(IOptions<PipaslotLoggerOptions> options)
+        {
+            _options = options;
+        }
+
+        protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, TState state);
+
+        protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state);
+        protected abstract ILogWriter Writer { get; }
+        public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
             TState state)
         {
-            //TODO Check log level
-            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity, message, state);
+            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity, state);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null)
             {
@@ -34,11 +36,24 @@ namespace Pipaslot.Logging.Queues
             {
                 return;
             }
+            
+            queue.Add(new LogGroup.Log(categoryName, severity, message, state, queue.Depth, true));
+        }
 
+        public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
+        {
+            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.Trace, state);
+            var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
+            if (queue == null)
+            {
+                // Log should be ommited
+                return;
+            }
+            
             // Update depth
             var depth = queue.Depth;
             var stateType = typeof(TState);
-            if (stateType == typeof(IncreaseScopeState))
+            if (stateType == typeof(IncreaseScopeState) || stateType == typeof(IncreaseMethodState))
             {
                 depth++;
             }
@@ -50,50 +65,30 @@ namespace Pipaslot.Logging.Queues
             // Log or finish
             if (depth <= 0)
             {
-                var log = _formatter.FormatRequest(queue, traceIdentifier);
-                Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
-
-                // Remove request history from memory
+                // Remove request history from memory 
                 LogGroups.Remove(traceIdentifier);
+                
+                var log = Formatter.FormatRequest(queue, traceIdentifier);
+                Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
             }
-            else
-            {
-                queue.Logs.Add(new LogGroup.Log(categoryName, severity, message, state, depth));
+            else{
+                //Write only increasing scopes and ignore decreasing scopes
+                var canWrite = CanWriteScope(state);
+                queue.Add(new LogGroup.Log(categoryName, LogLevel.Trace, "", state, depth, canWrite));
             }
         }
 
-        protected abstract ILogWriter Writer { get; }
-
-        protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, 
-            LogLevel severity, string message, TState state);
-
-        protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
-            LogLevel severity, string message, TState state);
-
-        private string GetLastMethodInCurrentScope<TState>(LogGroup logGroup, string categoryName, TState state)
+        private bool CanWriteScope<TState>(TState state)
         {
-            var scopeState = state as IncreaseScopeState;
-            if (scopeState != null)
-            {
-                var name = scopeState.CallerMemberName;
-                if (!string.IsNullOrWhiteSpace(name))
-                {
-                    return name;
-                }
+            var options = _options.Value;
+            if (state is IncreaseMethodState && options.IncludeMethods){
+                return true;
+            }
+            if (options.IncludeScopes){
+                return true;
             }
 
-            var lastIncreaseScopeLog = logGroup.Logs.LastOrDefault(l => l.State is IncreaseScopeState);
-
-            if (lastIncreaseScopeLog != null && lastIncreaseScopeLog.CategoryName == categoryName)
-            {
-                var name = (lastIncreaseScopeLog.State as IncreaseScopeState)?.CallerMemberName;
-                if (!string.IsNullOrWhiteSpace(name))
-                {
-                    return name;
-                }
-            }
-
-            return "";
+            return false;
         }
 
         public virtual void Dispose()
@@ -101,10 +96,9 @@ namespace Pipaslot.Logging.Queues
             //write all remaining logs
             foreach (var pair in LogGroups.GetAllQueues())
             {
-                var log = _formatter.FormatRequest(pair.Value, pair.Key);
+                var log = Formatter.FormatRequest(pair.Value, pair.Key);
                 Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
             }
-
             LogGroups.Dispose();
         }
     }

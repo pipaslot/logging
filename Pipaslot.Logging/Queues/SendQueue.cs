@@ -19,7 +19,7 @@ namespace Pipaslot.Logging.Queues
             _logLevel = logLevel;
         }
 
-        public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
+        public void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {//TODO Check log level
             var queue = _logGroups.GetQueue(traceIdentifier, true);
             if (queue == null)
@@ -51,8 +51,13 @@ namespace Pipaslot.Logging.Queues
             }
             else
             {
-                queue.Logs.Add(new LogGroup.Log(categoryName, severity, message, state, depth));
+                queue.Add(new LogGroup.Log(categoryName, severity, message, state, depth, true));
             }
+        }
+
+        public void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
+        {
+            //TODO
         }
 
         public virtual void Dispose()

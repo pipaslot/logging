@@ -16,25 +16,15 @@ namespace Pipaslot.Logging.Groups
             sb.AppendLine(requestIdentifier);
 
             var previousDepth = 0;
-            var first = true;
             var rows = 0;
             foreach (var log in logGroup.Logs)
             {
-                if (log.Depth < previousDepth)
-                {
-                    // Decreasing depth - ignore this case
-                }
-                else if (first && log.CategoryName == "Microsoft.AspNetCore.Hosting.Internal.WebHost")
-                {
-                    // Ignore first log which is Webhost call without usefull informations
-                }
-                else
+                if(log.ShouldBeWritten)
                 {
                     sb.AppendLine(FormatRecord(previousDepth, log.Depth, log));
                     rows++;
                 }
                 previousDepth = log.Depth;
-                first = false;
             }
             if (rows > 0)
             {

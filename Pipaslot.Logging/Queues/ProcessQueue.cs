@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Groups;
 
@@ -13,69 +14,69 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Log all processes together
     /// </summary>
-    public class ProcessQueue : IQueue
+    public class ProcessQueue : QueueBase
     {
-        private readonly LogGroupCollection _logGroups = new LogGroupCollection();
-        private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
-        private readonly ILogWriter _writer;
+        // private readonly LogGroupCollection _logGroups = new LogGroupCollection();
+        // private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
+        protected override ILogWriter Writer { get; }
 
-        public ProcessQueue(ILogWriter writer)
+        public ProcessQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
-            _writer = writer;
+            Writer = writer;
         }
 
-        public void Write<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
-            TState state)
-        {
-            if (!IsCLI(traceIdentifier))
-            {
-                return;
-            }
+        // public override void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
+        //     TState state)
+        // {
+        //     if (!IsCLI(traceIdentifier))
+        //     {
+        //         return;
+        //     }
+        //
+        //     var queue = _logGroups.GetQueue(traceIdentifier, true);
+        //     if (queue == null)
+        //     {
+        //         // Log should be ommited
+        //         return;
+        //     }
+        //
+        //     // Update depth
+        //     var depth = queue.Depth;
+        //     var stateType = typeof(TState);
+        //     var logStepToFile = true;
+        //     if (stateType == typeof(IncreaseScopeState))
+        //     {
+        //         depth++;
+        //     }
+        //     else if (stateType == typeof(DecreaseScopeState))
+        //     {
+        //         depth--;
+        //         logStepToFile = false;
+        //     }
+        //
+        //     var logRow = new LogGroup.Log(categoryName, severity, message, state, depth);
+        //     if (logStepToFile)
+        //     {
+        //         var previousDepth = queue.Logs.LastOrDefault()?.Depth ?? 0;
+        //         var log = _formatter.FormatRecord(previousDepth, depth, logRow);
+        //         Writer.WriteLog(log, logRow.Time.DateTime, traceIdentifier);
+        //         if (previousDepth <= 0)
+        //         {
+        //             queue.Logs.Clear();
+        //         }
+        //     }
+        //
+        //     queue.Logs.Add(logRow);
+        // }
 
-            var queue = _logGroups.GetQueue(traceIdentifier, true);
-            if (queue == null)
-            {
-                // Log should be ommited
-                return;
-            }
-
-            // Update depth
-            var depth = queue.Depth;
-            var stateType = typeof(TState);
-            var logStepToFile = true;
-            if (stateType == typeof(IncreaseScopeState))
-            {
-                depth++;
-            }
-            else if (stateType == typeof(DecreaseScopeState))
-            {
-                depth--;
-                logStepToFile = false;
-            }
-
-            var logRow = new LogGroup.Log(categoryName, severity, message, state, depth);
-            if (logStepToFile)
-            {
-                var previousDepth = queue.Logs.LastOrDefault()?.Depth ?? 0;
-                var log = _formatter.FormatRecord(previousDepth, depth, logRow);
-                _writer.WriteLog(log, logRow.Time.DateTime, traceIdentifier);
-                if (previousDepth <= 0)
-                {
-                    queue.Logs.Clear();
-                }
-            }
-
-            queue.Logs.Add(logRow);
-        }
-
-        private bool IsCLI(string traceIdentifier)
+        protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, TState state)
         {
             return traceIdentifier?.StartsWith(Constrants.CliTraceIdentifierPrefix) ?? false;
         }
 
-        public void Dispose()
+        protected override bool CanWrite<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            _logGroups.Dispose();
+            return true;
         }
     }
 }

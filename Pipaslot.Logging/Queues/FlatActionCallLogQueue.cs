@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging.Queues
@@ -7,22 +8,22 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    public class FlatActionCallQueue : QueueBase
+    public class FlatActionCallLogQueue : QueueBase
     {
         /// <summary>
         /// Definition of classes and their methods to be tracked
         /// </summary>
         private readonly HashSet<string> _classesAndMethods = new HashSet<string>();
 
-        private LogLevel _logLevel;
+        private readonly LogLevel _logLevel;
 
-        public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel, string className)
-            : this(writer, logLevel)
+        public FlatActionCallLogQueue(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options, string className)
+            : this(writer, logLevel, options)
         {
             _classesAndMethods.Add(className);
         }
 
-        public FlatActionCallQueue(ILogWriter writer, LogLevel logLevel)
+        public FlatActionCallLogQueue(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
             _logLevel = logLevel;
@@ -45,7 +46,7 @@ namespace Pipaslot.Logging.Queues
         }
 
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName,
-            LogLevel severity, string message, TState state)
+            LogLevel severity, TState state)
         {
             if (_logLevel >= severity){
                 if (_classesAndMethods.Count == 0){

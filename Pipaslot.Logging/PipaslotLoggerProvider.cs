@@ -2,8 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
@@ -12,7 +14,7 @@ namespace Pipaslot.Logging
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IQueue> _queues;
-        
+
         private readonly ConcurrentDictionary<string, PipaslotLogger> _sessions = new ConcurrentDictionary<string, PipaslotLogger>();
 
         public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IQueue> queues)
