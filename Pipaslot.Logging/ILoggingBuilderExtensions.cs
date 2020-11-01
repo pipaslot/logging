@@ -58,7 +58,7 @@ namespace Pipaslot.Logging
         /// <summary>
         ///     Sends every message by provider log sender. Useful when you need send notifications about critical errors
         /// </summary>
-        public static void AddSendMailLogger<TLogSender>(this ILoggingBuilder builder, LogLevel logLevel)
+        public static void AddSendLogger<TLogSender>(this ILoggingBuilder builder, LogLevel logLevel)
             where TLogSender : class, ILogSender
         {
             builder.AddPipaslotLoggerProvider();

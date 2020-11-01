@@ -21,7 +21,7 @@ namespace Pipaslot.Logging.Demo
                     builder.AddFlatLogger("-errors", LogLevel.Error);
                     builder.AddProcessLogger();
                     builder.AddTreeLogger("-controllers", "Pipaslot.Logging.Demo.Controllers");
-                    builder.AddSendMailLogger<LogSender>(LogLevel.Error);
+                    builder.AddSendLogger<LogSender>(LogLevel.Error);
                 })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         }
