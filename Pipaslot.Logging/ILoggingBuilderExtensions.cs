@@ -19,7 +19,9 @@ namespace Pipaslot.Logging
             builder.Services.AddSingleton<IQueue>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
-                return new RequestQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), options);
+                var logWriterFactory = s.GetService<ILogWriterFactory>();
+                var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
+                return new RequestQueue(writer, options);
             });
         }
 
@@ -32,7 +34,9 @@ namespace Pipaslot.Logging
             builder.Services.AddSingleton<IQueue>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
-                return new FlatQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), logLevel, options);
+                var logWriterFactory = s.GetService<ILogWriterFactory>();
+                var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
+                return new FlatQueue(writer, logLevel, options);
             });
         }
 
@@ -45,7 +49,9 @@ namespace Pipaslot.Logging
             builder.Services.AddSingleton<IQueue>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
-                return new TreeQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), options, className);
+                var logWriterFactory = s.GetService<ILogWriterFactory>();
+                var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
+                return new TreeQueue(writer, options, className);
             });
         }
 
@@ -74,7 +80,9 @@ namespace Pipaslot.Logging
             builder.Services.AddSingleton<IQueue>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
-                return new ProcessQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), options);
+                var logWriterFactory = s.GetService<ILogWriterFactory>();
+                var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
+                return new ProcessQueue(writer, options);
             });
         }
 
@@ -82,7 +90,10 @@ namespace Pipaslot.Logging
         {
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.TryAddSingleton<IOptions<PipaslotLoggerOptions>, DefaultPipaslotLoggerOptions>();
-            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider))) builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();
+            builder.Services.TryAddSingleton<ILogWriterFactory, LogWriterFactory>();
+            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider))){
+                builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();
+            }
         }
     }
 }

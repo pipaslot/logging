@@ -18,31 +18,12 @@ namespace Pipaslot.Logging.Demo.Services
             }
         }
 
-        public void LogMessage()
-        {
-            _logger.LogInformation("Operation performed");
-            Delay();
-        }
-
         public void LogMessage(int repeat)
         {
             for (int i = 0; i < repeat; i++){
                 _logger.LogInformation("Operation performed");
             }
 
-            Delay();
-        }
-
-        public void Noop()
-        {
-            Delay();
-        }
-
-        private void Delay()
-        {
-            for (int i = 0; i < 10000; i++){
-                if (true) ;
-            }
         }
     }
 }

@@ -27,21 +27,7 @@ namespace Pipaslot.Logging.Demo.Controllers
             return "Completed";
         }
 
-        [HttpGet("no-logging")]
-        public ActionResult<string> PerformActionWithoutLogging()
-        {
-            _serviceLevel1.Noop();
-            return "Completed";
-        }
-
-        [HttpGet("with-logging")]
-        public ActionResult<string> PerformActionWithSingleLog()
-        {
-            _serviceLevel1.LogMessage();
-            return "Completed";
-        }
-
-        [HttpGet("with-logging/{repeat}")]
+        [HttpGet("{repeat}")]
         public ActionResult<string> PerformActionWithLogging(int repeat)
         {
              _serviceLevel1.LogMessage(repeat);

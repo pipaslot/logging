@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Pipaslot.Logging.Benchmark.Mocks;
 using Pipaslot.Logging.Demo;
 using Pipaslot.Logging.Demo.Controllers;
 
@@ -11,19 +12,22 @@ namespace Pipaslot.Logging.Benchmark
 {
     public class DemoAppBenchmark
     {
-        private ValuesController _controller;
+        private ValuesController _controllerWithStandardLogging;
+        private ValuesController _controllerWithRequestLogging;
 
         #region Setup
 
         [GlobalSetup]
         public void GlobalSetup()
         {
-            var services = BuildServiceProvider();
+            var servicesWithStandardLogging = BuildServiceProvider(true);
+            var servicesWithRequestLogging = BuildServiceProvider(false);
 
-            _controller = services.GetRequiredService<ValuesController>();
+            _controllerWithStandardLogging = servicesWithStandardLogging.GetRequiredService<ValuesController>();
+            _controllerWithRequestLogging = servicesWithRequestLogging.GetRequiredService<ValuesController>();
         }
 
-        private IServiceProvider BuildServiceProvider()
+        private IServiceProvider BuildServiceProvider(bool configureLogging)
         {
             var services = new ServiceCollection();
             var configurationBuilder = new ConfigurationBuilder();
@@ -32,10 +36,13 @@ namespace Pipaslot.Logging.Benchmark
             startup.ConfigureServices(services);
             services.AddLogging();
             services.AddTransient<ValuesController>();
-            services.AddSingleton<IConfiguration>(s => configuration);
             
             var lb = new LoggingBuilder(services);
-            lb.AddRequestLogger();
+            if (configureLogging){
+                services.AddSingleton<IConfiguration>(s => configuration);
+                services.AddSingleton<ILogWriterFactory, NullLogWriterFactory>();
+                lb.AddRequestLogger();
+            }
 
             return services.BuildServiceProvider();
         }
@@ -43,28 +50,27 @@ namespace Pipaslot.Logging.Benchmark
         #endregion
 
         [Benchmark]
-        public void Without_Logging()
+        public void Standard_OnlyMessage_1000x()
         {
-            _controller.PerformActionWithoutLogging();
-        }
-        
-        /// <summary>
-        /// Keep in mind that this measurement will be distorted by Writing into file or to another output (IO operations)
-        /// </summary>
-        // Original: 21,000ns
-        [Benchmark]
-        public void With_Logging()
-        {
-            _controller.PerformActionWithSingleLog();
+            _controllerWithStandardLogging.PerformActionWithLogging(1000);
         }
 
-        /// <summary>
-        /// This measurement will reduce impact of IO operations to duration
-        /// </summary>
         [Benchmark]
-        public void With_Logging_1000x()
+        public void Request_OnlyMessage_1000x()
         {
-            _controller.PerformActionWithLogging(1000);
+            _controllerWithRequestLogging.PerformActionWithLogging(1000);
+        }
+        
+        [Benchmark]
+        public void Standard_ScopesAndMultipleMessages()
+        {
+            _controllerWithStandardLogging.PerformComplexAction();
+        }
+        
+        [Benchmark]
+        public void Request_ScopesAndMultipleMessages()
+        {
+            _controllerWithRequestLogging.PerformComplexAction();
         }
     }
 }
