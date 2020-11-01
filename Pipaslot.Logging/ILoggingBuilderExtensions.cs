@@ -17,8 +17,10 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new RequestQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"),
-                    s.GetService<IOptions<PipaslotLoggerOptions>>()));
+            {
+                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
+                return new RequestQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), options);
+            });
         }
 
         /// <summary>
@@ -28,8 +30,10 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel,
-                    s.GetService<IOptions<PipaslotLoggerOptions>>()));
+            {
+                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
+                return new FlatQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), logLevel, options);
+            });
         }
 
         /// <summary>
@@ -39,8 +43,10 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new TreeQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>(),
-                    className));
+            {
+                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
+                return new TreeQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), options, className);
+            });
         }
 
         /// <summary>
@@ -54,7 +60,8 @@ namespace Pipaslot.Logging
             builder.Services.AddSingleton<IQueue>(s =>
             {
                 var sender = s.GetService<TLogSender>();
-                return new SendQueue(sender, logLevel);
+                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
+                return new SendQueue(options, logLevel, sender);
             });
         }
 
@@ -65,8 +72,10 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new ProcessQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"),
-                    s.GetService<IOptions<PipaslotLoggerOptions>>()));
+            {
+                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
+                return new ProcessQueue(new FileLogWriter(options, "{Date}" + fileSuffix + ".log"), options);
+            });
         }
 
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)

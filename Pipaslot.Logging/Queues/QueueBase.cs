@@ -18,13 +18,12 @@ namespace Pipaslot.Logging.Queues
 
         protected abstract ILogWriter Writer { get; }
 
-        public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message,
-            TState state)
+        public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
             var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity, state);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
-                // Log should be ommited
+                // Log should be omitted
                 return;
             }
 
@@ -39,7 +38,7 @@ namespace Pipaslot.Logging.Queues
             var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.None, state);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
-                // Log should be ommited
+                // Log should be omitted
                 return;
             }
 
@@ -56,7 +55,9 @@ namespace Pipaslot.Logging.Queues
                 LogGroups.Remove(traceIdentifier);
 
                 var log = Formatter.FormatRequest(queue, traceIdentifier);
-                Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
+                if (!string.IsNullOrWhiteSpace(log)){
+                    Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
+                }
             }
             else{
                 //Write only increasing scopes and ignore decreasing scopes
@@ -70,7 +71,9 @@ namespace Pipaslot.Logging.Queues
             //write all remaining logs
             foreach (var pair in LogGroups.GetAllQueues()){
                 var log = Formatter.FormatRequest(pair.Value, pair.Key);
-                Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
+                if (!string.IsNullOrWhiteSpace(log)){
+                    Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
+                }
             }
 
             LogGroups.Dispose();

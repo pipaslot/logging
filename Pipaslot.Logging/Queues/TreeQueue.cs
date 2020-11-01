@@ -15,10 +15,15 @@ namespace Pipaslot.Logging.Queues
         /// </summary>
         private readonly HashSet<string> _classes = new HashSet<string>();
 
-        public TreeQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options, string className)
+        public TreeQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options, params string[] namespaceOrClass)
             : this(writer, options)
         {
-            _classes.Add(className.ToLower());
+            var items = namespaceOrClass
+                .Select(i => i.ToLower())
+                .Distinct();
+            foreach (var item in items){
+                _classes.Add(item);
+            }
         }
 
         public TreeQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
