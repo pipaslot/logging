@@ -37,10 +37,11 @@ namespace Pipaslot.Logging
 
             if (string.IsNullOrWhiteSpace(message)){
                 message = state.ToString();
-                state = default;
+                Write<object>(logLevel, message, null);
             }
-
-            Write(logLevel, message, state);
+            else{
+                Write(logLevel, message, state);
+            }
         }
 
         public bool IsEnabled(LogLevel logLevel)
