@@ -18,11 +18,11 @@ namespace Pipaslot.Logging.Demo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> PerformActionWithLogging()
+        public ActionResult<string> PerformComplexAction()
         {
             using var methodScope = _logger.BeginMethod(new {FakeData = "Some fake"});
             _logger.LogError("Fake error with code '{0}' from controller", 123);
-            _serviceLevel1.PerformOperationWithLogging();
+            _serviceLevel1.LogScopeAndCriticalMessage();
             _logger.LogInformationWithData("Service call finished", new {Message = "No Error"});
             return "Completed";
         }
@@ -30,8 +30,22 @@ namespace Pipaslot.Logging.Demo.Controllers
         [HttpGet("no-logging")]
         public ActionResult<string> PerformActionWithoutLogging()
         {
-            _serviceLevel1.PerformOperationWithoutLogging();
+            _serviceLevel1.Noop();
             return "Completed";
+        }
+
+        [HttpGet("with-logging")]
+        public ActionResult<string> PerformActionWithSingleLog()
+        {
+            _serviceLevel1.LogMessage();
+            return "Completed";
+        }
+
+        [HttpGet("with-logging/{repeat}")]
+        public ActionResult<string> PerformActionWithLogging(int repeat)
+        {
+             _serviceLevel1.LogMessage(repeat);
+             return "Completed";
         }
     }
 }

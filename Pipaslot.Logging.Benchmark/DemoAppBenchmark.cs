@@ -32,26 +32,39 @@ namespace Pipaslot.Logging.Benchmark
             startup.ConfigureServices(services);
             services.AddLogging();
             services.AddTransient<ValuesController>();
+            services.AddSingleton<IConfiguration>(s => configuration);
             
             var lb = new LoggingBuilder(services);
-            lb.AddRequestLogger(Directory.GetCurrentDirectory());
+            lb.AddRequestLogger();
 
             return services.BuildServiceProvider();
         }
         
         #endregion
 
-        // Original: 21,000ns
-        [Benchmark]
-        public void With_Logging()
-        {
-            _controller.PerformActionWithLogging();
-        }
-
         [Benchmark]
         public void Without_Logging()
         {
             _controller.PerformActionWithoutLogging();
+        }
+        
+        /// <summary>
+        /// Keep in mind that this measurement will be distorted by Writing into file or to another output (IO operations)
+        /// </summary>
+        // Original: 21,000ns
+        [Benchmark]
+        public void With_Logging()
+        {
+            _controller.PerformActionWithSingleLog();
+        }
+
+        /// <summary>
+        /// This measurement will reduce impact of IO operations to duration
+        /// </summary>
+        [Benchmark]
+        public void With_Logging_1000x()
+        {
+            _controller.PerformActionWithLogging(1000);
         }
     }
 }

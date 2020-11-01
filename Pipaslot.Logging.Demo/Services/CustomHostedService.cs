@@ -19,12 +19,12 @@ namespace Pipaslot.Logging.Demo.Services
         {
             _logger.LogInformation("Hosted service started");
             await Task.Delay(TimeSpan.FromSeconds(1));
-            _logger.LogError("Some error happened");
+            _logger.LogError("Some error happened on hosted service");
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Hosted service started");
+            _logger.LogInformation("Hosted service stopped");
             return Task.CompletedTask;
         }
     }
