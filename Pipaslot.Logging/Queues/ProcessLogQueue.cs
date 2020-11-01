@@ -14,13 +14,13 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Log all processes together
     /// </summary>
-    public class ProcessQueue : QueueBase
+    public class ProcessLogQueue : QueueBase
     {
         // private readonly LogGroupCollection _logGroups = new LogGroupCollection();
         // private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
         protected override ILogWriter Writer { get; }
 
-        public ProcessQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public ProcessLogQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
         }

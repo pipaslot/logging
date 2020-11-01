@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    public class FlatActionCallLogQueue : QueueBase
+    public class FlatLogQueue : QueueBase
     {
         /// <summary>
         /// Definition of classes and their methods to be tracked
@@ -17,13 +17,13 @@ namespace Pipaslot.Logging.Queues
 
         private readonly LogLevel _logLevel;
 
-        public FlatActionCallLogQueue(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options, string className)
+        public FlatLogQueue(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options, string className)
             : this(writer, logLevel, options)
         {
             _classesAndMethods.Add(className);
         }
 
-        public FlatActionCallLogQueue(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public FlatLogQueue(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
             _logLevel = logLevel;
