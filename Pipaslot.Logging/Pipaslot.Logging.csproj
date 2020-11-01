@@ -8,6 +8,11 @@
     <Description>Structured HTTP request logger. Supports multiple file writers for grouped by requests, priorities, service calls or threads. Contains adapter for sending for notifications.</Description>
     <PackageLicenseUrl>https://github.com/pipaslot/logging/blob/main/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/pipaslot/logging</RepositoryUrl>
+    <PackageVersion>1.1.0</PackageVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DocumentationFile>bin\Release\Pipaslot.Logging.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
