@@ -20,9 +20,11 @@ namespace Pipaslot.Logging.Demo.Controllers
         [HttpGet]
         public ActionResult<string> PerformActionWithLogging()
         {
+            using var methodScope = _logger.BeginMethod(new {FakeData = "Some fake"});
             _serviceLevel1.PerformOperationWithLogging();
             _logger.LogError("Fake error from controller");
             return "Completed";
+            
         }
 
         [HttpGet("no-logging")]

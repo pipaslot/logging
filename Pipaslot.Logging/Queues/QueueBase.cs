@@ -42,7 +42,7 @@ namespace Pipaslot.Logging.Queues
 
         public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
         {
-            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.Trace, state);
+            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.None, state);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null)
             {
@@ -74,7 +74,7 @@ namespace Pipaslot.Logging.Queues
             else{
                 //Write only increasing scopes and ignore decreasing scopes
                 var canWrite = CanWriteScope(state);
-                queue.Add(new LogGroup.Log(categoryName, LogLevel.Trace, "", state, depth, canWrite));
+                queue.Add(new LogGroup.Log(categoryName, LogLevel.None, "", state, depth, canWrite));
             }
         }
 

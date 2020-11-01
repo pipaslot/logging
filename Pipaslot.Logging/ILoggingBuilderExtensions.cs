@@ -21,7 +21,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new RequestLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>()));
+                new RequestQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>()));
         }
 
         /// <summary>
@@ -31,17 +31,17 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, s.GetService<IOptions<PipaslotLoggerOptions>>()));
+                new FlatQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, s.GetService<IOptions<PipaslotLoggerOptions>>()));
         }
 
         /// <summary>
         /// Log single message with specified log level and class or methods. Useful when you need separate specific procedure
         /// </summary>
-        public static void AddCallLogger(this ILoggingBuilder builder, string fileSuffix, LogLevel logLevel, string className)
+        public static void AddTreeLogger(this ILoggingBuilder builder, string fileSuffix, string className)
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new FlatLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), logLevel, s.GetService<IOptions<PipaslotLoggerOptions>>(), className));
+                new TreeQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>(), className));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Pipaslot.Logging
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>
-                new ProcessLogQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>()));
+                new ProcessQueue(new FileLogWriter(s.GetService<IOptions<PipaslotLoggerOptions>>(), "{Date}" + fileSuffix + ".log"), s.GetService<IOptions<PipaslotLoggerOptions>>()));
         }
 
         private static void AddPipaslotLoggerProvider(this ILoggingBuilder builder)

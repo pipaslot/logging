@@ -44,7 +44,7 @@ namespace Pipaslot.Logging.Groups
                 {LogLevel.Warning, "[WRN]" },
                 {LogLevel.Error, "[ERR]" },
                 {LogLevel.Critical, "[FTL]" },
-                {LogLevel.None, "" }
+                {LogLevel.None, "     " }
             };
             if (codes.ContainsKey(severity))
             {

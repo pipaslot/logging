@@ -7,9 +7,9 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Logs all separated requests
     /// </summary>
-    public class RequestLogQueue : QueueBase
+    public class RequestQueue : QueueBase
     {
-        public RequestLogQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public RequestQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
         }
