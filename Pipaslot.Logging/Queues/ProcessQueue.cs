@@ -13,8 +13,6 @@ namespace Pipaslot.Logging.Queues
             Writer = writer;
         }
 
-        // private readonly LogGroupCollection _logGroups = new LogGroupCollection();
-        // private readonly LogGroupFormatter _formatter = new LogGroupFormatter();
         protected override ILogWriter Writer { get; }
 
         protected override bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, TState state)
