@@ -21,7 +21,7 @@ namespace Pipaslot.Logging.Groups
         }
 
         /// <returns>Can be null if can not create a new queue</returns>
-        public LogGroup GetQueue(string traceIdentifier, bool canCreate)
+        public LogGroup? GetQueue(string traceIdentifier, bool canCreate)
         {
             //TODO benchmark single request access, multiple request access
             //TODO benchmark using ConcurrentDictionary instead

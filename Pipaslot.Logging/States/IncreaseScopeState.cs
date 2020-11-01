@@ -5,9 +5,9 @@ namespace Pipaslot.Logging.States
 {
     public class IncreaseScopeState : IState
     {
-        private readonly object _data;
+        private readonly object? _data;
 
-        public IncreaseScopeState(string callerMemberName, object data = null)
+        public IncreaseScopeState(string callerMemberName, object? data = null)
         {
             CallerMemberName = callerMemberName;
             _data = data;

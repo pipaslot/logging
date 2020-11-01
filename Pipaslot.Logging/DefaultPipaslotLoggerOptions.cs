@@ -8,7 +8,7 @@ namespace Pipaslot.Logging
     {
         private readonly IConfiguration _config;
 
-        private PipaslotLoggerOptions _value;
+        private PipaslotLoggerOptions? _value;
 
         public DefaultPipaslotLoggerOptions(IConfiguration config)
         {

@@ -36,8 +36,8 @@ namespace Pipaslot.Logging
             else if (exception != null) message = exception.ToString();
 
             if (string.IsNullOrWhiteSpace(message)){
-                message = state.ToString();
-                Write<object>(logLevel, message, null);
+                message = state?.ToString() ?? "";
+                Write<object?>(logLevel, message, null);
             }
             else
                 Write(logLevel, message, state);

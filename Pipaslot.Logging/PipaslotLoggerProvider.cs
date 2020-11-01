@@ -16,7 +16,6 @@ namespace Pipaslot.Logging
 
         public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IQueue> queues)
         {
-            Debug.Assert(httpContextAccessor != null, nameof(httpContextAccessor) + " != null");
             _httpContextAccessor = httpContextAccessor;
             _queues = queues;
         }
