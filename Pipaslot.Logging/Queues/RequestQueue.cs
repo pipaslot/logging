@@ -22,7 +22,7 @@ namespace Pipaslot.Logging.Queues
 
         protected override bool CanCreateNewQueue(string traceIdentifier, string categoryName, LogLevel severity)
         {
-            return !traceIdentifier.StartsWith(Constrants.CliTraceIdentifierPrefix);
+            return !traceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix);
         }
     }
 }

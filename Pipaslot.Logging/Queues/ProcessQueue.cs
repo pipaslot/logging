@@ -17,7 +17,7 @@ namespace Pipaslot.Logging.Queues
 
         protected override bool CanCreateNewQueue(string traceIdentifier, string categoryName, LogLevel severity)
         {
-            return traceIdentifier?.StartsWith(Constrants.CliTraceIdentifierPrefix) ?? false;
+            return traceIdentifier?.StartsWith(Constants.CliTraceIdentifierPrefix) ?? false;
         }
 
         protected override bool CanWriteIntoExistingQueue(string categoryName, LogLevel severity)
