@@ -4,7 +4,7 @@ namespace Pipaslot.Logging
 {
     public class LogWriterFactory : ILogWriterFactory
     {
-        private IOptions<PipaslotLoggerOptions> _options;
+        private readonly IOptions<PipaslotLoggerOptions> _options;
 
         public LogWriterFactory(IOptions<PipaslotLoggerOptions> options)
         {

@@ -39,9 +39,8 @@ namespace Pipaslot.Logging
                 message = state.ToString();
                 Write<object>(logLevel, message, null);
             }
-            else{
+            else
                 Write(logLevel, message, state);
-            }
         }
 
         public bool IsEnabled(LogLevel logLevel)

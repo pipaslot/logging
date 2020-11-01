@@ -2,8 +2,6 @@
 {
     public class DecreaseScopeState : IState
     {
-        public bool HasData => false;
-
         public string FormatMessage(string categoryName, string message)
         {
             return "";

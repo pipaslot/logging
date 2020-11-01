@@ -91,9 +91,7 @@ namespace Pipaslot.Logging
             builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.TryAddSingleton<IOptions<PipaslotLoggerOptions>, DefaultPipaslotLoggerOptions>();
             builder.Services.TryAddSingleton<ILogWriterFactory, LogWriterFactory>();
-            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider))){
-                builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();
-            }
+            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider))) builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();
         }
     }
 }

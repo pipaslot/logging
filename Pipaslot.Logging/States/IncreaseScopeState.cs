@@ -14,7 +14,6 @@ namespace Pipaslot.Logging.States
         }
 
         public string CallerMemberName { get; }
-        public bool HasData => _data != null;
 
         public string FormatMessage(string categoryName, string message)
         {

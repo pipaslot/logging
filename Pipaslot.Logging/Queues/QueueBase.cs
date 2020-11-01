@@ -20,7 +20,7 @@ namespace Pipaslot.Logging.Queues
 
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity, state);
+            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
                 // Log should be omitted
@@ -28,14 +28,14 @@ namespace Pipaslot.Logging.Queues
             }
 
             // Check if can be written for current scope and method
-            if (!CanWrite(traceIdentifier, categoryName, severity, message, state)) return;
+            if (!CanWriteIntoExistingQueue(categoryName, severity)) return;
 
             queue.Add(new LogGroup.Log(categoryName, severity, message, state, queue.Depth, true));
         }
 
         public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
         {
-            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.None, state);
+            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.None);
             var queue = LogGroups.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
                 // Log should be omitted
@@ -55,9 +55,7 @@ namespace Pipaslot.Logging.Queues
                 LogGroups.Remove(traceIdentifier);
 
                 var log = Formatter.FormatRequest(queue, traceIdentifier);
-                if (!string.IsNullOrWhiteSpace(log)){
-                    Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
-                }
+                if (!string.IsNullOrWhiteSpace(log)) Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
             }
             else{
                 //Write only increasing scopes and ignore decreasing scopes
@@ -71,17 +69,15 @@ namespace Pipaslot.Logging.Queues
             //write all remaining logs
             foreach (var pair in LogGroups.GetAllQueues()){
                 var log = Formatter.FormatRequest(pair.Value, pair.Key);
-                if (!string.IsNullOrWhiteSpace(log)){
-                    Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
-                }
+                if (!string.IsNullOrWhiteSpace(log)) Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
             }
 
             LogGroups.Dispose();
         }
 
-        protected abstract bool CanCreateNewQueue<TState>(string traceIdentifier, string categoryName, LogLevel severity, TState state);
+        protected abstract bool CanCreateNewQueue(string traceIdentifier, string categoryName, LogLevel severity);
 
-        protected abstract bool CanWrite<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state);
+        protected abstract bool CanWriteIntoExistingQueue(string categoryName, LogLevel severity);
 
         private bool CanWriteScope<TState>(TState state)
         {
