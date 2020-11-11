@@ -6,7 +6,6 @@ namespace Pipaslot.Logging.States
     {
         public IncreaseMethodState(string callerMemberName, object? data = null) : base(callerMemberName, data)
         {
-            if (data == null) throw new ArgumentNullException(nameof(data));
         }
     }
 }
