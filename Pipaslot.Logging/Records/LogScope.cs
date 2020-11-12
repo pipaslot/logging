@@ -36,5 +36,10 @@ namespace Pipaslot.Logging.Records
         {
             _logs.Add(logRecord);
         }
+
+        internal bool HasAnyWriteableLog()
+        {
+            return Logs.Any(l => l.Type == LogType.Record);
+        }
     }
 }

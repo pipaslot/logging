@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Records;
 
 namespace Pipaslot.Logging.Queues
 {
@@ -33,12 +34,12 @@ namespace Pipaslot.Logging.Queues
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanWriteIntoExistingQueue(string categoryName, LogLevel severity)
+        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, LogScope scope)
         {
             return true;
         }
 
-        protected override bool CanCreateNewQueue(string traceIdentifier, string categoryName, LogLevel severity)
+        protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
         {
             return Contains(categoryName);
         }

@@ -24,7 +24,7 @@ namespace Pipaslot.Logging
             var previousDepth = 0;
             var rows = 0;
             foreach (var log in logScope.Logs){
-                if (log.ShouldBeWritten){
+                if (log.Type == LogType.Record || log.Type == LogType.ScopeBegin){
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;
                 }

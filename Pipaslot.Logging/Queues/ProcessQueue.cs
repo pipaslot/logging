@@ -24,25 +24,25 @@ namespace Pipaslot.Logging.Queues
 
         public void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            if (CanWrite(traceIdentifier))
+            if (CanBeWrittenIntoQueue(traceIdentifier))
             {
                 var queue = LogScopes.GetQueue(traceIdentifier, false);
                 if (queue == null)
                 {
                     // Write directly if is nto part of some queue bordered by scope
                     var group = new LogScope(traceIdentifier);
-                    group.Add(new LogRecord(categoryName, severity, message, state, group.Depth, true));
+                    group.Add(new LogRecord(categoryName, severity, message, state, group.Depth, LogType.Record));
                     _writer.WriteLog(group);
                     return;
                 }
 
-                queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, true));
+                queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, LogType.Record));
             }
         }
 
         public void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
         {
-            if (CanWrite(traceIdentifier))
+            if (CanBeWrittenIntoQueue(traceIdentifier))
             {
                 var queue = LogScopes.GetQueue(traceIdentifier, true);
                 if (queue == null){
@@ -52,43 +52,41 @@ namespace Pipaslot.Logging.Queues
 
                 // Update depth
                 var depth = queue.Depth;
-                var stateType = typeof(TState);
-                if (stateType == typeof(IncreaseScopeState) || stateType == typeof(IncreaseMethodState))
+                var logType = QueueBase.GetLogType<TState>(_options.Value);
+                if (logType == LogType.ScopeBegin || logType == LogType.ScopeBeginIgnored){
                     depth++;
-                else if (stateType == typeof(DecreaseScopeState)) depth--;
+                }
+                else if (logType == LogType.ScopeEnd){
+                    depth--;
+                }
 
                 // LogRecord or finish
                 if (depth <= 0){
                     // Remove request history from memory 
                     LogScopes.Remove(traceIdentifier);
-                    _writer.WriteLog(queue);
+                    if(queue.HasAnyWriteableLog()){
+                        _writer.WriteLog(queue);
+                    }
                 }
                 else{
                     //Write only increasing scopes and ignore decreasing scopes
-                    var canWrite = CanWriteScope(state);
-                    queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, canWrite));
+                    queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, logType));
                 }
             }
         }
-        private bool CanWriteScope<TState>(TState state)
-        {
-            var options = _options.Value;
-            if (state is IncreaseMethodState && options.IncludeMethods) return true;
-            if (options.IncludeScopes) return true;
 
-            return false;
-        }
-
-        private bool CanWrite(string traceIdentifier)
+        private bool CanBeWrittenIntoQueue(string traceIdentifier)
         {
             return traceIdentifier?.StartsWith(Constants.CliTraceIdentifierPrefix) ?? false;
         }
-
+        
         public void Dispose()
         {
             //write all remaining logs
             foreach (var pair in LogScopes.GetAllQueues()){
-                _writer.WriteLog(pair.Value);
+                if(pair.Value.HasAnyWriteableLog()){
+                    _writer.WriteLog(pair.Value);
+                }
             }
 
             LogScopes.Dispose();

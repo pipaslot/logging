@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Records;
 using Pipaslot.Logging.States;
@@ -22,7 +23,7 @@ namespace Pipaslot.Logging.Queues
 
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, severity);
+            var canCreate = CanCreateNewLogScope(traceIdentifier, categoryName, severity);
             var queue = LogScopes.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
                 // LogRecord should be omitted
@@ -30,14 +31,14 @@ namespace Pipaslot.Logging.Queues
             }
 
             // Check if can be written for current scope and method
-            if (!CanWriteIntoExistingQueue(categoryName, severity)) return;
+            if (!CanAddIntoExistingLogScope(categoryName, severity, queue)) return;
 
-            queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, true));
+            queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, LogType.Record));
         }
 
         public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
         {
-            var canCreate = CanCreateNewQueue(traceIdentifier, categoryName, LogLevel.None);
+            var canCreate = CanCreateNewLogScope(traceIdentifier, categoryName, LogLevel.None);
             var queue = LogScopes.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
                 // LogRecord should be omitted
@@ -46,21 +47,25 @@ namespace Pipaslot.Logging.Queues
 
             // Update depth
             var depth = queue.Depth;
-            var stateType = typeof(TState);
-            if (stateType == typeof(IncreaseScopeState) || stateType == typeof(IncreaseMethodState))
+            var logType = GetLogType<TState>(_options.Value);
+            if (logType == LogType.ScopeBegin || logType == LogType.ScopeBeginIgnored){
                 depth++;
-            else if (stateType == typeof(DecreaseScopeState)) depth--;
+            }
+            else if (logType == LogType.ScopeEnd){
+                depth--;
+            }
 
             // LogRecord or finish
             if (depth <= 0){
                 // Remove request history from memory 
                 LogScopes.Remove(traceIdentifier);
-                Writer.WriteLog(queue);
+                if(queue.HasAnyWriteableLog()){
+                    Writer.WriteLog(queue);
+                }
             }
             else{
                 //Write only increasing scopes and ignore decreasing scopes
-                var canWrite = CanWriteScope(state);
-                queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, canWrite));
+                queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, logType));
             }
         }
 
@@ -68,23 +73,31 @@ namespace Pipaslot.Logging.Queues
         {
             //write all remaining logs
             foreach (var pair in LogScopes.GetAllQueues()){
-                Writer.WriteLog(pair.Value);
+                if(pair.Value.HasAnyWriteableLog()){
+                    Writer.WriteLog(pair.Value);
+                }
             }
 
             LogScopes.Dispose();
         }
 
-        protected abstract bool CanCreateNewQueue(string traceIdentifier, string categoryName, LogLevel severity);
+        protected abstract bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity);
 
-        protected abstract bool CanWriteIntoExistingQueue(string categoryName, LogLevel severity);
+        protected abstract bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, LogScope scope);
 
-        private bool CanWriteScope<TState>(TState state)
+        internal static LogType GetLogType<TState>(PipaslotLoggerOptions options)
         {
-            var options = _options.Value;
-            if (state is IncreaseMethodState && options.IncludeMethods) return true;
-            if (options.IncludeScopes) return true;
-
-            return false;
+            var stateType = typeof(TState);
+            if (stateType == typeof(IncreaseScopeState)){
+                return options.IncludeScopes ? LogType.ScopeBegin : LogType.ScopeBeginIgnored;
+            }
+            if (stateType == typeof(IncreaseMethodState)){
+                return options.IncludeMethods ? LogType.ScopeBegin : LogType.ScopeBeginIgnored;
+            }
+            if (stateType == typeof(DecreaseScopeState)){
+                return LogType.ScopeEnd;
+            }
+            return LogType.Record;
         }
     }
 }

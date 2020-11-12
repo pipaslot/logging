@@ -8,14 +8,14 @@ namespace Pipaslot.Logging.Records
     /// </summary>
     public class LogRecord
     {
-        public LogRecord(string categoryName, LogLevel severity, string message, object? state, int depth, bool shouldBeWritten)
+        public LogRecord(string categoryName, LogLevel severity, string message, object? state, int depth, LogType type)
         {
             CategoryName = categoryName;
             Severity = severity;
             Message = message;
             State = state;
             Depth = depth;
-            ShouldBeWritten = shouldBeWritten;
+            Type = type;
         }
 
         public string CategoryName { get; }
@@ -23,7 +23,7 @@ namespace Pipaslot.Logging.Records
         public string Message { get; }
         public object? State { get; }
         public int Depth { get; }
+        public LogType Type { get; }
         public DateTimeOffset Time { get; } = DateTimeOffset.Now;
-        public bool ShouldBeWritten { get; }
     }
 }
