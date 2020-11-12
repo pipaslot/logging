@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Records;
 
 namespace Pipaslot.Logging
 {
@@ -17,7 +19,7 @@ namespace Pipaslot.Logging
             _filename = filename;
         }
 
-        public void WriteLog(string log, DateTime dateTime, string traceIdentifier)
+        public void WriteLog(string log, DateTime dateTime, string traceIdentifier, IReadOnlyCollection<LogRecord> logRecords)
         {
             if (string.IsNullOrWhiteSpace(log)) return;
             lock (_fileLock)

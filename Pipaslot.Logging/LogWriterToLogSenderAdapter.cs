@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Pipaslot.Logging.Records;
 
 namespace Pipaslot.Logging
 {
@@ -11,9 +14,12 @@ namespace Pipaslot.Logging
             _logSender = logSender;
         }
 
-        public void WriteLog(string log, DateTime dateTime, string traceIdentifier)
+        public void WriteLog(string logContent, DateTime dateTime, string traceIdentifier, IReadOnlyCollection<LogRecord> logRecords)
         {
-            _logSender.SendLog(log);
+            Task.Run(()=>
+            {
+                _logSender.SendLog(logContent, logRecords).GetAwaiter().GetResult();
+            });
         }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Groups;
+using Pipaslot.Logging.Records;
 using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
-    ///     Log all processes together
+    ///     LogRecord all processes together
     /// </summary>
     public class ProcessQueue : IQueue
     {
         
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        protected readonly LogGroupFormatter Formatter = new LogGroupFormatter();
-        protected readonly LogGroupCollection LogGroups = new LogGroupCollection();
+        protected readonly LogFormatter Formatter = new LogFormatter();
+        protected readonly LogScopeCollection LogScopes = new LogScopeCollection();
         private readonly ILogWriter _writer;
 
         public ProcessQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options)
@@ -27,21 +27,21 @@ namespace Pipaslot.Logging.Queues
         {
             if (CanWrite(traceIdentifier))
             {
-                var queue = LogGroups.GetQueue(traceIdentifier, false);
+                var queue = LogScopes.GetQueue(traceIdentifier, false);
                 if (queue == null)
                 {
                     // Write directly if is nto part of some queue bordered by scope
-                    var group = new LogGroup();
-                    group.Add(new LogGroup.Log(categoryName, severity, message, state, group.Depth, true));
-                    var log = Formatter.FormatRequest(group, traceIdentifier);
+                    var group = new LogScope();
+                    group.Add(new LogRecord(categoryName, severity, message, state, group.Depth, true));
+                    var log = Formatter.FormatScope(group, traceIdentifier);
                     if (!string.IsNullOrWhiteSpace(log))
                     {
-                        _writer.WriteLog(log, group.Time.DateTime, traceIdentifier);
+                        _writer.WriteLog(log, group.Time.DateTime, traceIdentifier, group.Logs);
                     }
                     return;
                 }
 
-                queue.Add(new LogGroup.Log(categoryName, severity, message, state, queue.Depth, true));
+                queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, true));
             }
         }
 
@@ -49,9 +49,9 @@ namespace Pipaslot.Logging.Queues
         {
             if (CanWrite(traceIdentifier))
             {
-                var queue = LogGroups.GetQueue(traceIdentifier, true);
+                var queue = LogScopes.GetQueue(traceIdentifier, true);
                 if (queue == null){
-                    // Log should be omitted
+                    // LogRecord should be omitted
                     return;
                 }
 
@@ -62,21 +62,21 @@ namespace Pipaslot.Logging.Queues
                     depth++;
                 else if (stateType == typeof(DecreaseScopeState)) depth--;
 
-                // Log or finish
+                // LogRecord or finish
                 if (depth <= 0){
                     // Remove request history from memory 
-                    LogGroups.Remove(traceIdentifier);
+                    LogScopes.Remove(traceIdentifier);
 
-                    var log = Formatter.FormatRequest(queue, traceIdentifier);
+                    var log = Formatter.FormatScope(queue, traceIdentifier);
                     if (!string.IsNullOrWhiteSpace(log))
                     {
-                        _writer.WriteLog(log, queue.Time.DateTime, traceIdentifier);
+                        _writer.WriteLog(log, queue.Time.DateTime, traceIdentifier, queue.Logs);
                     }
                 }
                 else{
                     //Write only increasing scopes and ignore decreasing scopes
                     var canWrite = CanWriteScope(state);
-                    queue.Add(new LogGroup.Log(categoryName, LogLevel.None, "", state, depth, canWrite));
+                    queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, canWrite));
                 }
             }
         }
@@ -97,12 +97,12 @@ namespace Pipaslot.Logging.Queues
         public void Dispose()
         {
             //write all remaining logs
-            foreach (var pair in LogGroups.GetAllQueues()){
-                var log = Formatter.FormatRequest(pair.Value, pair.Key);
-                if (!string.IsNullOrWhiteSpace(log)) _writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key);
+            foreach (var pair in LogScopes.GetAllQueues()){
+                var log = Formatter.FormatScope(pair.Value, pair.Key);
+                if (!string.IsNullOrWhiteSpace(log)) _writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key, pair.Value.Logs);
             }
 
-            LogGroups.Dispose();
+            LogScopes.Dispose();
         }
     }
 }

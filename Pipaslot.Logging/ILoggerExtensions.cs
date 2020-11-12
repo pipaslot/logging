@@ -5,6 +5,9 @@ using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
 {
+    /// <summary>
+    /// Logger extension methods
+    /// </summary>
     public static class LoggerExtensions
     {
         /// <summary>
@@ -21,37 +24,79 @@ namespace Pipaslot.Logging
             return logger.BeginScope(scopeState);
         }
 
-        public static void LogDebugWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        /// <summary>
+        /// LogRecord Message with Trace severity containing additional data after message
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message">Plain message to be logged</param>
+        /// <param name="data">Value or data structure for serialization into log file</param>
+        /// <param name="exception">Exception to be logged</param>
+        public static void LogTraceWithData(this ILogger logger, string message, object data, Exception? exception = null)
         {
-            logger.Log(LogLevel.Debug, new EventId(0, message), data, ex, MessageFormatter);
+            logger.Log(LogLevel.Trace, new EventId(0, message), data, exception, MessageFormatter);
         }
 
-        public static void LogTraceWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        /// <summary>
+        /// LogRecord Message with Debug severity containing additional data after message
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message">Plain message to be logged</param>
+        /// <param name="data">Value or data structure for serialization into log file</param>
+        /// <param name="exception">Exception to be logged</param>
+        public static void LogDebugWithData(this ILogger logger, string message, object data, Exception? exception = null)
         {
-            logger.Log(LogLevel.Trace, new EventId(0, message), data, ex, MessageFormatter);
+            logger.Log(LogLevel.Debug, new EventId(0, message), data, exception, MessageFormatter);
         }
 
-        public static void LogInformationWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        /// <summary>
+        /// LogRecord Message with Information severity containing additional data after message
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message">Plain message to be logged</param>
+        /// <param name="data">Value or data structure for serialization into log file</param>
+        /// <param name="exception">Exception to be logged</param>
+        public static void LogInformationWithData(this ILogger logger, string message, object data, Exception? exception = null)
         {
-            logger.Log(LogLevel.Information, new EventId(0, message), data, ex, MessageFormatter);
+            logger.Log(LogLevel.Information, new EventId(0, message), data, exception, MessageFormatter);
         }
 
-        public static void LogWarningWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        /// <summary>
+        /// LogRecord Message with Warning severity containing additional data after message
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message">Plain message to be logged</param>
+        /// <param name="data">Value or data structure for serialization into log file</param>
+        /// <param name="exception">Exception to be logged</param>
+        public static void LogWarningWithData(this ILogger logger, string message, object data, Exception? exception = null)
         {
-            logger.Log(LogLevel.Warning, new EventId(0, message), data, ex, MessageFormatter);
+            logger.Log(LogLevel.Warning, new EventId(0, message), data, exception, MessageFormatter);
         }
 
-        public static void LogErrorWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        /// <summary>
+        /// LogRecord Message with Error severity containing additional data after message
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message">Plain message to be logged</param>
+        /// <param name="data">Value or data structure for serialization into log file</param>
+        /// <param name="exception">Exception to be logged</param>
+        public static void LogErrorWithData(this ILogger logger, string message, object data, Exception? exception = null)
         {
-            logger.Log(LogLevel.Error, new EventId(0, message), data, ex, MessageFormatter);
+            logger.Log(LogLevel.Error, new EventId(0, message), data, exception, MessageFormatter);
         }
 
-        public static void LogCriticalWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        /// <summary>
+        /// LogRecord Message with Critical severity containing additional data after message
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message">Plain message to be logged</param>
+        /// <param name="data">Value or data structure for serialization into log file</param>
+        /// <param name="exception">Exception to be logged</param>
+        public static void LogCriticalWithData(this ILogger logger, string message, object data, Exception? exception = null)
         {
-            logger.Log(LogLevel.Critical, new EventId(0, message), data, ex, MessageFormatter);
+            logger.Log(LogLevel.Critical, new EventId(0, message), data, exception, MessageFormatter);
         }
 
-        private static string MessageFormatter(object state, Exception error)
+        private static string MessageFormatter(object state, Exception exception)
         {
             return state?.ToString() ?? "";
         }

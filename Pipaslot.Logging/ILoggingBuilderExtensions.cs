@@ -11,7 +11,7 @@ namespace Pipaslot.Logging
     public static class LoggingBuilderExtensions
     {
         /// <summary>
-        ///     Log all messages grouped by HTTP requests into file
+        ///     LogRecord all messages grouped by HTTP requests into file
         /// </summary>
         public static void AddRequestLogger(this ILoggingBuilder builder, string fileSuffix = "-requests")
         {
@@ -26,7 +26,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        ///     Log single message with specified log level. Useful when you need separate only errors or critical failures
+        ///     LogRecord single message with specified log level. Useful when you need separate only errors or critical failures
         /// </summary>
         public static void AddFlatLogger(this ILoggingBuilder builder, string fileSuffix, LogLevel logLevel)
         {
@@ -41,7 +41,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        ///     Log single message with specified log level and class or methods. Useful when you need separate specific procedure
+        ///     LogRecord single message with specified log level and class or methods. Useful when you need separate specific procedure
         /// </summary>
         public static void AddTreeLogger(this ILoggingBuilder builder, string fileSuffix, params string[] namespaceOrClass)
         {
@@ -72,7 +72,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        ///     Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs. Every thread will have own log file
+        ///     LogRecord writing all messages from every single process which is not handled as HTTP request. Useful for background jobs. Every thread will have own log file
         /// </summary>
         public static void AddProcessLogger(this ILoggingBuilder builder, string fileSuffix = "-processes")
         {
