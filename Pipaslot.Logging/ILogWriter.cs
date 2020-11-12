@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Pipaslot.Logging.Records;
+﻿using Pipaslot.Logging.Records;
 
 namespace Pipaslot.Logging
 {
     /// <summary>
-    ///     Provider wring LogScopes to filesystem or database
+    ///     Provider writing LogScopes to filesystem or database
     /// </summary>
     public interface ILogWriter
     {
-        void WriteLog(string log, DateTime dateTime, string traceIdentifier, IReadOnlyCollection<LogRecord> logRecords);
+        /// <summary>
+        /// Write log scope to target stream
+        /// </summary>
+        /// <param name="logRecords"></param>
+        void WriteLog(LogScope logRecords);
     }
 }

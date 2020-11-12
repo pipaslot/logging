@@ -13,7 +13,6 @@ namespace Pipaslot.Logging.Queues
     {
         
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        protected readonly LogFormatter Formatter = new LogFormatter();
         protected readonly LogScopeCollection LogScopes = new LogScopeCollection();
         private readonly ILogWriter _writer;
 
@@ -31,13 +30,9 @@ namespace Pipaslot.Logging.Queues
                 if (queue == null)
                 {
                     // Write directly if is nto part of some queue bordered by scope
-                    var group = new LogScope();
+                    var group = new LogScope(traceIdentifier);
                     group.Add(new LogRecord(categoryName, severity, message, state, group.Depth, true));
-                    var log = Formatter.FormatScope(group, traceIdentifier);
-                    if (!string.IsNullOrWhiteSpace(log))
-                    {
-                        _writer.WriteLog(log, group.Time.DateTime, traceIdentifier, group.Logs);
-                    }
+                    _writer.WriteLog(group);
                     return;
                 }
 
@@ -66,12 +61,7 @@ namespace Pipaslot.Logging.Queues
                 if (depth <= 0){
                     // Remove request history from memory 
                     LogScopes.Remove(traceIdentifier);
-
-                    var log = Formatter.FormatScope(queue, traceIdentifier);
-                    if (!string.IsNullOrWhiteSpace(log))
-                    {
-                        _writer.WriteLog(log, queue.Time.DateTime, traceIdentifier, queue.Logs);
-                    }
+                    _writer.WriteLog(queue);
                 }
                 else{
                     //Write only increasing scopes and ignore decreasing scopes
@@ -98,8 +88,7 @@ namespace Pipaslot.Logging.Queues
         {
             //write all remaining logs
             foreach (var pair in LogScopes.GetAllQueues()){
-                var log = Formatter.FormatScope(pair.Value, pair.Key);
-                if (!string.IsNullOrWhiteSpace(log)) _writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key, pair.Value.Logs);
+                _writer.WriteLog(pair.Value);
             }
 
             LogScopes.Dispose();

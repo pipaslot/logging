@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Pipaslot.Logging.Records;
 
 namespace Pipaslot.Logging
@@ -9,6 +8,6 @@ namespace Pipaslot.Logging
     /// </summary>
     public interface ILogSender
     {
-        Task SendLog(string message, IReadOnlyCollection<LogRecord> records);
+        Task SendLog(LogScope scope);
     }
 }

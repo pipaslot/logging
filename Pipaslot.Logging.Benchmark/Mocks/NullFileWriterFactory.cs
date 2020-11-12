@@ -1,6 +1,6 @@
 ﻿namespace Pipaslot.Logging.Benchmark.Mocks
 {
-    public class NullLogWriterFactory : ILogWriterFactory
+    public class NullFileWriterFactory : IFileWriterFactory
     {
         public ILogWriter Create(string fileName)
         {

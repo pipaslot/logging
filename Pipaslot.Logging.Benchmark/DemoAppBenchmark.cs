@@ -40,7 +40,7 @@ namespace Pipaslot.Logging.Benchmark
             var lb = new LoggingBuilder(services);
             if (configureLogging){
                 services.AddSingleton<IConfiguration>(s => configuration);
-                services.AddSingleton<ILogWriterFactory, NullLogWriterFactory>();
+                services.AddSingleton<IFileWriterFactory, NullFileWriterFactory>();
                 lb.AddRequestLogger();
             }
 

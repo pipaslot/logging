@@ -11,7 +11,6 @@ namespace Pipaslot.Logging.Queues
     public abstract class QueueBase : IQueue
     {
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        protected readonly LogFormatter Formatter = new LogFormatter();
         protected readonly LogScopeCollection LogScopes = new LogScopeCollection();
 
         protected QueueBase(IOptions<PipaslotLoggerOptions> options)
@@ -56,9 +55,7 @@ namespace Pipaslot.Logging.Queues
             if (depth <= 0){
                 // Remove request history from memory 
                 LogScopes.Remove(traceIdentifier);
-
-                var log = Formatter.FormatScope(queue, traceIdentifier);
-                if (!string.IsNullOrWhiteSpace(log)) Writer.WriteLog(log, queue.Time.DateTime, traceIdentifier, queue.Logs);
+                Writer.WriteLog(queue);
             }
             else{
                 //Write only increasing scopes and ignore decreasing scopes
@@ -71,8 +68,7 @@ namespace Pipaslot.Logging.Queues
         {
             //write all remaining logs
             foreach (var pair in LogScopes.GetAllQueues()){
-                var log = Formatter.FormatScope(pair.Value, pair.Key);
-                if (!string.IsNullOrWhiteSpace(log)) Writer.WriteLog(log, pair.Value.Time.DateTime, pair.Key, pair.Value.Logs);
+                Writer.WriteLog(pair.Value);
             }
 
             LogScopes.Dispose();

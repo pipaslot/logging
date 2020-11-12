@@ -30,7 +30,7 @@ namespace Pipaslot.Logging.Records
                 if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
                 if (canCreate){
-                    var request = new LogScope();
+                    var request = new LogScope(traceIdentifier);
                     _queues.Add(traceIdentifier, request);
                     return request;
                 }
