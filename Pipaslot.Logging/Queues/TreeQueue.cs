@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     ///     Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    public class TreeQueue : QueueBase
+    internal class TreeQueue : QueueBase
     {
         /// <summary>
         ///     Definition of classes and their methods to be tracked

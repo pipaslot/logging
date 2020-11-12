@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace Pipaslot.Logging.Queues
 {
-    public class SendQueue : QueueBase
+    internal class SendQueue : QueueBase
     {
         private readonly LogLevel _logLevel;
 

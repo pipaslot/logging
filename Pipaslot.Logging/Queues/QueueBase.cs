@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Basic abstraction of Queue handling messages and scopes
     /// </summary>
-    public abstract class QueueBase : IQueue
+    internal abstract class QueueBase : IQueue
     {
         private readonly IOptions<PipaslotLoggerOptions> _options;
         protected readonly LogScopeCollection LogScopes = new LogScopeCollection();

@@ -9,7 +9,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     ///     LogRecord all processes together
     /// </summary>
-    public class ProcessQueue : IQueue
+    internal class ProcessQueue : IQueue
     {
         
         private readonly IOptions<PipaslotLoggerOptions> _options;

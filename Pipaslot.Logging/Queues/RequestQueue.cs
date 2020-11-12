@@ -6,7 +6,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     ///     Logs all separated requests
     /// </summary>
-    public class RequestQueue : QueueBase
+    internal class RequestQueue : QueueBase
     {
         public RequestQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
