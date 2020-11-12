@@ -21,6 +21,11 @@ namespace Pipaslot.Logging
             return logger.BeginScope(scopeState);
         }
 
+        public static void LogDebugWithData(this ILogger logger, string message, object data, Exception? ex = null)
+        {
+            logger.Log(LogLevel.Debug, new EventId(0, message), data, ex, MessageFormatter);
+        }
+
         public static void LogTraceWithData(this ILogger logger, string message, object data, Exception? ex = null)
         {
             logger.Log(LogLevel.Trace, new EventId(0, message), data, ex, MessageFormatter);

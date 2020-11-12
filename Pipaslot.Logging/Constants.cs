@@ -3,7 +3,7 @@
     /// <summary>
     /// Internal constants
     /// </summary>
-    public static class Constants
+    internal static class Constants
     {
         /// <summary>
         /// Trace identifier prefix used for CLI or non-request related threads

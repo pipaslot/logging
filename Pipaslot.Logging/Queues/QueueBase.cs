@@ -5,6 +5,9 @@ using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging.Queues
 {
+    /// <summary>
+    /// Basic abstraction of Queue handling messages and scopes
+    /// </summary>
     public abstract class QueueBase : IQueue
     {
         private readonly IOptions<PipaslotLoggerOptions> _options;
