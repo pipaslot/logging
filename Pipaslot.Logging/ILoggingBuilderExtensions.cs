@@ -62,12 +62,13 @@ namespace Pipaslot.Logging
             where TLogSender : class, ILogSender
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.TryAddSingleton<TLogSender>();
+            builder.Services.TryAddScoped<TLogSender>();
+            builder.Services.TryAddSingleton<LogWriterToLogSenderAdapter<TLogSender>>();
             builder.Services.AddSingleton<IQueue>(s =>
             {
-                var sender = s.GetService<TLogSender>();
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
-                return new SendQueue(options, logLevel, sender);
+                var writer = s.GetService<LogWriterToLogSenderAdapter<TLogSender>>();
+                return new SendQueue(options, logLevel, writer);
             });
         }
 

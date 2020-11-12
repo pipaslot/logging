@@ -7,10 +7,10 @@ namespace Pipaslot.Logging.Queues
     {
         private readonly LogLevel _logLevel;
 
-        public SendQueue(IOptions<PipaslotLoggerOptions> options, LogLevel logLevel, ILogSender logSender) : base(options)
+        public SendQueue(IOptions<PipaslotLoggerOptions> options, LogLevel logLevel, ILogWriter writer) : base(options)
         {
             _logLevel = logLevel;
-            Writer = new LogWriterToLogSenderAdapter(logSender);
+            Writer = writer;
         }
 
         protected override ILogWriter Writer { get; }
