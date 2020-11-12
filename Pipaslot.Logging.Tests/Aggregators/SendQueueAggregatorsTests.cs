@@ -7,10 +7,10 @@ using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Tests.Mocks;
 
-namespace Pipaslot.Logging.Tests.Queues
+namespace Pipaslot.Logging.Tests.Aggregators
 {
     [TestFixture]
-    class SendQueueTests : BaseQueueTestsWithMinimalLogLevel<SendQueueAggregator>
+    class SendQueueAggregatorsTests : BaseQueueAggregatorsTestsWithMinimalLogLevel<SendQueueAggregator>
     {
         protected override SendQueueAggregator CreateQueue(ILogWriter writer, LogLevel level)
         {

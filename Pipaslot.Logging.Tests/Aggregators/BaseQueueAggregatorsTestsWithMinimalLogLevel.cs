@@ -4,9 +4,9 @@ using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Tests.Mocks;
 
-namespace Pipaslot.Logging.Tests.Queues
+namespace Pipaslot.Logging.Tests.Aggregators
 {
-    abstract class BaseQueueTestsWithMinimalLogLevel<TQueue> : BaseQueueTests<TQueue> where TQueue : IQueueAggregator
+    abstract class BaseQueueAggregatorsTestsWithMinimalLogLevel<TQueue> : BaseQueueAggregatorsTests<TQueue> where TQueue : IQueueAggregator
     {
         [Test]
         public void WriteSingle_HigherLevel_OneMessageIsInserted()

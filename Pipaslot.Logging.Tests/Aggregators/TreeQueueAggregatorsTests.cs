@@ -4,10 +4,10 @@ using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.Tests.Mocks;
 
-namespace Pipaslot.Logging.Tests.Queues
+namespace Pipaslot.Logging.Tests.Aggregators
 {
     [TestFixture]
-    class TreeQueueTests : BaseQueueTests<TreeQueueAggregator>
+    class TreeQueueAggregatorsTests : BaseQueueAggregatorsTests<TreeQueueAggregator>
     {
         [Test]
         public void TODO()

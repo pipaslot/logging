@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
 
-namespace Pipaslot.Logging.Tests.Queues
+namespace Pipaslot.Logging.Tests.Aggregators
 {
     [TestFixture]
-    class ProcessQueueTests  : BaseQueueTests<ProcessQueueAggregator>
+    class ProcessQueueAggregatorsTests  : BaseQueueAggregatorsTests<ProcessQueueAggregator>
     {
         [Test]
         public void TODO()

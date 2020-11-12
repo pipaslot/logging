@@ -4,10 +4,10 @@ using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.Tests.Mocks;
 
-namespace Pipaslot.Logging.Tests.Queues
+namespace Pipaslot.Logging.Tests.Aggregators
 {
     [TestFixture]
-    class FlatQueueTests : BaseQueueTestsWithMinimalLogLevel<FlatQueueAggregator>
+    class FlatQueueAggregatorsTests : BaseQueueAggregatorsTestsWithMinimalLogLevel<FlatQueueAggregator>
     {
         [Test]
         public void TODO()
