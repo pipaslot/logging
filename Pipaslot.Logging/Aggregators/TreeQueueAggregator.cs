@@ -2,21 +2,21 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Aggregators
 {
     /// <summary>
     ///     Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    internal class TreeQueue : QueueBase
+    internal class TreeQueueAggregator : QueueAggregatorBase
     {
         /// <summary>
         ///     Definition of classes and their methods to be tracked
         /// </summary>
         private readonly HashSet<string> _classes = new HashSet<string>();
 
-        public TreeQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options, params string[] namespaceOrClass)
+        public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options, params string[] namespaceOrClass)
             : this(writer, options)
         {
             var items = namespaceOrClass
@@ -27,14 +27,14 @@ namespace Pipaslot.Logging.Queues
             }
         }
 
-        public TreeQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
         }
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, LogScope scope)
+        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue)
         {
             return true;
         }

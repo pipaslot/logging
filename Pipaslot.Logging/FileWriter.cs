@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
@@ -14,13 +14,13 @@ namespace Pipaslot.Logging
         private readonly object _fileLock = new object();
         private readonly string _filename;
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        private readonly LogScopeFormatter _formatter;
+        private readonly QueueFormatter _formatter;
 
-        public FileWriter(IOptions<PipaslotLoggerOptions> options, string filename) : this(options, filename, new LogScopeFormatter())
+        public FileWriter(IOptions<PipaslotLoggerOptions> options, string filename) : this(options, filename, new QueueFormatter())
         {
         }
 
-        public FileWriter(IOptions<PipaslotLoggerOptions> options, string filename, LogScopeFormatter formatter)
+        public FileWriter(IOptions<PipaslotLoggerOptions> options, string filename, QueueFormatter formatter)
         {
             _options = options;
             _filename = filename;
@@ -30,14 +30,14 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Write log to file if nto empty
         /// </summary>
-        public void WriteLog(LogScope scope)
+        public void WriteLog(Queue queue)
         {
-            var log = _formatter.Format(scope);
+            var log = _formatter.Format(queue);
             if (!string.IsNullOrWhiteSpace(log))
             {
                 lock (_fileLock)
                 {
-                    using var stream = GetStream(scope.Time.DateTime);
+                    using var stream = GetStream(queue.Time.DateTime);
                     stream.WriteLine(log);
                 }
             }

@@ -1,22 +1,22 @@
 ﻿using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Aggregators
 {
     /// <summary>
     ///     LogRecord all processes together
     /// </summary>
-    internal class ProcessQueue : IQueue
+    internal class ProcessQueueAggregator : IQueueAggregator
     {
         
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        protected readonly LogScopeCollection LogScopes = new LogScopeCollection();
+        protected readonly QueueCollection Queues = new QueueCollection();
         private readonly ILogWriter _writer;
 
-        public ProcessQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options)
+        public ProcessQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options)
         {
             _writer = writer;
             _options = options;
@@ -26,17 +26,17 @@ namespace Pipaslot.Logging.Queues
         {
             if (CanBeWrittenIntoQueue(traceIdentifier))
             {
-                var queue = LogScopes.GetQueue(traceIdentifier, false);
+                var queue = Queues.GetQueue(traceIdentifier, false);
                 if (queue == null)
                 {
                     // Write directly if is nto part of some queue bordered by scope
-                    var group = new LogScope(traceIdentifier);
-                    group.Add(new LogRecord(categoryName, severity, message, state, group.Depth, LogType.Record));
+                    var group = new Queue(traceIdentifier);
+                    group.Add(new Record(categoryName, severity, message, state, group.Depth, RecordType.Record));
                     _writer.WriteLog(group);
                     return;
                 }
 
-                queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, LogType.Record));
+                queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
             }
         }
 
@@ -44,7 +44,7 @@ namespace Pipaslot.Logging.Queues
         {
             if (CanBeWrittenIntoQueue(traceIdentifier))
             {
-                var queue = LogScopes.GetQueue(traceIdentifier, true);
+                var queue = Queues.GetQueue(traceIdentifier, true);
                 if (queue == null){
                     // LogRecord should be omitted
                     return;
@@ -52,25 +52,25 @@ namespace Pipaslot.Logging.Queues
 
                 // Update depth
                 var depth = queue.Depth;
-                var logType = QueueBase.GetLogType<TState>(_options.Value);
-                if (logType == LogType.ScopeBegin || logType == LogType.ScopeBeginIgnored){
+                var logType = QueueAggregatorBase.GetLogType<TState>(_options.Value);
+                if (logType == RecordType.ScopeBegin || logType == RecordType.ScopeBeginIgnored){
                     depth++;
                 }
-                else if (logType == LogType.ScopeEnd){
+                else if (logType == RecordType.ScopeEnd){
                     depth--;
                 }
 
                 // LogRecord or finish
                 if (depth <= 0){
                     // Remove request history from memory 
-                    LogScopes.Remove(traceIdentifier);
+                    Queues.Remove(traceIdentifier);
                     if(queue.HasAnyWriteableLog()){
                         _writer.WriteLog(queue);
                     }
                 }
                 else{
                     //Write only increasing scopes and ignore decreasing scopes
-                    queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, logType));
+                    queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
                 }
             }
         }
@@ -83,13 +83,13 @@ namespace Pipaslot.Logging.Queues
         public void Dispose()
         {
             //write all remaining logs
-            foreach (var pair in LogScopes.GetAllQueues()){
+            foreach (var pair in Queues.GetAllQueues()){
                 if(pair.Value.HasAnyWriteableLog()){
                     _writer.WriteLog(pair.Value);
                 }
             }
 
-            LogScopes.Dispose();
+            Queues.Dispose();
         }
     }
 }

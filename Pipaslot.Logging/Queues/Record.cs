@@ -1,14 +1,14 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.Records
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     /// Single input from logger
     /// </summary>
-    public class LogRecord
+    public class Record
     {
-        public LogRecord(string categoryName, LogLevel severity, string message, object? state, int depth, LogType type)
+        public Record(string categoryName, LogLevel severity, string message, object? state, int depth, RecordType type)
         {
             CategoryName = categoryName;
             Severity = severity;
@@ -23,7 +23,7 @@ namespace Pipaslot.Logging.Records
         public string Message { get; }
         public object? State { get; }
         public int Depth { get; }
-        public LogType Type { get; }
+        public RecordType Type { get; }
         public DateTimeOffset Time { get; } = DateTimeOffset.Now;
     }
 }

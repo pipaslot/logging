@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Aggregators;
 
 namespace Pipaslot.Logging
 {
@@ -16,12 +16,12 @@ namespace Pipaslot.Logging
         public static void AddRequestLogger(this ILoggingBuilder builder, string fileSuffix = "-requests")
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueue>(s =>
+            builder.Services.AddSingleton<IQueueAggregator>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
-                return new RequestQueue(writer, options);
+                return new RequestQueueAggregator(writer, options);
             });
         }
 
@@ -31,12 +31,12 @@ namespace Pipaslot.Logging
         public static void AddFlatLogger(this ILoggingBuilder builder, string fileSuffix, LogLevel logLevel)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueue>(s =>
+            builder.Services.AddSingleton<IQueueAggregator>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
-                return new FlatQueue(writer, logLevel, options);
+                return new FlatQueueAggregator(writer, logLevel, options);
             });
         }
 
@@ -46,12 +46,12 @@ namespace Pipaslot.Logging
         public static void AddTreeLogger(this ILoggingBuilder builder, string fileSuffix, params string[] namespaceOrClass)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueue>(s =>
+            builder.Services.AddSingleton<IQueueAggregator>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
-                return new TreeQueue(writer, options, namespaceOrClass);
+                return new TreeQueueAggregator(writer, options, namespaceOrClass);
             });
         }
 
@@ -64,11 +64,11 @@ namespace Pipaslot.Logging
             builder.AddPipaslotLoggerProvider();
             builder.Services.TryAddScoped<TLogSender>();
             builder.Services.TryAddSingleton<LogWriterToLogSenderAdapter<TLogSender>>();
-            builder.Services.AddSingleton<IQueue>(s =>
+            builder.Services.AddSingleton<IQueueAggregator>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var writer = s.GetService<LogWriterToLogSenderAdapter<TLogSender>>();
-                return new SendQueue(options, logLevel, writer);
+                return new SendQueueAggregator(options, logLevel, writer);
             });
         }
 
@@ -78,12 +78,12 @@ namespace Pipaslot.Logging
         public static void AddProcessLogger(this ILoggingBuilder builder, string fileSuffix = "-processes")
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueue>(s =>
+            builder.Services.AddSingleton<IQueueAggregator>(s =>
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create("{Date}" + fileSuffix + ".log");
-                return new ProcessQueue(writer, options);
+                return new ProcessQueueAggregator(writer, options);
             });
         }
 

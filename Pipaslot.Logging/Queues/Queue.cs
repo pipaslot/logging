@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Pipaslot.Logging.Records
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     /// Set of log records collected together. Is read-only for consuming libraries
     /// </summary>
-    public class LogScope
+    public class Queue
     {
-        private readonly List<LogRecord> _logs = new List<LogRecord>();
+        private readonly List<Record> _logs = new List<Record>();
 
-        internal LogScope(string traceIdentifier)
+        internal Queue(string traceIdentifier)
         {
             TraceIdentifier = traceIdentifier;
         }
@@ -28,18 +28,18 @@ namespace Pipaslot.Logging.Records
         /// <summary>
         /// Collected log messages
         /// </summary>
-        public IReadOnlyCollection<LogRecord> Logs => _logs;
+        public IReadOnlyCollection<Record> Logs => _logs;
 
         internal int Depth => Logs.LastOrDefault()?.Depth ?? 0;
 
-        internal void Add(LogRecord logRecord)
+        internal void Add(Record record)
         {
-            _logs.Add(logRecord);
+            _logs.Add(record);
         }
 
         internal bool HasAnyWriteableLog()
         {
-            return Logs.Any(l => l.Type == LogType.Record);
+            return Logs.Any(l => l.Type == RecordType.Record);
         }
     }
 }

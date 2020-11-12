@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
@@ -8,6 +8,6 @@ namespace Pipaslot.Logging
     /// </summary>
     public interface ILogSender
     {
-        Task SendLog(LogScope scope);
+        Task SendLog(Queue queue);
     }
 }

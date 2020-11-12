@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Aggregators
 {
     /// <summary>
     /// Queue aggregating log records with the same trace identifier
     /// </summary>
-    public interface IQueue : IDisposable
+    public interface IQueueAggregator : IDisposable
     {
         /// <summary>
         /// Write message from logger

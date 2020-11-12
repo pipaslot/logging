@@ -1,20 +1,20 @@
 ﻿using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Aggregators
 {
     /// <summary>
     /// Basic abstraction of Queue handling messages and scopes
     /// </summary>
-    internal abstract class QueueBase : IQueue
+    internal abstract class QueueAggregatorBase : IQueueAggregator
     {
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        protected readonly LogScopeCollection LogScopes = new LogScopeCollection();
+        protected readonly QueueCollection Queues = new QueueCollection();
 
-        protected QueueBase(IOptions<PipaslotLoggerOptions> options)
+        protected QueueAggregatorBase(IOptions<PipaslotLoggerOptions> options)
         {
             _options = options;
         }
@@ -24,7 +24,7 @@ namespace Pipaslot.Logging.Queues
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
             var canCreate = CanCreateNewLogScope(traceIdentifier, categoryName, severity);
-            var queue = LogScopes.GetQueue(traceIdentifier, canCreate);
+            var queue = Queues.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
                 // LogRecord should be omitted
                 return;
@@ -33,13 +33,13 @@ namespace Pipaslot.Logging.Queues
             // Check if can be written for current scope and method
             if (!CanAddIntoExistingLogScope(categoryName, severity, queue)) return;
 
-            queue.Add(new LogRecord(categoryName, severity, message, state, queue.Depth, LogType.Record));
+            queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
         }
 
         public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
         {
             var canCreate = CanCreateNewLogScope(traceIdentifier, categoryName, LogLevel.None);
-            var queue = LogScopes.GetQueue(traceIdentifier, canCreate);
+            var queue = Queues.GetQueue(traceIdentifier, canCreate);
             if (queue == null){
                 // LogRecord should be omitted
                 return;
@@ -48,56 +48,56 @@ namespace Pipaslot.Logging.Queues
             // Update depth
             var depth = queue.Depth;
             var logType = GetLogType<TState>(_options.Value);
-            if (logType == LogType.ScopeBegin || logType == LogType.ScopeBeginIgnored){
+            if (logType == RecordType.ScopeBegin || logType == RecordType.ScopeBeginIgnored){
                 depth++;
             }
-            else if (logType == LogType.ScopeEnd){
+            else if (logType == RecordType.ScopeEnd){
                 depth--;
             }
 
             // LogRecord or finish
             if (depth <= 0){
                 // Remove request history from memory 
-                LogScopes.Remove(traceIdentifier);
+                Queues.Remove(traceIdentifier);
                 if(queue.HasAnyWriteableLog()){
                     Writer.WriteLog(queue);
                 }
             }
             else{
                 //Write only increasing scopes and ignore decreasing scopes
-                queue.Add(new LogRecord(categoryName, LogLevel.None, "", state, depth, logType));
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
             }
         }
 
         public virtual void Dispose()
         {
             //write all remaining logs
-            foreach (var pair in LogScopes.GetAllQueues()){
+            foreach (var pair in Queues.GetAllQueues()){
                 if(pair.Value.HasAnyWriteableLog()){
                     Writer.WriteLog(pair.Value);
                 }
             }
 
-            LogScopes.Dispose();
+            Queues.Dispose();
         }
 
         protected abstract bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity);
 
-        protected abstract bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, LogScope scope);
+        protected abstract bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue);
 
-        internal static LogType GetLogType<TState>(PipaslotLoggerOptions options)
+        internal static RecordType GetLogType<TState>(PipaslotLoggerOptions options)
         {
             var stateType = typeof(TState);
             if (stateType == typeof(IncreaseScopeState)){
-                return options.IncludeScopes ? LogType.ScopeBegin : LogType.ScopeBeginIgnored;
+                return options.IncludeScopes ? RecordType.ScopeBegin : RecordType.ScopeBeginIgnored;
             }
             if (stateType == typeof(IncreaseMethodState)){
-                return options.IncludeMethods ? LogType.ScopeBegin : LogType.ScopeBeginIgnored;
+                return options.IncludeMethods ? RecordType.ScopeBegin : RecordType.ScopeBeginIgnored;
             }
             if (stateType == typeof(DecreaseScopeState)){
-                return LogType.ScopeEnd;
+                return RecordType.ScopeEnd;
             }
-            return LogType.Record;
+            return RecordType.Record;
         }
     }
 }

@@ -1,22 +1,22 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Aggregators
 {
     /// <summary>
     ///     Logs all separated requests
     /// </summary>
-    internal class RequestQueue : QueueBase
+    internal class RequestQueueAggregator : QueueAggregatorBase
     {
-        public RequestQueue(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public RequestQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
         {
             Writer = writer;
         }
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, LogScope scope)
+        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue)
         {
             return true;
         }

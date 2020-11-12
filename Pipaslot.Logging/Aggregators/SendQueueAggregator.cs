@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 
-namespace Pipaslot.Logging.Queues
+namespace Pipaslot.Logging.Aggregators
 {
-    internal class SendQueue : QueueBase
+    internal class SendQueueAggregator : QueueAggregatorBase
     {
         private readonly LogLevel _minimalLogLevel;
 
-        public SendQueue(IOptions<PipaslotLoggerOptions> options, LogLevel minimalLogLevel, ILogWriter writer) : base(options)
+        public SendQueueAggregator(IOptions<PipaslotLoggerOptions> options, LogLevel minimalLogLevel, ILogWriter writer) : base(options)
         {
             _minimalLogLevel = minimalLogLevel;
             Writer = writer;
@@ -21,7 +21,7 @@ namespace Pipaslot.Logging.Queues
             return _minimalLogLevel <= severity;
         }
 
-        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, LogScope scope)
+        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue)
         {
             return true;
         }

@@ -2,29 +2,29 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
 {
-    public class LogScopeFormatter
+    public class QueueFormatter
     {
         /// <summary>
         /// Format whole logRecord group belonging to the same scope
         /// </summary>
-        /// <param name="logScope"></param>
+        /// <param name="queue"></param>
         /// <returns></returns>
-        public virtual string Format(LogScope logScope)
+        public virtual string Format(Queue queue)
         {
             var sb = new StringBuilder();
-            sb.Append(logScope.Time);
+            sb.Append(queue.Time);
             sb.Append(" ");
-            sb.AppendLine(logScope.TraceIdentifier);
+            sb.AppendLine(queue.TraceIdentifier);
 
             var previousDepth = 0;
             var rows = 0;
-            foreach (var log in logScope.Logs){
-                if (log.Type == LogType.Record || log.Type == LogType.ScopeBegin){
+            foreach (var log in queue.Logs){
+                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin){
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;
                 }
@@ -60,22 +60,22 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Format single log record message
         /// </summary>
-        /// <param name="logRecord">LogRecord record</param>
+        /// <param name="record">LogRecord record</param>
         /// <param name="previousDepth"></param>
         /// <param name="currentDepth">Current scope depth</param>
-        public virtual string FormatRecord(LogRecord logRecord, int previousDepth, int currentDepth)
+        public virtual string FormatRecord(Record record, int previousDepth, int currentDepth)
         {
             var sb = new StringBuilder();
-            sb.Append(logRecord.Time.ToString("HH:mm:ss.fff"));
+            sb.Append(record.Time.ToString("HH:mm:ss.fff"));
             sb.Append(" ");
-            sb.Append(FormatSeverity(logRecord.Severity));
+            sb.Append(FormatSeverity(record.Severity));
             sb.Append(" ");
             sb.Append(FormatDepth(previousDepth, currentDepth));
-            if (logRecord.State != null && logRecord.State is IState state) sb.Append(state.FormatMessage(logRecord.CategoryName, logRecord.Message));
-            sb.Append(logRecord.Message);
+            if (record.State != null && record.State is IState state) sb.Append(state.FormatMessage(record.CategoryName, record.Message));
+            sb.Append(record.Message);
             
-            if (logRecord.State != null && !(logRecord.State is IState)){
-                var serializedData = SerializeState(logRecord.State);
+            if (record.State != null && !(record.State is IState)){
+                var serializedData = SerializeState(record.State);
                 sb.Append(" ");
                 sb.Append(serializedData);
             }

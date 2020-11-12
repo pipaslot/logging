@@ -1,6 +1,6 @@
-﻿namespace Pipaslot.Logging.Records
+﻿namespace Pipaslot.Logging.Queues
 {
-    public enum LogType
+    public enum RecordType
     {
         Record,
         ScopeBegin,

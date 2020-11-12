@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Aggregators;
 
 namespace Pipaslot.Logging.Tests.Queues
 {
     [TestFixture]
-    class RequestQueueTests : BaseQueueTests<RequestQueue>
+    class RequestQueueTests : BaseQueueTests<RequestQueueAggregator>
     {
         [Test]
         public void TODO()
@@ -14,7 +14,7 @@ namespace Pipaslot.Logging.Tests.Queues
             throw new NotImplementedException();
         }
 
-        protected override RequestQueue CreateQueue(ILogWriter writer)
+        protected override RequestQueueAggregator CreateQueue(ILogWriter writer)
         {
             throw new NotImplementedException();
         }

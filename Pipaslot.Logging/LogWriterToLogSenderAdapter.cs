@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Pipaslot.Logging.Records;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
@@ -21,14 +21,14 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Write log scope to sender
         /// </summary>
-        /// <param name="scope"></param>
-        public void WriteLog(LogScope scope)
+        /// <param name="queue"></param>
+        public void WriteLog(Queue queue)
         {
             Task.Run(()=>
             {
                 using var serviceScope = _serviceProvider.CreateScope();
                 var sender = serviceScope.ServiceProvider.GetService<TLogSender>();
-                sender.SendLog(scope).GetAwaiter().GetResult();
+                sender.SendLog(queue).GetAwaiter().GetResult();
             });
         }
     }

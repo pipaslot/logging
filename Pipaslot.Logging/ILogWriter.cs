@@ -1,4 +1,4 @@
-﻿using Pipaslot.Logging.Records;
+﻿using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
@@ -10,7 +10,7 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Write log scope to target stream
         /// </summary>
-        /// <param name="logRecords"></param>
-        void WriteLog(LogScope logRecords);
+        /// <param name="records"></param>
+        void WriteLog(Queue records);
     }
 }

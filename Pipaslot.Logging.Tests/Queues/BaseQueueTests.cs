@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.States;
 using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Queues
 {
-    abstract class BaseQueueTests<TQueue> where TQueue : IQueue
+    abstract class BaseQueueTests<TQueue> where TQueue : IQueueAggregator
     {
         [Test]
         public void WriteScope_OnlyIncreaseScopeIsLogged_IgnoreScope()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
@@ -12,9 +12,9 @@ namespace Pipaslot.Logging
     {
         private readonly string _categoryName;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEnumerable<IQueue> _queues;
+        private readonly IEnumerable<IQueueAggregator> _queues;
 
-        public PipaslotLogger(IEnumerable<IQueue> queues, IHttpContextAccessor httpContextAccessor, string categoryName)
+        public PipaslotLogger(IEnumerable<IQueueAggregator> queues, IHttpContextAccessor httpContextAccessor, string categoryName)
         {
             _queues = queues;
             _httpContextAccessor = httpContextAccessor;

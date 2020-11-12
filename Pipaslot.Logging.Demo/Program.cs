@@ -17,10 +17,10 @@ namespace Pipaslot.Logging.Demo
             return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(builder =>
                 {
-                    // builder.AddRequestLogger();
-                    // builder.AddFlatLogger("-errors", LogLevel.Error);
-                    // builder.AddProcessLogger("-processes");
-                    // builder.AddTreeLogger("-controllers", "Pipaslot.Logging.Demo.Controllers");
+                    builder.AddRequestLogger();
+                    builder.AddFlatLogger("-errors", LogLevel.Error);
+                    builder.AddProcessLogger("-processes");
+                    builder.AddTreeLogger("-controllers", "Pipaslot.Logging.Demo.Controllers");
                     builder.AddSendLogger<LogSender>(LogLevel.Critical);
                 })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
