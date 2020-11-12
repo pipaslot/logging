@@ -41,7 +41,7 @@ namespace Pipaslot.Logging
         /// Format severity
         /// </summary>
         /// <param name="severity">Message severity</param>
-        protected virtual string FormatSeverity(LogLevel severity)
+        public virtual string FormatSeverity(LogLevel severity)
         {
             var codes = new Dictionary<LogLevel, string>
             {
@@ -63,7 +63,7 @@ namespace Pipaslot.Logging
         /// <param name="logRecord">LogRecord record</param>
         /// <param name="previousDepth"></param>
         /// <param name="currentDepth">Current scope depth</param>
-        protected virtual string FormatRecord(LogRecord logRecord, int previousDepth, int currentDepth)
+        public virtual string FormatRecord(LogRecord logRecord, int previousDepth, int currentDepth)
         {
             var sb = new StringBuilder();
             sb.Append(logRecord.Time.ToString("HH:mm:ss.fff"));
