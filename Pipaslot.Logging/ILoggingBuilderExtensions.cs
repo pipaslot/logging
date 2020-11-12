@@ -74,7 +74,7 @@ namespace Pipaslot.Logging
         /// <summary>
         ///     Log writing all messages from every single process which is not handled as HTTP request. Useful for background jobs. Every thread will have own log file
         /// </summary>
-        public static void AddProcessLogger(this ILoggingBuilder builder, string fileSuffix = "-process-{Id}")
+        public static void AddProcessLogger(this ILoggingBuilder builder, string fileSuffix = "-processes")
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton<IQueue>(s =>

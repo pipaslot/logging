@@ -22,7 +22,8 @@ namespace Pipaslot.Logging.Demo
             services.AddControllers();
 
             services.AddTransient<ServiceLevel1>();
-            services.AddHostedService<CustomHostedService>();
+            services.AddHostedService<FlatLoggingHostedService>();
+            services.AddHostedService<DeepLoggingHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -30,7 +30,7 @@ and provide logging options in your `appsettings.json` file:
     "LogLevel": {
       "Default": "Warning", // Define standard log filtering 
       "MyApp": "Information", // Log all informations from our application (includes nested namespaces like MyApp.Libs...)
-      "Microsoft.AspNetCore.Hosting.Diagnostics": "Debug" // Log HTTP requests
+      "Microsoft.AspNetCore.Hosting.Diagnostics": "Information" // Log HTTP requests
     },
     "Pipaslot": {
       "OutputPath": "./logs",

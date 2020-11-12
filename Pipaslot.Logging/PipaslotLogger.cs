@@ -81,7 +81,7 @@ namespace Pipaslot.Logging
         {
             var process = Process.GetCurrentProcess();
 
-            return $"{Constants.CliTraceIdentifierPrefix}{process.Id}:{process.StartTime:HHmmss}";
+            return $"{Constants.CliTraceIdentifierPrefix}ID:{process.Id}_Started:{process.StartTime:HH}:{process.StartTime:mm}:{process.StartTime:ss}";
         }
     }
 }
