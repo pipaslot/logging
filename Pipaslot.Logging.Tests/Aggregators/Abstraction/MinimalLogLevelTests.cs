@@ -1,24 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
-using Pipaslot.Logging.States;
 using Pipaslot.Logging.Tests.Mocks;
 
-namespace Pipaslot.Logging.Tests.Aggregators
+namespace Pipaslot.Logging.Tests.Aggregators.Abstraction
 {
-    abstract class BaseQueueAggregatorsTestsWithMinimalLogLevel<TQueue> : BaseQueueAggregatorsTests<TQueue> where TQueue : IQueueAggregator
+    internal abstract class MinimalLogLevelTests<TQueue> where TQueue : IQueueAggregator
     {
         [Test]
         public void WriteSingle_HigherLevel_OneMessageIsInserted()
         {
             var writerMock = new LogWritterMock();
             using (var queue = CreateQueue(writerMock.Object, LogLevel.Information)){
-                queue.WriteLog( LogLevel.Error);
+                queue.WriteLog(LogLevel.Error);
             }
 
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(1);
         }
-        
+
         [Test]
         public void WriteScopeAndLog_LogHasLowPriority_IgnoreScope()
         {
@@ -30,7 +29,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
 
             writerMock.VerifyWriteLogIsNotCalled();
         }
-        
+
         [Test]
         public void WriteMethodAndLog_LogHasLowPriority_IgnoreScope()
         {
@@ -42,7 +41,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
 
             writerMock.VerifyWriteLogIsNotCalled();
         }
-        
+
         protected abstract TQueue CreateQueue(ILogWriter writer, LogLevel level);
     }
 }

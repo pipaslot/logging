@@ -9,12 +9,12 @@ namespace Pipaslot.Logging.Tests.Mocks
         {
             Verify(w => w.WriteLog(It.Is<Queue>(scope => scope.Logs.Count == count)), Times.Once);
         }
-        
+
         public void VerifyWriteLogIsNotCalled()
         {
             Verify(w => w.WriteLog(It.IsAny<Queue>()), Times.Never);
         }
-        
+
         public void VerifyWriteLogIsCalledOnce()
         {
             Verify(w => w.WriteLog(It.IsAny<Queue>()), Times.Once);

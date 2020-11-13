@@ -15,6 +15,13 @@ namespace Pipaslot.Logging.Queues
         {
             TraceIdentifier = traceIdentifier;
         }
+        private Queue(string traceIdentifier, DateTimeOffset time, IEnumerable<Record> logs)
+        {
+            TraceIdentifier = traceIdentifier;
+            Time = time;
+            _logs = logs.ToList();
+        }
+        
         /// <summary>
         /// Request or process trace identifier
         /// </summary>
@@ -40,6 +47,11 @@ namespace Pipaslot.Logging.Queues
         internal bool HasAnyWriteableLog()
         {
             return Logs.Any(l => l.Type == RecordType.Record);
+        }
+
+        internal Queue CloneWith(IEnumerable<Record> logs)
+        {
+            return new Queue(TraceIdentifier, Time, logs);
         }
     }
 }

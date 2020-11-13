@@ -25,10 +25,5 @@ namespace Pipaslot.Logging.Aggregators
         {
             return !traceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix);
         }
-        
-        protected override bool CanWriteQueueToOutput(Queue queue)
-        {
-            return true;
-        }
     }
 }

@@ -26,10 +26,14 @@ namespace Pipaslot.Logging.Aggregators
         {
             return true;
         }
-
-        protected override bool CanWriteQueueToOutput(Queue queue)
+        
+        protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
-            return queue.Logs.Any(log => log.Severity != LogLevel.None && _minimalLogLevel <= log.Severity);
+            // Filter all records with severity lower than minimal
+            var logs = queue.Logs.Where(log => 
+                log.Type != RecordType.Record // Keep all scope records
+                || (log.Type == RecordType.Record && log.Severity != LogLevel.None && _minimalLogLevel <= log.Severity));
+            return queue.CloneWith(logs);
         }
     }
 }

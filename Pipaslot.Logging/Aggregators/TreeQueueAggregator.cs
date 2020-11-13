@@ -43,11 +43,6 @@ namespace Pipaslot.Logging.Aggregators
         {
             return Contains(categoryName);
         }
-        
-        protected override bool CanWriteQueueToOutput(Queue queue)
-        {
-            return true;
-        }
 
         private bool Contains(string categoryName)
         {

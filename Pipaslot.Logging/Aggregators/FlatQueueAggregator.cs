@@ -29,9 +29,5 @@ namespace Pipaslot.Logging.Aggregators
             return severity != LogLevel.None && _logLevel <= severity;
         }
         
-        protected override bool CanWriteQueueToOutput(Queue queue)
-        {
-            return true;
-        }
     }
 }

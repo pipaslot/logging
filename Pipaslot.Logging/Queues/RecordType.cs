@@ -5,6 +5,6 @@
         Record,
         ScopeBegin,
         ScopeBeginIgnored,
-        ScopeEnd
+        ScopeEndIgnored
     }
 }

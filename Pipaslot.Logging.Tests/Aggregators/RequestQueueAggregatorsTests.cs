@@ -1,14 +1,12 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
-using Pipaslot.Logging.States;
+using Pipaslot.Logging.Tests.Aggregators.Abstraction;
 using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Aggregators
 {
-    [TestFixture]
-    class RequestQueueAggregatorsTests : BaseQueueAggregatorsTests<RequestQueueAggregator>
+    internal class RequestQueueAggregatorsTests
     {
         [Test]
         public void SingleLogFromCli_Ignore()
@@ -43,7 +41,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }
 
-        protected override RequestQueueAggregator CreateQueue(ILogWriter writer)
+        private RequestQueueAggregator CreateQueue(ILogWriter writer)
         {
             var optionsMock = new PipaslotLoggerOptionsMock();
             return new RequestQueueAggregator(writer, optionsMock.Object);

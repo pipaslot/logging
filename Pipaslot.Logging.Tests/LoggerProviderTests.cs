@@ -16,7 +16,7 @@ namespace Pipaslot.Logging.Tests
 
             var logger1 = sut.CreateLogger(category);
             var logger2 = sut.CreateLogger(category);
-            Assert.AreSame(logger1,logger2);
+            Assert.AreSame(logger1, logger2);
         }
     }
 }

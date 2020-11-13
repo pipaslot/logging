@@ -56,7 +56,7 @@ namespace Pipaslot.Logging.Aggregators
                 if (logType == RecordType.ScopeBegin || logType == RecordType.ScopeBeginIgnored){
                     depth++;
                 }
-                else if (logType == RecordType.ScopeEnd){
+                else if (logType == RecordType.ScopeEndIgnored){
                     depth--;
                 }
 
