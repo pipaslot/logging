@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
 using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
-using Pipaslot.Logging.Queues;
-using Pipaslot.Logging.States;
 using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Aggregators
@@ -12,6 +8,37 @@ namespace Pipaslot.Logging.Tests.Aggregators
     [TestFixture]
     class SendQueueAggregatorsTests : BaseQueueAggregatorsTestsWithMinimalLogLevel<SendQueueAggregator>
     {
+        [Test]
+        public void WriteOnlyInfoInNestedScopes_ShouldIgnore()
+        {
+            var writerMock = new LogWritterMock();
+            using (var queue = CreateQueue(writerMock.Object)){
+                queue.WriteIncreaseScope();
+                queue.WriteLog( LogLevel.Information );
+                queue.WriteIncreaseScope();
+                queue.WriteLog( LogLevel.Information);
+                queue.WriteDecreaseScope();
+                queue.WriteLog(LogLevel.Information);
+                queue.WriteDecreaseScope();
+                writerMock.VerifyWriteLogIsNotCalled();
+            }
+        }
+        
+        [Test]
+        public void WriteErrorInNestedScope_ShouldWrite()
+        {
+            var writerMock = new LogWritterMock();
+            using (var queue = CreateQueue(writerMock.Object)){
+                queue.WriteIncreaseScope();
+                queue.WriteLog( LogLevel.Information);
+                queue.WriteIncreaseScope();
+                queue.WriteLog(LogLevel.Error);
+                queue.WriteDecreaseScope();
+                queue.WriteLog( LogLevel.Information);
+                queue.WriteDecreaseScope();
+                writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(6);
+            }
+        }
         protected override SendQueueAggregator CreateQueue(ILogWriter writer, LogLevel level)
         {
             var optionsMock = new PipaslotLoggerOptionsMock();

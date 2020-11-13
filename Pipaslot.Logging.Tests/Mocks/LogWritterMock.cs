@@ -14,5 +14,10 @@ namespace Pipaslot.Logging.Tests.Mocks
         {
             Verify(w => w.WriteLog(It.IsAny<Queue>()), Times.Never);
         }
+        
+        public void VerifyWriteLogIsCalledOnce()
+        {
+            Verify(w => w.WriteLog(It.IsAny<Queue>()), Times.Once);
+        }
     }
 }

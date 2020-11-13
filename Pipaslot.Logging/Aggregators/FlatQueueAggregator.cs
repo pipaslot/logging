@@ -21,12 +21,17 @@ namespace Pipaslot.Logging.Aggregators
 
         protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
         {
-            return _logLevel <= severity;
+            return severity != LogLevel.None && _logLevel <= severity;
         }
 
         protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue)
         {
-            return _logLevel <= severity;
+            return severity != LogLevel.None && _logLevel <= severity;
+        }
+        
+        protected override bool CanWriteQueueToOutput(Queue queue)
+        {
+            return true;
         }
     }
 }

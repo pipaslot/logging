@@ -59,9 +59,7 @@ namespace Pipaslot.Logging.Aggregators
             if (depth <= 0){
                 // Remove request history from memory 
                 Queues.Remove(traceIdentifier);
-                if(queue.HasAnyWriteableLog()){
-                    Writer.WriteLog(queue);
-                }
+                WriteQueue(queue);
             }
             else{
                 //Write only increasing scopes and ignore decreasing scopes
@@ -73,17 +71,24 @@ namespace Pipaslot.Logging.Aggregators
         {
             //write all remaining logs
             foreach (var pair in Queues.GetAllQueues()){
-                if(pair.Value.HasAnyWriteableLog()){
-                    Writer.WriteLog(pair.Value);
-                }
+                WriteQueue(pair.Value);
             }
 
             Queues.Dispose();
         }
 
+        private void WriteQueue(Queue queue)
+        {
+            if(queue.HasAnyWriteableLog() && CanWriteQueueToOutput(queue)){
+                Writer.WriteLog(queue);
+            }
+        }
+
+
         protected abstract bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity);
 
         protected abstract bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue);
+        protected abstract bool CanWriteQueueToOutput(Queue queue);
 
         internal static RecordType GetLogType<TState>(PipaslotLoggerOptions options)
         {

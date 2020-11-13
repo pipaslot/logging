@@ -13,7 +13,17 @@ namespace Pipaslot.Logging.Tests.Aggregators
         {
             var writerMock = new LogWritterMock();
             using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteScopeChange("trace", "category", new IncreaseScopeState("method"));
+                queue.WriteIncreaseScope();
+            }
+
+            writerMock.VerifyWriteLogIsNotCalled();
+        }
+        [Test]
+        public void WriteMethod_OnlyIncreaseMethodIsLogged_IgnoreScope()
+        {
+            var writerMock = new LogWritterMock();
+            using (var queue = CreateQueue(writerMock.Object)){
+                queue.WriteIncreaseMethod();
             }
 
             writerMock.VerifyWriteLogIsNotCalled();
@@ -24,9 +34,21 @@ namespace Pipaslot.Logging.Tests.Aggregators
         {
             var writerMock = new LogWritterMock();
             using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteScopeChange("trace", "category", new IncreaseScopeState("method"));
-                queue.WriteLog("trace", "category", LogLevel.Error, "message", new { });
-                queue.WriteScopeChange("trace", "category", new DecreaseScopeState());
+                queue.WriteIncreaseScope();
+                queue.WriteLog(LogLevel.Error);
+                queue.WriteDecreaseScope();
+                writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+            }
+        }
+        
+        [Test]
+        public void WriteMethod_FullMethod_DecreaseScopeCauseWriting()
+        {
+            var writerMock = new LogWritterMock();
+            using (var queue = CreateQueue(writerMock.Object)){
+                queue.WriteIncreaseMethod();
+                queue.WriteLog(LogLevel.Error);
+                queue.WriteDecreaseScope();
                 writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
             }
         }
@@ -36,8 +58,19 @@ namespace Pipaslot.Logging.Tests.Aggregators
         {
             var writerMock = new LogWritterMock();
             using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteScopeChange("trace", "category", new IncreaseScopeState("method"));
-                queue.WriteLog("trace", "category", LogLevel.Error, "message", new { });
+                queue.WriteIncreaseScope();
+                queue.WriteLog(LogLevel.Error);
+            }
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+        }
+        
+        [Test]
+        public void WriteMethod_DecreaseScopeIsMissing_MessageIsWrittenDuringDisposing()
+        {
+            var writerMock = new LogWritterMock();
+            using (var queue = CreateQueue(writerMock.Object)){
+                queue.WriteIncreaseMethod();
+                queue.WriteLog(LogLevel.Error);
             }
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }

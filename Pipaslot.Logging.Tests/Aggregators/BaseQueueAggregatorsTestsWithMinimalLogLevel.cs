@@ -13,7 +13,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
         {
             var writerMock = new LogWritterMock();
             using (var queue = CreateQueue(writerMock.Object, LogLevel.Information)){
-                queue.WriteLog("trace", "category", LogLevel.Error, "message", new { });
+                queue.WriteLog( LogLevel.Error);
             }
 
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(1);
@@ -24,8 +24,20 @@ namespace Pipaslot.Logging.Tests.Aggregators
         {
             var writerMock = new LogWritterMock();
             using (var queue = CreateQueue(writerMock.Object, LogLevel.Error)){
-                queue.WriteScopeChange("trace", "category", new IncreaseScopeState("method"));
-                queue.WriteLog("trace", "category", LogLevel.Information, "message", new { });
+                queue.WriteIncreaseScope();
+                queue.WriteLog(LogLevel.Information);
+            }
+
+            writerMock.VerifyWriteLogIsNotCalled();
+        }
+        
+        [Test]
+        public void WriteMethodAndLog_LogHasLowPriority_IgnoreScope()
+        {
+            var writerMock = new LogWritterMock();
+            using (var queue = CreateQueue(writerMock.Object, LogLevel.Error)){
+                queue.WriteIncreaseMethod();
+                queue.WriteLog(LogLevel.Information);
             }
 
             writerMock.VerifyWriteLogIsNotCalled();
