@@ -19,7 +19,7 @@ namespace Pipaslot.Logging.Demo
                 {
                     builder.AddRequestLogger();
                     builder.AddFlatLogger("-errors", LogLevel.Error);
-                    builder.AddProcessLogger("-processes");
+                    builder.AddProcessLogger("-processes", RollingInterval.Minute);
                     builder.AddTreeLogger("-controllers", "Pipaslot.Logging.Demo.Controllers");
                     builder.AddSendLogger<LogSender>(LogLevel.Critical);
                 })

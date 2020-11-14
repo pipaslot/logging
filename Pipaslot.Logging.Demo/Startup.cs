@@ -24,6 +24,9 @@ namespace Pipaslot.Logging.Demo
             services.AddTransient<ServiceLevel1>();
             services.AddHostedService<FlatLoggingHostedService>();
             services.AddHostedService<DeepLoggingHostedService>();
+            
+            // Register background process automatically removing old log files
+            services.AddHostedService<LogFileEraseHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

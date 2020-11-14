@@ -43,7 +43,7 @@ and provide logging options in your `appsettings.json` file:
 }
 ```
 
-## Example
+## Example of usage
 Boost your logging abilities by logging class and method names, visualize deep of nesting and log serialized data/structures
 Create custom controller and service, setup logging and check your log file after few requests
 ```
@@ -93,14 +93,63 @@ and check your log file:
 
 ![Request log sample](readmeImages/logfile.jpg)
 
-## Aggregate only errors or critical messages into separated log file
-Register `loggingBuilder.AddFlatLogger("-errors", LogLevel.Error);` to extract only messages with priority Error and higher (includes Critical) to file with suffix "-errors"
-## Log single or multiple class usages into separated log file
-Register `loggingBuilder.AddTreeLogger("-services", "MyApplication.Services");`. All messages and scopes in classes within this namespace will be logged into separated file with suffix "-service".
+## Register loggers by their purpose
 
-## Send notification with critical error dump
+### Aggregate only errors or critical messages into separated log file
+Register `loggingBuilder.AddFlatLogger("errors", LogLevel.Error, RollingInterval.Day);` to extract only messages with priority Error and higher (includes Critical) to file with suffix "-errors"
+
+### Log single or multiple class usages into separated log file
+Register `loggingBuilder.AddTreeLogger("services", RollingInterval.Day, "MyApplication.Controllers", "MyApplication.Services.SpecificService"...);`. All messages and scopes in classes within this namespace will be logged into separated file with suffix "-service".
+
+### Send notification with critical error dump
 Register `loggingBuilder.AddSendLogger<MyMailLogSender>(LogLevel.Critical);` and provide class `MyMailLogSender` implementing interface `Pipaslot.Logging.ILogSender`. 
 All critical errors will be sent through your sender.
 
-## Log Background worker threads
-If you need to log what is happening in thread not related to HTTP request, you can use registration for process logger: `loggingBuilder.AddProcessLogger();`
+### Log Background worker threads
+If you need to log what is happening in thread not related to HTTP request, you can use registration for process logger: `loggingBuilder.AddProcessLogger("processes", RollingInterval.Hour);`
+
+## Automatically erase old logs
+Use service `Pipaslot.Logging.FileEraser` registered in dependency injection to erase old files whenever you want:
+```
+var fileEraser = serviceProvider.GetService<Pipaslot.Logging.FileEraser>();
+fileEraser.Run(TimeSpan.FromMonths(3)); //Remove files older than 3 months
+```
+Or event better you can register HostedService which will run erase job every day with `maxAge` specified in this service.
+
+```
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace Pipaslot.Logging.Demo.Services
+{
+    public class LogFileEraseHostedService : BackgroundService
+    {
+        private readonly ILogger<LogFileEraseHostedService> _logger;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly TimeSpan _maxAge = TimeSpan.FromMonths(3);
+        private readonly TimeSpan _repeatInterval = TimeSpan.FromDays(1);
+
+        public LogFileEraseHostedService(ILogger<LogFileEraseHostedService> logger, IServiceProvider serviceProvider)
+        {
+            _logger = logger;
+            _serviceProvider = serviceProvider;
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested){
+                using (var scope = _serviceProvider.CreateScope()){
+                    var eraser = scope.ServiceProvider.GetService<FileEraser>();
+                    var erasedCount = eraser.Run(_maxAge);
+                    _logger.LogInformation("Erased {0} log files", erasedCount);
+                }
+                await Task.Delay(_repeatInterval, stoppingToken);
+            }
+        }
+    }
+}
+```

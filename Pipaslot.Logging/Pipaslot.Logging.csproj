@@ -7,16 +7,19 @@
     <Description>Structured HTTP request logger. Supports multiple file writers for grouped by requests, priorities, service calls or threads. Contains adapter for sending for notifications.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RepositoryUrl>https://github.com/pipaslot/logging</RepositoryUrl>
-    <PackageVersion>2.1.0</PackageVersion>
+    <PackageVersion>2.2.0</PackageVersion>
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
     <PackageReleaseNotes>
+      2.2.0 - Provide customizable file name formatter with rolling interval and old file erasing
+            - BREAKING change - IFileWritterFactory signature changed
       2.1.0 - Extended ILogger API with method overloads
       2.0.0 - Provide full queue output to IWriter and exposed QueuFormater
     </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
+    <None Include="../README.md" Pack="true" PackagePath="." />
     <InternalsVisibleTo Include="Pipaslot.Logging.Tests" />
   </ItemGroup>
 

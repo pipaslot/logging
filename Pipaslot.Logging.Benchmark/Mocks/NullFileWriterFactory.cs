@@ -2,7 +2,7 @@
 {
     public class NullFileWriterFactory : IFileWriterFactory
     {
-        public ILogWriter Create(string fileName)
+        public ILogWriter Create(string name, RollingInterval rollingInterval)
         {
             return new NullLogWriter();
         }
