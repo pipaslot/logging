@@ -1,5 +1,7 @@
-# Logging
-Structured HTTP request logger. Supports multiple file writers for grouped by requests, priorities, service calls or threads. Contains adapter for notification sending.
+# .NET Core Logging Provider
+
+Logging provider enriching [Microsoft.Extensions.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Loggin) by aggregated HTTP request logging. 
+Supports multiple file writers for grouping by requests, priorities, service calls or processes. Contains adapter for notification sending.
 
 Register logger services by `AddRequestLogger`:
 ```
@@ -78,7 +80,7 @@ public class MyService
             // Log message as you are used to from standar logger
             _logger.LogInformation("Standard log message using string formatter '{0}'", "paramValue1");   
 
-            // Or provide enhanced message wit hdata dump as json
+            // Or provide enhanced message with data dump as json
             _logger.LogInformationWithData("Log message with serialized data", new { Key1 = "value1" ... });  
 
             return ...
