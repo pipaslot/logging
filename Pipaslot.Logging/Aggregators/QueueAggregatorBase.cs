@@ -83,7 +83,7 @@ namespace Pipaslot.Logging.Aggregators
         {
             var processed = ProcessQueueBeforeWrite(queue);
             if(processed.HasAnyWriteableLog()){
-                Writer.WriteLog(queue);
+                Writer.WriteLog(processed);
             }
         }
         
@@ -97,10 +97,7 @@ namespace Pipaslot.Logging.Aggregators
             return true;
         }
 
-        protected virtual Queue ProcessQueueBeforeWrite(Queue queue)
-        {
-            return queue;
-        }
+        protected abstract Queue ProcessQueueBeforeWrite(Queue queue);
 
         private static RecordType GetLogType<TState>(PipaslotLoggerOptions options)
         {

@@ -45,5 +45,9 @@ namespace Pipaslot.Logging.Aggregators
             var lowercase = categoryName.ToLower() ?? "";
             return _classes.Any(c => lowercase.StartsWith(c));
         }
+        protected override Queue ProcessQueueBeforeWrite(Queue queue)
+        {
+            return queue;
+        }
     }
 }

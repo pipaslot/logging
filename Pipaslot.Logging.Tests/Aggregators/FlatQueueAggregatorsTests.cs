@@ -47,7 +47,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 logger.LogDebug("message");
                 logger.LogTrace("message");
             }
-            writerMock.VerifyWriteLogIsCalledXTimesWithLogCountEqualTo(expected, 1);
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(expected);
         }
 
         [Test]

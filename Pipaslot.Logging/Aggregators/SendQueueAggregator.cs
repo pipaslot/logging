@@ -18,12 +18,11 @@ namespace Pipaslot.Logging.Aggregators
         protected override ILogWriter Writer { get; }
 
        protected override Queue ProcessQueueBeforeWrite(Queue queue)
-        {
-            // Filter all records with severity lower than minimal
-            var logs = queue.Logs.Where(log =>
-                log.Type != RecordType.Record // Keep all scope records
-                || (log.Type == RecordType.Record && log.Severity != LogLevel.None && _minimalLogLevel <= log.Severity));
-            return queue.CloneWith(logs);
+       {
+           return queue.Logs.Any(log =>
+               log.Type == RecordType.Record && _minimalLogLevel <= log.Severity && log.Severity != LogLevel.None)
+               ? queue
+               : queue.CloneEmpty();
         }
     }
 }

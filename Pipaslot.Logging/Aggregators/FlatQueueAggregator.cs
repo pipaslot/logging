@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Queues;
 
@@ -19,14 +21,29 @@ namespace Pipaslot.Logging.Aggregators
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
+        protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
-            return severity != LogLevel.None && _logLevel <= severity;
-        }
-
-        protected override bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue)
-        {
-            return severity != LogLevel.None && _logLevel <= severity;
+            var records = new List<Record>(queue.Logs.Count);
+            int? endDepth = null;
+            foreach (var log in queue.Logs)
+            {
+                if (log.Type == RecordType.Record)
+                {
+                    if (_logLevel <= log.Severity)
+                    {
+                        records.Add(log);
+                        endDepth = log.Depth;
+                    }
+                }
+                else
+                {
+                    if (endDepth != null && log.Depth >= endDepth.Value)
+                    {
+                        records.Add(log);
+                    }
+                }
+            }
+            return queue.CloneWith(records);
         }
 
     }
