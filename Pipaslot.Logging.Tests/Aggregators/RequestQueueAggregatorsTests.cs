@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.Tests.Aggregators.Abstraction;
@@ -12,39 +13,58 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void SingleLogFromCli_Ignore()
         {
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteLog(LogLevel.Critical, Constants.CliTraceIdentifierPrefix + "trace");
-            }
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = null
+            };
+            var logger = CreateLogger(writerMock.Object, httpContextAccessor);
+            logger.LogCritical("message");
 
             writerMock.VerifyWriteLogIsNotCalled();
         }
 
-
         [Test]
         public void CLILogsCombinedWithRequest_IgnoreCLI()
         {
-            var requestId = "trace";
-            var cliId = Constants.CliTraceIdentifierPrefix + "trace";
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteIncreaseMethod(cliId);
-                queue.WriteLog(LogLevel.Critical, cliId);
+            var httpContextAccessor = new HttpContextAccessor
+            {
+                HttpContext = null
+            };
+            var logger = CreateLogger(writerMock.Object, httpContextAccessor);
+            var requestContext = new DefaultHttpContext();
 
-                queue.WriteIncreaseScope(requestId);
-                queue.WriteLog(LogLevel.Critical, requestId);
-                queue.WriteDecreaseScope();
-
-                queue.WriteIncreaseScope(cliId);
-                queue.WriteLog(LogLevel.Critical, cliId);
+            //CLI 1
+            using (logger.BeginMethod())
+            {
+                logger.LogCritical("message");
+                //Request 1
+                httpContextAccessor.HttpContext = requestContext;
+                using (logger.BeginMethod())
+                {
+                    logger.LogCritical("message");
+                    // Cli 2
+                    httpContextAccessor.HttpContext = null;
+                    using (logger.BeginMethod())
+                    {
+                        logger.LogCritical("message");
+                    }
+                    
+                    //Back to Request 1
+                    httpContextAccessor.HttpContext = requestContext;
+                }
+                
+                // Back to Cli 1
+                httpContextAccessor.HttpContext = null;
             }
 
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }
 
-        private RequestQueueAggregator CreateQueue(ILogWriter writer)
+        private PipaslotLogger CreateLogger(ILogWriter writer, IHttpContextAccessor httpContextAccessor)
         {
-            var optionsMock = new PipaslotLoggerOptionsMock();
-            return new RequestQueueAggregator(writer, optionsMock.Object);
+            return TestLoggerFactory.CreateLogger(IQueueAggregatorExtensions.Category, httpContextAccessor, 
+                (o) => new RequestQueueAggregator(writer, o));
         }
     }
 }

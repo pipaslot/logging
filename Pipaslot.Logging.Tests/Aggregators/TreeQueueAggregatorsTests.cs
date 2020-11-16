@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.Tests.Aggregators.Abstraction;
@@ -8,84 +9,94 @@ namespace Pipaslot.Logging.Tests.Aggregators
 {
     internal class TreeQueueAggregatorsTests
     {
-        private const string FirstCategory = "SecondCategory";
+        private const string FirstCategory = "FirstCategory";
         private const string SecondCategory = "SecondCategory";
-        private const string NestedCategory = "IgnoredCategory";
+        private const string IgnoredCategory = "IgnoredCategory";
 
         [TestCase(true, 18)]
         [TestCase(false, 8)]
-        public void WriteNestedNotSPecifiedCategory(bool addNested, int expectedCount)
+        public void WriteNestedNotSpecifiedCategory(bool addNested, int expectedCount)
         {
-            var trace = "trace";
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteIncreaseMethod(trace, FirstCategory);
-                queue.WriteLog(LogLevel.Critical, trace, FirstCategory);
+            var (firstCategoryLogger, secondCategoryLogger, ignoredCategoryLogger) = CreateLogger(writerMock.Object, FirstCategory, SecondCategory, IgnoredCategory);
 
-                if (addNested){
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
-                    queue.WriteIncreaseScope(trace, NestedCategory);
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
-                    queue.WriteDecreaseScope(trace, NestedCategory);
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
+            using (firstCategoryLogger.BeginMethod())
+            {
+                firstCategoryLogger.LogCritical("message");
+                if (addNested)
+                {
+                    ignoredCategoryLogger.LogCritical("message");
+                    using (ignoredCategoryLogger.BeginScope(null))
+                    {
+                        ignoredCategoryLogger.LogCritical("message");
+                    }
+                    ignoredCategoryLogger.LogCritical("message");
                 }
 
-                queue.WriteLog(LogLevel.Critical, trace, SecondCategory);
-                queue.WriteIncreaseScope(trace, SecondCategory);
-                queue.WriteLog(LogLevel.Critical, trace, SecondCategory);
-                queue.WriteDecreaseScope(trace, SecondCategory);
-                queue.WriteLog(LogLevel.Critical, trace, SecondCategory);
-
-                if (addNested){
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
-                    queue.WriteIncreaseScope(trace, NestedCategory);
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
-                    queue.WriteDecreaseScope(trace, NestedCategory);
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
+                secondCategoryLogger.LogCritical("message");
+                using (secondCategoryLogger.BeginScope(null))
+                {
+                    secondCategoryLogger.LogCritical("message");
                 }
+                secondCategoryLogger.LogCritical("message");
 
-                queue.WriteLog(LogLevel.Critical, trace, FirstCategory);
-                queue.WriteDecreaseScope(trace, FirstCategory);
+                if (addNested)
+                {
+                    ignoredCategoryLogger.LogCritical("message");
+                    using (ignoredCategoryLogger.BeginScope(null))
+                    {
+                        ignoredCategoryLogger.LogCritical("message");
+                    }
+                    ignoredCategoryLogger.LogCritical("message");
+                }
+                firstCategoryLogger.LogCritical("message");
             }
 
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(expectedCount);
         }
 
-        [TestCase(true, 6)]
-        [TestCase(false, 6)]
+        [TestCase(true, 8)]
+        [TestCase(false, 8)]
         public void IgnoreWrappingNotSpecifiedCategory(bool addWrapping, int expectedCount)
         {
-            var trace = "trace";
+
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                if (addWrapping){
-                    queue.WriteIncreaseScope(trace, NestedCategory);
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
-                }
+            var (firstCategoryLogger, secondCategoryLogger, ignoredCategoryLogger) = CreateLogger(writerMock.Object, FirstCategory, SecondCategory, IgnoredCategory);
 
-                queue.WriteIncreaseMethod(trace, FirstCategory);
-                queue.WriteLog(LogLevel.Critical, trace, FirstCategory);
+            IDisposable wrappingScope = null;
 
-                queue.WriteIncreaseScope(trace, SecondCategory);
-                queue.WriteLog(LogLevel.Critical, trace, SecondCategory);
-                queue.WriteDecreaseScope(trace, SecondCategory);
+            if (addWrapping)
+            {
+                wrappingScope = ignoredCategoryLogger.BeginScope(null);
+                ignoredCategoryLogger.LogCritical("message");
+            }
 
-                queue.WriteLog(LogLevel.Critical, trace, FirstCategory);
-                queue.WriteDecreaseScope(trace, FirstCategory);
+            using (firstCategoryLogger.BeginMethod())//causes write
+            {
+                firstCategoryLogger.LogCritical("message");//causes write
 
-                if (addWrapping){
-                    queue.WriteLog(LogLevel.Critical, trace, NestedCategory);
-                    queue.WriteDecreaseScope(trace, NestedCategory);
-                }
+                secondCategoryLogger.LogCritical("message");//causes write
+                using (secondCategoryLogger.BeginScope(null))//causes write
+                {
+                    secondCategoryLogger.LogCritical("message");//causes write
+                }//causes write
+                secondCategoryLogger.LogCritical("message");//causes write
+
+                firstCategoryLogger.LogCritical("message");//causes write
+            }
+
+            if (addWrapping)
+            {
+                ignoredCategoryLogger.LogCritical("message");
+                wrappingScope?.Dispose();
             }
 
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(expectedCount);
         }
-
-        private TreeQueueAggregator CreateQueue(ILogWriter writer)
+        private (ILogger first, ILogger second, ILogger third) CreateLogger(ILogWriter writer, string category1, string category2, string ignoredCategory)
         {
-            var optionsMock = new PipaslotLoggerOptionsMock();
-            return new TreeQueueAggregator(writer, optionsMock.Object, FirstCategory, SecondCategory);
+            return TestLoggerFactory.CreateLogger(category1, category2, ignoredCategory,
+                (o) => new TreeQueueAggregator(writer, o, category1, category2));
         }
     }
 }

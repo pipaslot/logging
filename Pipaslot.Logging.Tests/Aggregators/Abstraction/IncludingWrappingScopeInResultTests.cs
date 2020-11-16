@@ -5,8 +5,7 @@ using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Aggregators.Abstraction
 {
-    internal abstract class IncludingWrappingScopeInResultTests<TQueue>
-        where TQueue : IQueueAggregator
+    internal abstract class IncludingWrappingScopeInResultTests
     {
         protected abstract string TraceId { get; }
 
@@ -14,35 +13,41 @@ namespace Pipaslot.Logging.Tests.Aggregators.Abstraction
         public void WriteScope_FullScope_DecreaseScopeCauseWritingWithWrappingScopeInResult()
         {
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteIncreaseScope(TraceId);
-                queue.WriteLog(LogLevel.Critical, TraceId);
-                queue.WriteDecreaseScope(TraceId);
-                writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+            using (var logger = CreateLogger(writerMock.Object))
+            {
+                using (logger.BeginScope(null))
+                {
+                    logger.Log(LogLevel.Critical, "message");
+                }
             }
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+
         }
 
         [Test]
         public void WriteMethod_FullMethod_DecreaseScopeCauseWritingWithWrappingMethodInResult()
         {
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteIncreaseMethod(TraceId);
-                queue.WriteLog(LogLevel.Critical, TraceId);
-                queue.WriteDecreaseScope(TraceId);
-                writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+            using (var logger = CreateLogger(writerMock.Object))
+            {
+                using (logger.BeginMethod())
+                {
+                    logger.Log(LogLevel.Critical, "message");
+                }
             }
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+
         }
 
         [Test]
         public void WriteScope_DecreaseScopeIsMissing_MessageIsWrittenDuringDisposingWithWrappingScopeInResult()
         {
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteIncreaseScope(TraceId);
-                queue.WriteLog(LogLevel.Critical, TraceId);
+            using (var logger = CreateLogger(writerMock.Object))
+            {
+                logger.BeginScope(null);
+                logger.Log(LogLevel.Critical, "message");
             }
-
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }
 
@@ -50,14 +55,14 @@ namespace Pipaslot.Logging.Tests.Aggregators.Abstraction
         public void WriteMethod_DecreaseScopeIsMissing_MessageIsWrittenDuringDisposingWithWrappingMethodInResult()
         {
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object)){
-                queue.WriteIncreaseMethod(TraceId);
-                queue.WriteLog(LogLevel.Critical, TraceId);
+            using (var logger = CreateLogger(writerMock.Object))
+            {
+                logger.BeginMethod();
+                logger.Log(LogLevel.Critical, "message");
             }
-
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }
 
-        protected abstract TQueue CreateQueue(ILogWriter writer);
+        protected abstract PipaslotLogger CreateLogger(ILogWriter writer);
     }
 }

@@ -5,6 +5,10 @@ namespace Pipaslot.Logging.Tests.Mocks
 {
     public class LogWritterMock : Mock<ILogWriter>
     {
+        public void VerifyWriteLogIsCalledXTimesWithLogCountEqualTo(int times, int count)
+        {
+            Verify(w => w.WriteLog(It.Is<Queue>(scope => scope.Logs.Count == count)), Times.Exactly(times));
+        }
         public void VerifyWriteLogIsCalledOnceWithLogCountEqualTo(int count)
         {
             Verify(w => w.WriteLog(It.Is<Queue>(scope => scope.Logs.Count == count)), Times.Once);

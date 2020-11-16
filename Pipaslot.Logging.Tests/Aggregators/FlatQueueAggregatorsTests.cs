@@ -14,26 +14,96 @@ namespace Pipaslot.Logging.Tests.Aggregators
         [TestCase(LogLevel.Information, 4)]
         [TestCase(LogLevel.Debug, 5)]
         [TestCase(LogLevel.Trace, 6)]
-        public void WriteLogOnly_LogOnlyEqualOrHigherPriorities(LogLevel minimalLevel, int expected)
+        public void WriteLogOnly_LogOnlyEqualOrHigherPriorities_WriteEverySingle(LogLevel minimalLevel, int expected)
         {
             var writerMock = new LogWritterMock();
-            using (var queue = CreateQueue(writerMock.Object, minimalLevel)){
-                queue.WriteLog(LogLevel.Critical);
-                queue.WriteLog(LogLevel.Error);
-                queue.WriteLog(LogLevel.Warning);
-                queue.WriteLog(LogLevel.Information);
-                queue.WriteLog(LogLevel.Debug);
-                queue.WriteLog(LogLevel.Trace);
-                queue.WriteLog(LogLevel.None);
-            }
+            var logger = CreateLogger(writerMock.Object, minimalLevel);
+            logger.LogCritical("message");
+            logger.LogError("message");
+            logger.LogWarning("message");
+            logger.LogInformation("message");
+            logger.LogDebug("message");
+            logger.LogTrace("message");
 
-            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(expected);
+            writerMock.VerifyWriteLogIsCalledXTimesWithLogCountEqualTo(expected, 1);
         }
 
-        private FlatQueueAggregator CreateQueue(ILogWriter writer, LogLevel level)
+        [TestCase(LogLevel.Critical, 1)]
+        [TestCase(LogLevel.Error, 2)]
+        [TestCase(LogLevel.Warning, 3)]
+        [TestCase(LogLevel.Information, 4)]
+        [TestCase(LogLevel.Debug, 5)]
+        [TestCase(LogLevel.Trace, 6)]
+        public void WriteLogsInsideScope_LogOnlyEqualOrHigherPriorities_IgnoreScopeAndWriteAllSeparatedly(LogLevel minimalLevel, int expected)
         {
-            var optionsMock = new PipaslotLoggerOptionsMock();
-            return new FlatQueueAggregator(writer, level, optionsMock.Object);
+            var writerMock = new LogWritterMock();
+            var logger = CreateLogger(writerMock.Object, minimalLevel);
+            using (logger.BeginMethod())
+            {
+                logger.LogCritical("message");
+                logger.LogError("message");
+                logger.LogWarning("message");
+                logger.LogInformation("message");
+                logger.LogDebug("message");
+                logger.LogTrace("message");
+            }
+            writerMock.VerifyWriteLogIsCalledXTimesWithLogCountEqualTo(expected, 1);
+        }
+
+        [Test]
+        public void WriteScope_FullScope_DecreaseScopeCauseWriting()
+        {
+            var writerMock = new LogWritterMock();
+            var logger = CreateLogger(writerMock.Object);
+
+            using (logger.BeginScope(null))
+            {
+                logger.LogCritical("message");
+            }
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(1);
+        }
+
+        [Test]
+        public void WriteMethod_FullMethod_DecreaseScopeCauseWriting()
+        {
+            var writerMock = new LogWritterMock();
+            var logger = CreateLogger(writerMock.Object);
+            using (logger.BeginMethod())
+            {
+                logger.LogCritical("message");
+            }
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(1);
+        }
+
+        [Test]
+        public void WriteScope_DecreaseScopeIsMissing_MessageIsWrittenDuringDisposing()
+        {
+            var writerMock = new LogWritterMock();
+            using (var logger = CreateLogger(writerMock.Object))
+            {
+                logger.BeginScope(null);
+                logger.LogCritical("message");
+            }
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(1);
+        }
+
+        [Test]
+        public void WriteMethod_DecreaseScopeIsMissing_MessageIsWrittenDuringDisposing()
+        {
+            var writerMock = new LogWritterMock();
+            using (var logger = CreateLogger(writerMock.Object))
+            {
+                logger.BeginMethod();
+                logger.LogCritical("message");
+            }
+
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(1);
+        }
+
+        private PipaslotLogger CreateLogger(ILogWriter writer, LogLevel level = LogLevel.Error)
+        {
+            return TestLoggerFactory.CreateLogger(IQueueAggregatorExtensions.Category,
+                (o) => new FlatQueueAggregator(writer, level, o));
         }
     }
 }

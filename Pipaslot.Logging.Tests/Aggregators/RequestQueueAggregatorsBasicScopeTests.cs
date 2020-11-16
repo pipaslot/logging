@@ -5,11 +5,9 @@ using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Aggregators
 {
-    internal class RequestQueueAggregatorsIncludingWrappingScopeInResultTests : IncludingWrappingScopeInResultTests
+    internal class RequestQueueAggregatorsBasicScopeTests : BasicScopeTests<RequestQueueAggregator>
     {
-        protected override string TraceId => IQueueAggregatorExtensions.TraceId;
-
-        protected override PipaslotLogger CreateLogger(ILogWriter writer)
+        protected override ILogger CreateLogger(ILogWriter writer)
         {
             return TestLoggerFactory.CreateLogger( IQueueAggregatorExtensions.Category,
                 (o) => new RequestQueueAggregator(writer, o));

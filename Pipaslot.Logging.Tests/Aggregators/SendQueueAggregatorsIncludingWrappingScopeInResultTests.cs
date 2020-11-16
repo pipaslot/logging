@@ -5,14 +5,14 @@ using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Aggregators
 {
-    internal class SendQueueAggregatorsIncludingWrappingScopeInResultTests : IncludingWrappingScopeInResultTests<SendQueueAggregator>
+    internal class SendQueueAggregatorsIncludingWrappingScopeInResultTests : IncludingWrappingScopeInResultTests
     {
         protected override string TraceId => IQueueAggregatorExtensions.TraceId;
 
-        protected override SendQueueAggregator CreateQueue(ILogWriter writer)
+        protected override PipaslotLogger CreateLogger(ILogWriter writer)
         {
-            var optionsMock = new PipaslotLoggerOptionsMock();
-            return new SendQueueAggregator(optionsMock.Object, LogLevel.Error, writer);
+            return TestLoggerFactory.CreateLogger( IQueueAggregatorExtensions.Category,
+                (o) => new SendQueueAggregator(o, LogLevel.Error, writer));
         }
     }
 }
