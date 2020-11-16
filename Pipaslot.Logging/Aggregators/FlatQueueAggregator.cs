@@ -13,14 +13,11 @@ namespace Pipaslot.Logging.Aggregators
     {
         private readonly LogLevel _logLevel;
 
-        public FlatQueueAggregator(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public FlatQueueAggregator(ILogWriter writer, LogLevel logLevel, IOptions<PipaslotLoggerOptions> options) : base(writer, options)
         {
-            Writer = writer;
             _logLevel = logLevel;
         }
-
-        protected override ILogWriter Writer { get; }
-
+        
         protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
             var records = new List<Record>(queue.Logs.Count);

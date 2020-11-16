@@ -9,13 +9,11 @@ namespace Pipaslot.Logging.Aggregators
     {
         private readonly LogLevel _minimalLogLevel;
 
-        public SendQueueAggregator(IOptions<PipaslotLoggerOptions> options, LogLevel minimalLogLevel, ILogWriter writer) : base(options)
+        public SendQueueAggregator(IOptions<PipaslotLoggerOptions> options, LogLevel minimalLogLevel, ILogWriter writer) : base(writer, options)
         {
             _minimalLogLevel = minimalLogLevel;
-            Writer = writer;
         }
 
-        protected override ILogWriter Writer { get; }
 
        protected override Queue ProcessQueueBeforeWrite(Queue queue)
        {

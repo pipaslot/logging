@@ -9,13 +9,10 @@ namespace Pipaslot.Logging.Aggregators
     /// </summary>
     internal class RequestQueueAggregator : QueueAggregatorBase
     {
-        public RequestQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public RequestQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(writer, options)
         {
-            Writer = writer;
         }
 
-        protected override ILogWriter Writer { get; }
-        
         protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
             return queue.TraceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix)

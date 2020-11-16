@@ -28,13 +28,10 @@ namespace Pipaslot.Logging.Aggregators
             }
         }
 
-        public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(options)
+        public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(writer, options)
         {
-            Writer = writer;
         }
-
-        protected override ILogWriter Writer { get; }
-
+        
         protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
         {
             return Contains(categoryName);

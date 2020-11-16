@@ -11,15 +11,15 @@ namespace Pipaslot.Logging.Aggregators
     internal abstract class QueueAggregatorBase : IQueueAggregator
     {
         private readonly IOptions<PipaslotLoggerOptions> _options;
+        private ILogWriter _writer;
         protected readonly QueueCollection Queues = new QueueCollection();
 
-        protected QueueAggregatorBase(IOptions<PipaslotLoggerOptions> options)
+        protected QueueAggregatorBase(ILogWriter writer, IOptions<PipaslotLoggerOptions> options)
         {
             _options = options;
+            _writer = writer;
         }
-
-        protected abstract ILogWriter Writer { get; }
-
+        
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
             var canCreate = CanCreateNewLogScope(traceIdentifier, categoryName, severity);
@@ -83,7 +83,7 @@ namespace Pipaslot.Logging.Aggregators
         {
             var processed = ProcessQueueBeforeWrite(queue);
             if(processed.HasAnyWriteableLog()){
-                Writer.WriteLog(processed);
+                _writer.WriteLog(processed);
             }
         }
         
