@@ -33,7 +33,7 @@ namespace Pipaslot.Logging.Aggregators
             if (!CanAddIntoExistingLogScope(traceIdentifier, categoryName, severity, queue)) return;
 
             queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
-            if (queue.Logs.Count == 1)
+            if (queue.Count == 1)
             {
                 // Remove request history from memory 
                 Queues.Remove(traceIdentifier);
@@ -82,7 +82,7 @@ namespace Pipaslot.Logging.Aggregators
         private void WriteQueue(Queue queue)
         {
             var processed = ProcessQueueBeforeWrite(queue);
-            if(processed.HasAnyWriteableLog()){
+            if(processed.HasAnyRecord()){
                 _writer.WriteLog(processed);
             }
         }

@@ -17,7 +17,7 @@ namespace Pipaslot.Logging.Aggregators
 
        protected override Queue ProcessQueueBeforeWrite(Queue queue)
        {
-           return queue.Logs.Any(log =>
+           return queue.Any(log =>
                log.Type == RecordType.Record && _minimalLogLevel <= log.Severity && log.Severity != LogLevel.None)
                ? queue
                : queue.CloneEmpty();

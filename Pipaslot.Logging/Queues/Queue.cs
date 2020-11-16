@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace Pipaslot.Logging.Queues
     /// <summary>
     /// Set of log records collected together. Is read-only for consuming libraries
     /// </summary>
-    public class Queue
+    public class Queue : IReadOnlyCollection<Record>
     {
         private readonly List<Record> _logs = new List<Record>();
 
@@ -35,18 +36,22 @@ namespace Pipaslot.Logging.Queues
         /// <summary>
         /// Collected log messages
         /// </summary>
+        [Obsolete("Use direct enumerator on this object")]
         public IReadOnlyCollection<Record> Logs => _logs;
 
-        internal int Depth => Logs.LastOrDefault()?.Depth ?? 0;
+        internal int Depth => _logs.LastOrDefault()?.Depth ?? 0;
 
         internal void Add(Record record)
         {
             _logs.Add(record);
         }
-
-        internal bool HasAnyWriteableLog()
+        /// <summary>
+        /// Returns true if at least one message (not a scope) is written
+        /// </summary>
+        /// <returns></returns>
+        internal bool HasAnyRecord()
         {
-            return Logs.Any(l => l.Type == RecordType.Record);
+            return _logs.Any(l => l.Type == RecordType.Record);
         }
 
         internal Queue CloneWith(IEnumerable<Record> logs)
@@ -57,5 +62,19 @@ namespace Pipaslot.Logging.Queues
         {
             return new Queue(TraceIdentifier, Time, new Record[0]);
         }
+
+        public IEnumerator<Record> GetEnumerator()
+        {
+            return _logs.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        /// <summary>
+        /// Amount of records written into queue
+        /// </summary>
+        public int Count => _logs.Count;
     }
 }

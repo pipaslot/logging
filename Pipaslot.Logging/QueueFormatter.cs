@@ -23,7 +23,7 @@ namespace Pipaslot.Logging
 
             var previousDepth = 0;
             var rows = 0;
-            foreach (var log in queue.Logs){
+            foreach (var log in queue){
                 if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin){
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;

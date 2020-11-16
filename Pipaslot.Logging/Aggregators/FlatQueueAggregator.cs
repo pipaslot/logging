@@ -20,9 +20,9 @@ namespace Pipaslot.Logging.Aggregators
         
         protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
-            var records = new List<Record>(queue.Logs.Count);
+            var records = new List<Record>(queue.Count);
             int? endDepth = null;
-            foreach (var log in queue.Logs)
+            foreach (var log in queue)
             {
                 if (log.Type == RecordType.Record)
                 {
