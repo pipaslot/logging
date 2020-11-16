@@ -33,7 +33,7 @@ namespace Pipaslot.Logging.Aggregators
             if (!CanAddIntoExistingLogScope(traceIdentifier, categoryName, severity, queue)) return;
 
             queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
-            if (queue.Logs.Count == 1 && CanWriteRootLogWithoutScope())
+            if (queue.Logs.Count == 1)
             {
                 // Remove request history from memory 
                 Queues.Remove(traceIdentifier);
@@ -94,11 +94,6 @@ namespace Pipaslot.Logging.Aggregators
         protected virtual Queue ProcessQueueBeforeWrite(Queue queue)
         {
             return queue;
-        }
-        
-        protected virtual bool CanWriteRootLogWithoutScope()
-        {
-            return false;
         }
 
         private static RecordType GetLogType<TState>(PipaslotLoggerOptions options)

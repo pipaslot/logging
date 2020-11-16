@@ -35,10 +35,5 @@ namespace Pipaslot.Logging.Aggregators
                 || (log.Type == RecordType.Record && log.Severity != LogLevel.None && _minimalLogLevel <= log.Severity));
             return queue.CloneWith(logs);
         }
-
-        protected override bool CanWriteRootLogWithoutScope()
-        {
-            return true;
-        }
     }
 }
