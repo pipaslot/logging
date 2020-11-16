@@ -20,7 +20,7 @@ namespace Pipaslot.Logging.Tests.Aggregators.Abstraction
                     logger.Log(LogLevel.Critical, "message");
                 }
             }
-            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
 
         }
 
@@ -35,7 +35,7 @@ namespace Pipaslot.Logging.Tests.Aggregators.Abstraction
                     logger.Log(LogLevel.Critical, "message");
                 }
             }
-            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
 
         }
 

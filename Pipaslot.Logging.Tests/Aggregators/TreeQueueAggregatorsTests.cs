@@ -13,8 +13,8 @@ namespace Pipaslot.Logging.Tests.Aggregators
         private const string SecondCategory = "SecondCategory";
         private const string IgnoredCategory = "IgnoredCategory";
 
-        [TestCase(true, 18)]
-        [TestCase(false, 8)]
+        [TestCase(true, 19)]
+        [TestCase(false, 9)]
         public void WriteNestedNotSpecifiedCategory(bool addNested, int expectedCount)
         {
             var writerMock = new LogWritterMock();
@@ -55,8 +55,8 @@ namespace Pipaslot.Logging.Tests.Aggregators
             writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(expectedCount);
         }
 
-        [TestCase(true, 8)]
-        [TestCase(false, 8)]
+        [TestCase(true, 9)]
+        [TestCase(false, 9)]
         public void IgnoreWrappingNotSpecifiedCategory(bool addWrapping, int expectedCount)
         {
 

@@ -59,16 +59,13 @@ namespace Pipaslot.Logging.Aggregators
             else if (logType == RecordType.ScopeEndIgnored){
                 depth--;
             }
+            queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
 
             // LogRecord or finish
             if (depth <= 0){
                 // Remove request history from memory 
                 Queues.Remove(traceIdentifier);
                 WriteQueue(queue);
-            }
-            else{
-                //Write only increasing scopes and ignore decreasing scopes
-                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
             }
         }
 

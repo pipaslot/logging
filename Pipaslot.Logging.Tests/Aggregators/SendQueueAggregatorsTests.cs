@@ -73,7 +73,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 }
                 logger.LogInformation("message");
             }
-            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(6);
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(7);
 
         }
 

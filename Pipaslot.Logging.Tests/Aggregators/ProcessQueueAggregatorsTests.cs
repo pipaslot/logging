@@ -56,7 +56,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 httpContextAccessor.HttpContext = requestContext;
             }
 
-            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+            writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
 
         private PipaslotLogger CreateLogger(ILogWriter writer, IHttpContextAccessor httpContextAccessor)
