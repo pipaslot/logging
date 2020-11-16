@@ -17,17 +17,7 @@ namespace Pipaslot.Logging.Aggregators
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
-        {
-            return true;
-        }
-
-        protected override bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue)
-        {
-            return true;
-        }
-
-        protected override Queue ProcessQueueBeforeWrite(Queue queue)
+       protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
             // Filter all records with severity lower than minimal
             var logs = queue.Logs.Where(log =>

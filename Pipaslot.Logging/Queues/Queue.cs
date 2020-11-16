@@ -53,5 +53,9 @@ namespace Pipaslot.Logging.Queues
         {
             return new Queue(TraceIdentifier, Time, logs);
         }
+        internal Queue CloneEmpty()
+        {
+            return new Queue(TraceIdentifier, Time, new Record[0]);
+        }
     }
 }

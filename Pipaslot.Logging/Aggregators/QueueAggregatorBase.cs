@@ -87,9 +87,15 @@ namespace Pipaslot.Logging.Aggregators
             }
         }
         
-        protected abstract bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity);
+        protected virtual bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
+        {
+            return true;
+        }
 
-        protected abstract bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue);
+        protected virtual bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue)
+        {
+            return true;
+        }
 
         protected virtual Queue ProcessQueueBeforeWrite(Queue queue)
         {

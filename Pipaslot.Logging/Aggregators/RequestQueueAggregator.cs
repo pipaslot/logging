@@ -15,12 +15,7 @@ namespace Pipaslot.Logging.Aggregators
         }
 
         protected override ILogWriter Writer { get; }
-
-        protected override bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue)
-        {
-            return true;
-        }
-
+        
         protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
         {
             return !traceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix);
