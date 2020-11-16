@@ -31,20 +31,29 @@ namespace Pipaslot.Logging.Aggregators
         public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(writer, options)
         {
         }
-        
-        protected override bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity)
-        {
-            return Contains(categoryName);
-        }
 
-        private bool Contains(string categoryName)
-        {
-            var lowercase = categoryName.ToLower() ?? "";
-            return _classes.Any(c => lowercase.StartsWith(c));
-        }
         protected override Queue ProcessQueueBeforeWrite(Queue queue)
         {
-            return queue;
+            var records = new List<Record>(queue.Logs.Count);
+            int? endDepth = null;
+            foreach (var log in queue.Logs)
+            {
+                var lowercase = log.CategoryName.ToLower() ?? "";
+                var isIncluded = _classes.Any(c => lowercase.StartsWith(c));
+                if (endDepth == null && isIncluded)
+                {
+                    endDepth = log.Depth;
+                }
+                if (endDepth != null && log.Depth >= endDepth.Value)
+                {
+                    records.Add(log);
+                }
+                else if (endDepth != null && log.Depth == endDepth.Value - 1 && log.Type == RecordType.ScopeEndIgnored)
+                {
+                    records.Add(log);
+                }
+            }
+            return queue.CloneWith(records);
         }
     }
 }

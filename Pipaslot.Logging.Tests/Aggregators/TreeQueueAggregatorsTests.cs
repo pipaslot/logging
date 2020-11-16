@@ -79,7 +79,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 using (secondCategoryLogger.BeginScope(null))//causes write
                 {
                     secondCategoryLogger.LogCritical("message");//causes write
-                }//causes write
+                }
                 secondCategoryLogger.LogCritical("message");//causes write
 
                 firstCategoryLogger.LogCritical("message");//causes write
