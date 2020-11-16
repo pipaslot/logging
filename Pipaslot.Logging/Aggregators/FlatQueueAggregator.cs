@@ -24,7 +24,7 @@ namespace Pipaslot.Logging.Aggregators
             return severity != LogLevel.None && _logLevel <= severity;
         }
 
-        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue)
+        protected override bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue)
         {
             return severity != LogLevel.None && _logLevel <= severity;
         }
@@ -33,6 +33,6 @@ namespace Pipaslot.Logging.Aggregators
         {
             return true;
         }
-        
+
     }
 }

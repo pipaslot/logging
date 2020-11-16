@@ -22,7 +22,8 @@ namespace Pipaslot.Logging.Aggregators
             var items = namespaceOrClass
                 .Select(i => i.ToLower())
                 .Distinct();
-            foreach (var item in items){
+            foreach (var item in items)
+            {
                 _classes.Add(item);
             }
         }
@@ -34,7 +35,7 @@ namespace Pipaslot.Logging.Aggregators
 
         protected override ILogWriter Writer { get; }
 
-        protected override bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue)
+        protected override bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue)
         {
             return true;
         }

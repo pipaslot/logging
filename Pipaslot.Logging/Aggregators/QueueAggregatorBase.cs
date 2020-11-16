@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
@@ -32,7 +30,7 @@ namespace Pipaslot.Logging.Aggregators
             }
 
             // Check if can be written for current scope and method
-            if (!CanAddIntoExistingLogScope(categoryName, severity, queue)) return;
+            if (!CanAddIntoExistingLogScope(traceIdentifier, categoryName, severity, queue)) return;
 
             queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
             if (queue.Logs.Count == 1 && CanWriteRootLogWithoutScope())
@@ -91,11 +89,10 @@ namespace Pipaslot.Logging.Aggregators
                 Writer.WriteLog(queue);
             }
         }
-
-
+        
         protected abstract bool CanCreateNewLogScope(string traceIdentifier, string categoryName, LogLevel severity);
 
-        protected abstract bool CanAddIntoExistingLogScope(string categoryName, LogLevel severity, Queue queue);
+        protected abstract bool CanAddIntoExistingLogScope(string traceIdentifier, string categoryName, LogLevel severity, Queue queue);
 
         protected virtual Queue ProcessQueueBeforeWrite(Queue queue)
         {
@@ -107,7 +104,7 @@ namespace Pipaslot.Logging.Aggregators
             return false;
         }
 
-        internal static RecordType GetLogType<TState>(PipaslotLoggerOptions options)
+        private static RecordType GetLogType<TState>(PipaslotLoggerOptions options)
         {
             var stateType = typeof(TState);
             if (stateType == typeof(IncreaseScopeState)){
