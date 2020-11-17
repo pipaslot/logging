@@ -45,11 +45,17 @@ namespace Pipaslot.Logging.Aggregators
             var logType = GetLogType<TState>(_options.Value);
             if (logType == RecordType.ScopeBegin || logType == RecordType.ScopeBeginIgnored){
                 depth++;
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
             }
             else if (logType == RecordType.ScopeEndIgnored){
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
                 depth--;
             }
-            queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
+            else
+            {
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
+            }
+            
 
             // LogRecord or finish
             if (depth <= 0){

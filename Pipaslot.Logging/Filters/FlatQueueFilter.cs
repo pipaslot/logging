@@ -15,7 +15,7 @@ namespace Pipaslot.Logging.Filters
         {
             _logLevel = logLevel;
         }
-        
+
         public Queue Filter(Queue queue)
         {
             var records = new List<Record>(queue.Count);
@@ -27,15 +27,19 @@ namespace Pipaslot.Logging.Filters
                     if (_logLevel <= log.Severity)
                     {
                         records.Add(log);
-                        endDepth = log.Depth;
+                        if(endDepth == null){
+                            endDepth = log.Depth;
+                        }
                     }
                 }
-                else
+                else if (endDepth != null && log.Depth == endDepth.Value && log.Type == RecordType.ScopeEndIgnored)
                 {
-                    if (endDepth != null && log.Depth >= endDepth.Value)
-                    {
-                        records.Add(log);
-                    }
+                    //ignore last scope from the same depth
+                }
+                else if (endDepth != null && log.Depth > endDepth.Value)
+                {
+                    // Involve nested scopes
+                    records.Add(log);
                 }
             }
             return queue.CloneWith(records);

@@ -47,9 +47,9 @@ namespace Pipaslot.Logging.Tests.Filters
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
                 RecordFactory.Create(2,RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(2,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(1,RecordType.ScopeEndIgnored),
+                RecordFactory.Create(2,RecordType.ScopeEndIgnored),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(0,RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1,RecordType.ScopeEndIgnored),
             };
 
             var filter = new SendQueueFilter(LogLevel.Error);
@@ -67,9 +67,9 @@ namespace Pipaslot.Logging.Tests.Filters
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
                 RecordFactory.Create(2,RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(2,RecordType.Record,LogLevel.Error),
-                RecordFactory.Create(1,RecordType.ScopeEndIgnored),
+                RecordFactory.Create(2,RecordType.ScopeEndIgnored),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(0,RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1,RecordType.ScopeEndIgnored),
             };
 
             var filter = new SendQueueFilter(LogLevel.Error);

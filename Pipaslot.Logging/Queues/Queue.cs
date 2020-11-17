@@ -39,7 +39,25 @@ namespace Pipaslot.Logging.Queues
         [Obsolete("Use direct enumerator on this object")]
         public IReadOnlyCollection<Record> Logs => _logs;
 
-        internal int Depth => _logs.LastOrDefault()?.Depth ?? 0;
+        /// <summary>
+        /// Current log level depth
+        /// </summary>
+        internal int Depth
+        {
+            get
+            {
+                var last = _logs.LastOrDefault();
+                if (last != null)
+                {
+                    if (last.Type == RecordType.ScopeEndIgnored)
+                    {
+                        return last.Depth - 1;
+                    }
+                    return last.Depth;
+                }
+                return 0;
+            }
+        }
 
         internal void Add(Record record)
         {

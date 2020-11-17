@@ -41,10 +41,6 @@ namespace Pipaslot.Logging.Queues
                 {
                     records.Add(log);
                 }
-                else if (endDepth != null && log.Depth == endDepth.Value - 1 && log.Type == RecordType.ScopeEndIgnored)
-                {
-                    records.Add(log);
-                }
             }
             return queue.CloneWith(records);
         }

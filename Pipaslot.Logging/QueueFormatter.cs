@@ -92,16 +92,16 @@ namespace Pipaslot.Logging
         protected virtual string FormatDepth(int previousDepth, int currentDepth)
         {
             var sb = new StringBuilder();
-            for (var i = 2; i < currentDepth; i++){
+            for (var i = 3; i < currentDepth; i++){
                 sb.Append("| ");
             }
 
             if (previousDepth < currentDepth){
                 if (currentDepth > 1) sb.Append("+ ");
             }
-            else if (previousDepth > currentDepth)
-                sb.Append("/ ");
-            else if (currentDepth > 1) sb.Append("| ");
+            else if (currentDepth > 1) {
+                sb.Append("| ");
+            }
 
             return sb.ToString();
         }

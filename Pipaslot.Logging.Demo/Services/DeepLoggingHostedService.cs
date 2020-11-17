@@ -17,11 +17,20 @@ namespace Pipaslot.Logging.Demo.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using(_logger.BeginMethod(new {FakeData = "FakeValue"}))
+            using (_logger.BeginMethod(new {FakeData = "FakeValue"}))
             {
-                _logger.LogInformation(nameof(DeepLoggingHostedService)+" - Hosted service started");
+                _logger.LogInformation(nameof(DeepLoggingHostedService) + " - Hosted service started");
+                NestedMethod();
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-                _logger.LogError(nameof(DeepLoggingHostedService)+" - Some error happened on hosted service");
+                _logger.LogError(nameof(DeepLoggingHostedService) + " - Some error happened on hosted service");
+            }
+        }
+
+        private void NestedMethod()
+        {
+            using (_logger.BeginMethod())
+            {
+                _logger.LogInformation(nameof(DeepLoggingHostedService) + " - Nested method");
             }
         }
 

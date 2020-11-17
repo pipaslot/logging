@@ -50,7 +50,7 @@ namespace Pipaslot.Logging.Tests.Filters
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Debug),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Trace),
-                RecordFactory.Create(0,RecordType.ScopeEndIgnored,0),
+                RecordFactory.Create(1,RecordType.ScopeEndIgnored,0),
             };
 
             var filter = new FlatQueueFilter(minimalLevel);
@@ -76,13 +76,13 @@ namespace Pipaslot.Logging.Tests.Filters
                 RecordFactory.Create(3,"yes",RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(3,"no ",RecordType.Record,LogLevel.Information),
                 RecordFactory.Create(3,"yes",RecordType.Record,LogLevel.Error),
-                RecordFactory.Create(2,"yes",RecordType.ScopeEndIgnored),
+                RecordFactory.Create(3,"yes",RecordType.ScopeEndIgnored),
 
                 RecordFactory.Create(2,"yes",RecordType.Record,LogLevel.Error),
-                RecordFactory.Create(1,"no ",RecordType.ScopeEndIgnored),
+                RecordFactory.Create(2,"no ",RecordType.ScopeEndIgnored),
 
                 RecordFactory.Create(1,"no ",RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(0,"no ",RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1,"no ",RecordType.ScopeEndIgnored),
 
                 RecordFactory.Create(0,"no ",RecordType.Record,LogLevel.Information),
             };
