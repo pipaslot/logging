@@ -1,23 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Filters;
 
-namespace Pipaslot.Logging.Aggregators
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     ///     Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    internal class TreeQueueAggregator : QueueAggregatorBase
+    internal class TreeQueueFilter : IQueueFilter
     {
         /// <summary>
         ///     Definition of classes and their methods to be tracked
         /// </summary>
         private readonly HashSet<string> _classes = new HashSet<string>();
 
-        public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options, params string[] namespaceOrClass)
-            : this(writer, options)
+        public TreeQueueFilter(params string[] namespaceOrClass)
         {
             var items = namespaceOrClass
                 .Select(i => i.ToLower())
@@ -27,12 +24,8 @@ namespace Pipaslot.Logging.Aggregators
                 _classes.Add(item);
             }
         }
-
-        public TreeQueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options) : base(writer, options)
-        {
-        }
-
-        protected override Queue ProcessQueueBeforeWrite(Queue queue)
+        
+        public Queue Filter(Queue queue)
         {
             var records = new List<Record>(queue.Count);
             int? endDepth = null;

@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Aggregators;
+using Pipaslot.Logging.Filters;
+using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging
 {
@@ -24,7 +26,7 @@ namespace Pipaslot.Logging
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new RequestQueueAggregator(writer, options);
+                return new QueueAggregator(writer, options, new RequestQueueFilter());
             });
         }
 
@@ -39,7 +41,7 @@ namespace Pipaslot.Logging
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new FlatQueueAggregator(writer, logLevel, options);
+                return new QueueAggregator(writer, options, new FlatQueueFilter(logLevel));
             });
         }
 
@@ -63,7 +65,7 @@ namespace Pipaslot.Logging
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new TreeQueueAggregator(writer, options, namespaceOrClass);
+                return new QueueAggregator(writer, options, new TreeQueueFilter(namespaceOrClass));
             });
         }
 
@@ -80,7 +82,7 @@ namespace Pipaslot.Logging
             {
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var writer = s.GetService<LogWriterToLogSenderAdapter<TLogSender>>();
-                return new SendQueueAggregator(options, logLevel, writer);
+                return new QueueAggregator(writer, options, new SendQueueFilter(logLevel));
             });
         }
 
@@ -95,7 +97,7 @@ namespace Pipaslot.Logging
                 var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new ProcessQueueAggregator(writer, options);
+                return new QueueAggregator(writer, options, new ProcessQueueFilter());
             });
         }
 

@@ -16,7 +16,7 @@ namespace Pipaslot.Logging.Queues
         {
             TraceIdentifier = traceIdentifier;
         }
-        private Queue(string traceIdentifier, DateTimeOffset time, IEnumerable<Record> logs)
+        internal Queue(string traceIdentifier, DateTimeOffset time, IEnumerable<Record> logs)
         {
             TraceIdentifier = traceIdentifier;
             Time = time;

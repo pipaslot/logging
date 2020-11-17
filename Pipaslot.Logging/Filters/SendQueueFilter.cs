@@ -1,21 +1,20 @@
 ﻿using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Queues;
 
-namespace Pipaslot.Logging.Aggregators
+namespace Pipaslot.Logging.Filters
 {
-    internal class SendQueueAggregator : QueueAggregatorBase
+    internal class SendQueueFilter : IQueueFilter
     {
         private readonly LogLevel _minimalLogLevel;
 
-        public SendQueueAggregator(IOptions<PipaslotLoggerOptions> options, LogLevel minimalLogLevel, ILogWriter writer) : base(writer, options)
+        public SendQueueFilter( LogLevel minimalLogLevel)
         {
             _minimalLogLevel = minimalLogLevel;
         }
 
 
-       protected override Queue ProcessQueueBeforeWrite(Queue queue)
+        public Queue Filter(Queue queue)
        {
            return queue.Any(log =>
                log.Type == RecordType.Record && _minimalLogLevel <= log.Severity && log.Severity != LogLevel.None)

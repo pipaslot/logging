@@ -23,8 +23,24 @@ namespace Pipaslot.Logging.Queues
                 _queues.Remove(traceIdentifier);
             }
         }
+        public Queue GetOrCreateQueue(string traceIdentifier)
+        {
+            // Try read without locking to improve performance
+            // This approach is 2x faster in comparison to using concurrent dictionary
+            // ReSharper disable once InconsistentlySynchronizedField
+            if (_queues.TryGetValue(traceIdentifier, out var queue)) return queue;
+            lock (_queueLock)
+            {
+                if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
+                var request = new Queue(traceIdentifier);
+                _queues.Add(traceIdentifier, request);
+                return request;
+            }
+        }
+        
         /// <returns>Can be null if can not create a new queue</returns>
+        [Obsolete("Use different method overload")]
         public Queue? GetQueue(string traceIdentifier, bool canCreate)
         {
             // Try read without locking to improve performance
