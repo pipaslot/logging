@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Aggregators;
 
 namespace Pipaslot.Logging
@@ -10,21 +10,18 @@ namespace Pipaslot.Logging
     public class PipaslotLoggerProvider : ILoggerProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEnumerable<IQueueAggregator> _queues;
-
         private readonly ConcurrentDictionary<string, PipaslotLogger> _sessions = new ConcurrentDictionary<string, PipaslotLogger>();
+        private readonly QueueAggregator _aggregator;
 
-        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<IQueueAggregator> queues)
+        public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<Pipe> pipes, IOptions<PipaslotLoggerOptions> options)
         {
             _httpContextAccessor = httpContextAccessor;
-            _queues = queues;
+            _aggregator = new QueueAggregator(pipes, options);
         }
 
         public void Dispose()
         {
-            foreach (var logger in _sessions.Values){
-                logger.Dispose();
-            }
+            _aggregator.Dispose();
         }
 
         /// <summary>
@@ -32,7 +29,7 @@ namespace Pipaslot.Logging
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
-            return _sessions.GetOrAdd(categoryName, name => new PipaslotLogger(_queues, _httpContextAccessor, categoryName));
+            return _sessions.GetOrAdd(categoryName, name => new PipaslotLogger( _httpContextAccessor, _aggregator, categoryName));
         }
     }
 }

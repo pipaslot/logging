@@ -13,6 +13,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
         #region Setup
 
         private LogWritterMock _writerMock;
+        private QueueAggregator _aggregator;
 
         [SetUp]
         public void Setup()
@@ -27,11 +28,12 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 HttpContext = new DefaultHttpContext()
             };
             var options = new PipaslotLoggerOptionsMock();
-            var queues = new IQueueAggregator[]
+            var pipes = new[]
             {
-                new QueueAggregator(_writerMock.Object, options.Object, new NullFilter()), 
+                new Pipe(_writerMock.Object, new NullFilter()),
             };
-            return new PipaslotLogger(queues, httpContextAccessor, "category");
+            _aggregator = new QueueAggregator(pipes, options.Object);
+            return new PipaslotLogger(httpContextAccessor, _aggregator, "category");
         }
 
         private class HttpContextAccessor : IHttpContextAccessor
@@ -48,9 +50,9 @@ namespace Pipaslot.Logging.Tests.Aggregators
         }
 
         #endregion
-        
+
         #region Scope Only - ignored
-        
+
         [Test]
         public void ScopeOnly_OnlyIncreaseScopeIsLogged_IgnoreScope()
         {
@@ -71,152 +73,138 @@ namespace Pipaslot.Logging.Tests.Aggregators
         #endregion
 
         #region ScopeEnd with record - Cause write
-        
+
         [Test]
         public void ScopeEnd_FullScope_DecreaseScopeCauseWritingWithWrappingScopeInResult()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginScope(null))
             {
-                using (logger.BeginScope(null))
-                {
-                    logger.Log(LogLevel.Critical, "message");
-                }
+                logger.Log(LogLevel.Critical, "message");
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
 
         [Test]
         public void ScopeEnd_FullMethod_DecreaseScopeCauseWritingWithWrappingMethodInResult()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginMethod())
             {
-                using (logger.BeginMethod())
-                {
-                    logger.Log(LogLevel.Critical, "message");
-                }
+                logger.Log(LogLevel.Critical, "message");
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
 
         [Test]
         public void ScopeEnd_NestedFullScopeWithRecord_DecreaseScopeCauseWritingWithWrappingScopeInResult()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginScope(null))
             {
                 using (logger.BeginScope(null))
                 {
-                    using (logger.BeginScope(null))
-                    {
-                        logger.Log(LogLevel.Critical, "message");
-                    }
+                    logger.Log(LogLevel.Critical, "message");
                 }
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(5);
         }
 
         [Test]
         public void ScopeEnd_NestedFullMethodWithRecord_DecreaseScopeCauseWritingWithWrappingMethodInResult()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginMethod())
             {
                 using (logger.BeginMethod())
                 {
-                    using (logger.BeginMethod())
-                    {
-                        logger.Log(LogLevel.Critical, "message");
-                    }
+                    logger.Log(LogLevel.Critical, "message");
                 }
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(5);
         }
 
         #endregion
 
         #region ScopeEnd without record - is ignored
-        
+
         [Test]
         public void ScopeEnd_FullScopeWithoutRecord_WriteIsIgnored()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginScope(null))
             {
-                using (logger.BeginScope(null))
-                {
-                }
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
         [Test]
         public void ScopeEnd_FullMethodWithoutRecord_WriteIsIgnored()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginMethod())
             {
-                using (logger.BeginMethod())
-                {
-                }
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
-        
+
         [Test]
         public void ScopeEnd_NestedFullScopeWithoutRecord_WriteIsIgnored()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginScope(null))
             {
                 using (logger.BeginScope(null))
                 {
-                    using (logger.BeginScope(null))
-                    {
-                    }
                 }
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
         [Test]
         public void ScopeEnd_NestedFullMethodWithoutRecord_WriteIsIgnored()
         {
-            using (var logger = CreateLogger())
+            var logger = CreateLogger();
+            using (logger.BeginMethod())
             {
                 using (logger.BeginMethod())
                 {
-                    using (logger.BeginMethod())
-                    {
-                    }
                 }
             }
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
         #endregion
-
-        #region Me
-
         
-
-        #endregion
-
         #region Disposing
-        
+
         [Test]
         public void Dispose_DecreaseScopeIsMissing_MessageIsWrittenDuringDisposingWithWrappingScopeInResult()
         {
-            using (var logger = CreateLogger())
-            {
-                logger.BeginScope(null);
-                logger.Log(LogLevel.Critical, "message");
-            }
+            var logger = CreateLogger();
+            logger.BeginScope(null);
+            logger.Log(LogLevel.Critical, "message");
+
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }
 
         [Test]
         public void Dispose_DecreaseMethodIsMissing_MessageIsWrittenDuringDisposingWithWrappingMethodInResult()
         {
-            using (var logger = CreateLogger())
-            {
-                logger.BeginMethod();
-                logger.Log(LogLevel.Critical, "message");
-            }
+            var logger = CreateLogger();
+            logger.BeginMethod();
+            logger.Log(LogLevel.Critical, "message");
+
+            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
         }
 

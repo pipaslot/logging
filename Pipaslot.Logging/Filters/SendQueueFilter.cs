@@ -4,7 +4,7 @@ using Pipaslot.Logging.Queues;
 
 namespace Pipaslot.Logging.Filters
 {
-    internal class SendQueueFilter : IQueueFilter
+    public class SendQueueFilter : IQueueFilter
     {
         private readonly LogLevel _minimalLogLevel;
 

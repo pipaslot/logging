@@ -23,8 +23,10 @@ namespace Pipaslot.Logging
 
             var previousDepth = 0;
             var rows = 0;
-            foreach (var log in queue){
-                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin){
+            foreach (var log in queue)
+            {
+                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin)
+                {
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;
                 }
@@ -70,11 +72,12 @@ namespace Pipaslot.Logging
             sb.Append(" ");
             sb.Append(FormatSeverity(record.Severity));
             sb.Append(" ");
-            sb.Append(FormatDepth(previousDepth, currentDepth));
+            sb.Append(FormatDepth(previousDepth, currentDepth, record.Type));
             if (record.State != null && record.State is IState state) sb.Append(state.FormatMessage(record.CategoryName, record.Message));
             sb.Append(record.Message);
-            
-            if (record.State != null && !(record.State is IState)){
+
+            if (record.State != null && !(record.State is IState))
+            {
                 var serializedData = SerializeState(record.State);
                 sb.Append(" ");
                 sb.Append(serializedData);
@@ -89,18 +92,23 @@ namespace Pipaslot.Logging
         /// <param name="previousDepth"></param>
         /// <param name="currentDepth"></param>
         /// <returns></returns>
-        protected virtual string FormatDepth(int previousDepth, int currentDepth)
+        protected virtual string FormatDepth(int previousDepth, int currentDepth, RecordType recordType)
         {
             var sb = new StringBuilder();
-            for (var i = 3; i < currentDepth; i++){
+            for (var i = 3; i < currentDepth; i++)
+            {
                 sb.Append("| ");
             }
-
-            if (previousDepth < currentDepth){
-                if (currentDepth > 1) sb.Append("+ ");
-            }
-            else if (currentDepth > 1) {
-                sb.Append("| ");
+            if (currentDepth > 1)
+            {
+                if (previousDepth < currentDepth && recordType != RecordType.Record)
+                {
+                    sb.Append("+ ");
+                }
+                else
+                {
+                    sb.Append("| ");
+                }
             }
 
             return sb.ToString();

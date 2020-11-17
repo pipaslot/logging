@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -8,24 +7,17 @@ using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
 {
-    public class PipaslotLogger : ILogger, IDisposable
+    public class PipaslotLogger : ILogger
     {
         private readonly string _categoryName;
+        private readonly QueueAggregator _aggregator;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IEnumerable<IQueueAggregator> _queues;
 
-        public PipaslotLogger(IEnumerable<IQueueAggregator> queues, IHttpContextAccessor httpContextAccessor, string categoryName)
+        public PipaslotLogger(IHttpContextAccessor httpContextAccessor, QueueAggregator aggregator, string categoryName)
         {
-            _queues = queues;
             _httpContextAccessor = httpContextAccessor;
             _categoryName = categoryName;
-        }
-
-        public void Dispose()
-        {
-            foreach (var writer in _queues){
-                writer.Dispose();
-            }
+            _aggregator = aggregator;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -63,18 +55,15 @@ namespace Pipaslot.Logging
         {
             var context = _httpContextAccessor.HttpContext;
             var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
-            foreach (var writer in _queues){
-                writer.WriteLog(identifier, _categoryName, severity, message, state);
-            }
+            _aggregator.WriteLog(identifier, _categoryName, severity, message, state);
         }
 
         private void WriteScopeChange<TState>(TState state)
         {
             var context = _httpContextAccessor.HttpContext;
             var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
-            foreach (var writer in _queues){
-                writer.WriteScopeChange(identifier, _categoryName, state);
-            }
+            _aggregator.WriteScopeChange(identifier, _categoryName, state);
+            
         }
 
         private string GetProcessIdentifier()

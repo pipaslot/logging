@@ -21,12 +21,11 @@ namespace Pipaslot.Logging
         public static void AddRequestLogger(this ILoggingBuilder builder, string name = "requests", RollingInterval rollingInterval = RollingInterval.Day)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueueAggregator>(s =>
+            builder.Services.AddSingleton<Pipe>(s =>
             {
-                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new QueueAggregator(writer, options, new RequestQueueFilter());
+                return new Pipe(writer, new RequestQueueFilter());
             });
         }
 
@@ -36,12 +35,11 @@ namespace Pipaslot.Logging
         public static void AddFlatLogger(this ILoggingBuilder builder, string name, LogLevel logLevel, RollingInterval rollingInterval = RollingInterval.Day)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueueAggregator>(s =>
+            builder.Services.AddSingleton<Pipe>(s =>
             {
-                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new QueueAggregator(writer, options, new FlatQueueFilter(logLevel));
+                return new Pipe(writer, new FlatQueueFilter(logLevel));
             });
         }
 
@@ -60,12 +58,11 @@ namespace Pipaslot.Logging
         public static void AddTreeLogger(this ILoggingBuilder builder, string name, RollingInterval rollingInterval, params string[] namespaceOrClass)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueueAggregator>(s =>
+            builder.Services.AddSingleton<Pipe>(s =>
             {
-                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new QueueAggregator(writer, options, new TreeQueueFilter(namespaceOrClass));
+                return new Pipe(writer, new TreeQueueFilter(namespaceOrClass));
             });
         }
 
@@ -78,11 +75,10 @@ namespace Pipaslot.Logging
             builder.AddPipaslotLoggerProvider();
             builder.Services.TryAddScoped<TLogSender>();
             builder.Services.TryAddSingleton<LogWriterToLogSenderAdapter<TLogSender>>();
-            builder.Services.AddSingleton<IQueueAggregator>(s =>
+            builder.Services.AddSingleton<Pipe>(s =>
             {
-                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var writer = s.GetService<LogWriterToLogSenderAdapter<TLogSender>>();
-                return new QueueAggregator(writer, options, new SendQueueFilter(logLevel));
+                return new Pipe(writer, new SendQueueFilter(logLevel));
             });
         }
 
@@ -92,12 +88,11 @@ namespace Pipaslot.Logging
         public static void AddProcessLogger(this ILoggingBuilder builder, string name = "processes", RollingInterval rollingInterval = RollingInterval.Day)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<IQueueAggregator>(s =>
+            builder.Services.AddSingleton<Pipe>(s =>
             {
-                var options = s.GetService<IOptions<PipaslotLoggerOptions>>();
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new QueueAggregator(writer, options, new ProcessQueueFilter());
+                return new Pipe(writer, new ProcessQueueFilter());
             });
         }
 

@@ -7,10 +7,11 @@
     <Description>Structured HTTP request logger. Supports multiple file writers for grouped by requests, priorities, service calls or threads. Contains adapter for sending for notifications.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RepositoryUrl>https://github.com/pipaslot/logging</RepositoryUrl>
-    <PackageVersion>2.2.1</PackageVersion>
+    <PackageVersion>3.0.0-beta1</PackageVersion>
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
     <PackageReleaseNotes>
+      3.0.0 - Improved throughput
       2.2.1 - Fix for writing logs without scope for FlatQueueAggregator and ProcessQueueAggregator
       2.2.0 - Provide customizable file name formatter with rolling interval and old file erasing
             - IFileWritterFactory signature extended

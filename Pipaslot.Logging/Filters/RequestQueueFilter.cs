@@ -5,7 +5,7 @@ namespace Pipaslot.Logging.Filters
     /// <summary>
     ///     Logs all separated requests
     /// </summary>
-    internal class RequestQueueFilter : IQueueFilter
+    public class RequestQueueFilter : IQueueFilter
     {
         public Queue Filter(Queue queue)
         {

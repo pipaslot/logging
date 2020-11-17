@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
-using Pipaslot.Logging.Aggregators;
+using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests
 {
@@ -12,7 +12,8 @@ namespace Pipaslot.Logging.Tests
         public void CreateLogger_DuplicateCategoryName_ReturnsTheSameLogger(string category)
         {
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            var sut = new PipaslotLoggerProvider(httpContextAccessorMock.Object, new IQueueAggregator[0]);
+            var optionsMock = new PipaslotLoggerOptionsMock();
+            var sut = new PipaslotLoggerProvider(httpContextAccessorMock.Object, new Pipe[0], optionsMock.Object);
 
             var logger1 = sut.CreateLogger(category);
             var logger2 = sut.CreateLogger(category);

@@ -7,7 +7,7 @@ namespace Pipaslot.Logging.Filters
     /// <summary>
     ///     Logging only for defined classes/scopes and their methods. Does not involve also deeper logging.
     /// </summary>
-    internal class FlatQueueFilter : IQueueFilter
+    public class FlatQueueFilter : IQueueFilter
     {
         private readonly LogLevel _logLevel;
 

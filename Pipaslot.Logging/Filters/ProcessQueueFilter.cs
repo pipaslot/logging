@@ -5,7 +5,7 @@ namespace Pipaslot.Logging.Filters
     /// <summary>
     ///     LogRecord all processes together
     /// </summary>
-    internal class ProcessQueueFilter : IQueueFilter
+    public class ProcessQueueFilter : IQueueFilter
     {
 
         public Queue Filter(Queue queue)

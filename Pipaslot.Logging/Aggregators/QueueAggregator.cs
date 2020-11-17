@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Filters;
 using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 
@@ -9,36 +9,34 @@ namespace Pipaslot.Logging.Aggregators
     /// <summary>
     /// Basic abstraction of Queue handling messages and scopes
     /// </summary>
-    internal class QueueAggregator : IQueueAggregator
+    public class QueueAggregator
     {
+        private readonly IEnumerable<Pipe> _pipes;
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        private readonly IQueueFilter _queueFilter;
-        private readonly ILogWriter _writer;
-        protected readonly QueueCollection Queues = new QueueCollection();
+        private readonly QueueCollection _queues = new QueueCollection();
 
-        public QueueAggregator(ILogWriter writer, IOptions<PipaslotLoggerOptions> options, IQueueFilter queueFilter)
+        public QueueAggregator(IEnumerable<Pipe> pipes, IOptions<PipaslotLoggerOptions> options)
         {
+            _pipes = pipes;
             _options = options;
-            _queueFilter = queueFilter;
-            _writer = writer;
         }
         
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            var queue = Queues.GetOrCreateQueue(traceIdentifier);
+            var queue = _queues.GetOrCreateQueue(traceIdentifier);
             
             queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
             if (queue.Count == 1)
             {
                 // Remove request history from memory 
-                Queues.Remove(traceIdentifier);
+                _queues.Remove(traceIdentifier);
                 WriteQueue(queue);
             }
         }
 
         public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
         {
-            var queue = Queues.GetOrCreateQueue(traceIdentifier);
+            var queue = _queues.GetOrCreateQueue(traceIdentifier);
 
             // Update depth
             var depth = queue.Depth;
@@ -60,7 +58,7 @@ namespace Pipaslot.Logging.Aggregators
             // LogRecord or finish
             if (depth <= 0){
                 // Remove request history from memory 
-                Queues.Remove(traceIdentifier);
+                _queues.Remove(traceIdentifier);
                 WriteQueue(queue);
             }
         }
@@ -68,18 +66,18 @@ namespace Pipaslot.Logging.Aggregators
         public virtual void Dispose()
         {
             //write all remaining logs
-            foreach (var pair in Queues.GetAllQueues()){
+            foreach (var pair in _queues.GetAllQueues()){
                 WriteQueue(pair.Value);
             }
 
-            Queues.Dispose();
+            _queues.Dispose();
         }
 
         private void WriteQueue(Queue queue)
         {
-            var processed = _queueFilter.Filter(queue);
-            if(processed.HasAnyRecord()){
-                _writer.WriteLog(processed);
+            foreach (var pipe in _pipes)
+            {
+                pipe.Process(queue);
             }
         }
         
