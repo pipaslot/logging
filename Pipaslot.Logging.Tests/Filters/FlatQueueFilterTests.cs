@@ -73,10 +73,10 @@ namespace Pipaslot.Logging.Tests.Filters
                 RecordFactory.Create(2,"yes",RecordType.Record,LogLevel.Error),
                 RecordFactory.Create(2,"no ",RecordType.Record,LogLevel.Information),
 
-                RecordFactory.Create(3,"yes",RecordType.ScopeBeginIgnored),
+                RecordFactory.Create(3,"no ",RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(3,"no ",RecordType.Record,LogLevel.Information),
                 RecordFactory.Create(3,"yes",RecordType.Record,LogLevel.Error),
-                RecordFactory.Create(3,"yes",RecordType.ScopeEndIgnored),
+                RecordFactory.Create(3,"no ",RecordType.ScopeEndIgnored),
 
                 RecordFactory.Create(2,"yes",RecordType.Record,LogLevel.Error),
                 RecordFactory.Create(2,"no ",RecordType.ScopeEndIgnored),
@@ -90,8 +90,10 @@ namespace Pipaslot.Logging.Tests.Filters
             var filter = new FlatQueueFilter(LogLevel.Error);
             var result = filter.Filter(queue);
 
-            Assert.AreEqual(5, result.Count);
+            Assert.AreEqual(3, result.Count);
             Assert.IsTrue(result.All(l=>l.Message=="yes"));
         }
+        
+
     }
 }

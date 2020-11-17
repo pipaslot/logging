@@ -19,26 +19,10 @@ namespace Pipaslot.Logging.Filters
         public Queue Filter(Queue queue)
         {
             var records = new List<Record>(queue.Count);
-            int? endDepth = null;
             foreach (var log in queue)
             {
-                if (log.Type == RecordType.Record)
+                if (log.Type == RecordType.Record && _logLevel <= log.Severity)
                 {
-                    if (_logLevel <= log.Severity)
-                    {
-                        records.Add(log);
-                        if(endDepth == null){
-                            endDepth = log.Depth;
-                        }
-                    }
-                }
-                else if (endDepth != null && log.Depth == endDepth.Value && log.Type == RecordType.ScopeEndIgnored)
-                {
-                    //ignore last scope from the same depth
-                }
-                else if (endDepth != null && log.Depth > endDepth.Value)
-                {
-                    // Involve nested scopes
                     records.Add(log);
                 }
             }
