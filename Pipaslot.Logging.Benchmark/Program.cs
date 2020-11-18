@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Benchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<DemoAppBenchmark>(/*new DebugInProcessConfig()*/);
+            BenchmarkRunner.Run<DemoAppBenchmark>(new DebugInProcessConfig());
             Console.WriteLine("Benchmark finished");
             Console.ReadLine();
         }

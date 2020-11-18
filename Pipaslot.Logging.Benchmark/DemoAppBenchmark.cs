@@ -4,7 +4,6 @@ using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Pipaslot.Logging.Benchmark.Mocks;
 using Pipaslot.Logging.Demo;
 using Pipaslot.Logging.Demo.Controllers;
@@ -13,7 +12,7 @@ namespace Pipaslot.Logging.Benchmark
 {
     public class DemoAppBenchmark
     {
-        private ValuesController _controllerWithStandardLogging;
+        private ValuesController _controllerWithoutLogging;
         private ValuesController _controllerWithRequestLogging;
 
         #region Setup
@@ -21,11 +20,8 @@ namespace Pipaslot.Logging.Benchmark
         [GlobalSetup]
         public void GlobalSetup()
         {
-            var servicesWithStandardLogging = BuildServiceProvider(false);
-            var servicesWithRequestLogging = BuildServiceProvider(true);
-
-            _controllerWithStandardLogging = servicesWithStandardLogging.GetRequiredService<ValuesController>();
-            _controllerWithRequestLogging = servicesWithRequestLogging.GetRequiredService<ValuesController>();
+            _controllerWithoutLogging = BuildServiceProvider(false).GetRequiredService<ValuesController>();
+            _controllerWithRequestLogging = BuildServiceProvider(true).GetRequiredService<ValuesController>();
         }
 
         private IServiceProvider BuildServiceProvider(bool configureLogging)
@@ -44,52 +40,48 @@ namespace Pipaslot.Logging.Benchmark
                 services.AddSingleton<IConfiguration>(s => configuration);
                 services.AddSingleton<IFileWriterFactory, NullFileWriterFactory>();
                 lb.AddRequestLogger();
-            }
-            else
-            {
-                lb.AddProvider(new NullLoggerProvider());
+                lb.AddProcessLogger();
+                lb.AddFlatLogger("err", LogLevel.Error);
             }
 
             return services.BuildServiceProvider();
         }
-
         #endregion
-
+        
         [Benchmark]
-        public void Standard_OnlyMessage_1000x()
+        public void MultipleWrites100x_NoLogging()
         {
-            _controllerWithStandardLogging.PerformActionWithLogging(1000);
+            _controllerWithoutLogging.PerformActionWithLogging(100);
         }
 
         [Benchmark]
-        public void Request_OnlyMessage_1000x()
+        public void MultipleWrites100x_Requests()
         {
-            _controllerWithRequestLogging.PerformActionWithLogging(1000);
+            _controllerWithRequestLogging.PerformActionWithLogging(100);
         }
 
         [Benchmark]
-        public void Standard_ScopesAndMultipleMessages()
+        public void SingleWrite100x_NoLogging()
         {
-            _controllerWithStandardLogging.PerformComplexAction();
+            _controllerWithoutLogging.PerformActionWithLoggingInsideScope(100);
         }
 
         [Benchmark]
-        public void Request_ScopesAndMultipleMessages()
+        public void SingleWrite100x_Requests()
+        {
+            _controllerWithRequestLogging.PerformActionWithLoggingInsideScope(100);
+        }
+
+        [Benchmark]
+        public void ScopesAndMultipleMessages_NoLogging()
+        {
+            _controllerWithoutLogging.PerformComplexAction();
+        }
+
+        [Benchmark]
+        public void ScopesAndMultipleMessages_Requests()
         {
             _controllerWithRequestLogging.PerformComplexAction();
-        }
-
-        private class NullLoggerProvider : ILoggerProvider
-        {
-            public void Dispose()
-            {
-
-            }
-
-            public ILogger CreateLogger(string categoryName)
-            {
-                return NullLogger.Instance;
-            }
         }
     }
 }
