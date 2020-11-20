@@ -2,9 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Pipaslot.Logging.Queues;
-using Pipaslot.Logging.Writers;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Adapter providing Log sender with lazy loading
