@@ -1,6 +1,7 @@
 ﻿using System;
+using Pipaslot.Logging.Configuration;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Provide unified file name format for log files

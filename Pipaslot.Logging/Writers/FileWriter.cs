@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Configuration;
 using Pipaslot.Logging.Queues;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Default file writer implementation containing locking for unique access

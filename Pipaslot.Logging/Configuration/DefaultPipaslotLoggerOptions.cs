@@ -2,8 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Configuration
 {
+    /// <summary>
+    /// Provider loading options from appsettings file
+    /// </summary>
     public class DefaultPipaslotLoggerOptions : IOptions<PipaslotLoggerOptions>
     {
         private readonly IConfiguration _config;
@@ -15,6 +18,7 @@ namespace Pipaslot.Logging
             _config = config;
         }
 
+        /// <inheritdoc />
         public PipaslotLoggerOptions Value
         {
             get

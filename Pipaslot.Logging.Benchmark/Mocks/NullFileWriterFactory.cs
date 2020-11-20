@@ -1,4 +1,7 @@
-﻿namespace Pipaslot.Logging.Benchmark.Mocks
+﻿using Pipaslot.Logging.Configuration;
+using Pipaslot.Logging.Writers;
+
+namespace Pipaslot.Logging.Benchmark.Mocks
 {
     public class NullFileWriterFactory : IFileWriterFactory
     {

@@ -1,4 +1,6 @@
-﻿namespace Pipaslot.Logging
+﻿using Pipaslot.Logging.Configuration;
+
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Factory class providing standard writer instances

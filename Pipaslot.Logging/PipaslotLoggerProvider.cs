@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Aggregators;
+using Pipaslot.Logging.Configuration;
 
 namespace Pipaslot.Logging
 {

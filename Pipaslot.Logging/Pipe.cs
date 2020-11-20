@@ -1,8 +1,12 @@
 ﻿using Pipaslot.Logging.Filters;
 using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {
+    /// <summary>
+    ///     Pipe filtering and processing aggregated queues
+    /// </summary>
     public class Pipe
     {
         private readonly IQueueFilter _filter;
@@ -13,7 +17,7 @@ namespace Pipaslot.Logging
             _writer = writer;
             _filter = filter;
         }
-
+        
         public void Process(IQueue queue)
         {
             var processed = _filter.Filter(queue);

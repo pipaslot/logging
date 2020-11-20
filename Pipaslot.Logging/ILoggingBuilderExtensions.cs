@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Configuration;
 using Pipaslot.Logging.Filters;
 using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {

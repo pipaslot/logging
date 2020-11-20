@@ -1,5 +1,6 @@
 ﻿using Moq;
 using Pipaslot.Logging.Queues;
+using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging.Tests.Mocks
 {

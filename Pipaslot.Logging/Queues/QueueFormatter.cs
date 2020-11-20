@@ -2,10 +2,9 @@
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Queues
 {
     /// <summary>
     ///     Default log file formatter

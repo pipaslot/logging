@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Configuration;
 using Pipaslot.Logging.Queues;
 using Pipaslot.Logging.States;
 

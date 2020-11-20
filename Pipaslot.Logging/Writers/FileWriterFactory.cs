@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Configuration;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Default file writer factory implementation

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Options;
+using Pipaslot.Logging.Configuration;
+using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging
 {

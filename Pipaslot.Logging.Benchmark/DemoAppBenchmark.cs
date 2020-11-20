@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Pipaslot.Logging.Benchmark.Mocks;
 using Pipaslot.Logging.Demo;
 using Pipaslot.Logging.Demo.Controllers;
+using Pipaslot.Logging.Writers;
 
 namespace Pipaslot.Logging.Benchmark
 {

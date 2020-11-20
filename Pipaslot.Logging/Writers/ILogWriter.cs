@@ -1,6 +1,6 @@
 ﻿using Pipaslot.Logging.Queues;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Provider writing LogScopes to filesystem or database

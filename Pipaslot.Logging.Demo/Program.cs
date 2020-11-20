@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Pipaslot.Logging.Configuration;
 using Pipaslot.Logging.Demo.Services;
 
 namespace Pipaslot.Logging.Demo

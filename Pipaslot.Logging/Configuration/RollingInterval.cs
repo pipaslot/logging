@@ -1,4 +1,4 @@
-﻿namespace Pipaslot.Logging
+﻿namespace Pipaslot.Logging.Configuration
 {
     /// <summary>
     ///     Specifies the frequency at which the log file should roll.

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using Pipaslot.Logging.Configuration;
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Writers
 {
     /// <summary>
     ///     Default file name formatter providing unified file name format

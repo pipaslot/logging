@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Moq;
+using Pipaslot.Logging.Configuration;
 
 namespace Pipaslot.Logging.Tests.Mocks
 {

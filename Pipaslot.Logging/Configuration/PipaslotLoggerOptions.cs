@@ -1,7 +1,10 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Pipaslot.Logging
+namespace Pipaslot.Logging.Configuration
 {
+    /// <summary>
+    /// Basic configuration options for logger
+    /// </summary>
     public class PipaslotLoggerOptions
     {
         public string OutputPath { get; set; } = "./logs";
