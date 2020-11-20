@@ -49,19 +49,6 @@ namespace Pipaslot.Logging
         /// <param name="logger"></param>
         /// <param name="message">Plain message to be logged</param>
         /// <param name="data">Value or data structure for serialization into log file</param>
-        /// <param name="exception">Exception to be logged</param>
-        [Obsolete("Use another overload")]
-        public static void LogTraceWithData(this ILogger logger, string message, object data, Exception exception)
-        {
-            logger.LogInternal(LogLevel.Trace, message, data, exception);
-        }
-
-        /// <summary>
-        ///     LogRecord Message with Trace severity containing additional data after message
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Plain message to be logged</param>
-        /// <param name="data">Value or data structure for serialization into log file</param>
         public static void LogTraceWithData(this ILogger logger, string message, object data)
         {
             logger.LogInternal(LogLevel.Trace, message, data, null);
@@ -82,19 +69,6 @@ namespace Pipaslot.Logging
         #endregion
 
         #region Debug
-
-        /// <summary>
-        ///     LogRecord Message with Debug severity containing additional data after message
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Plain message to be logged</param>
-        /// <param name="data">Value or data structure for serialization into log file</param>
-        /// <param name="exception">Exception to be logged</param>
-        [Obsolete("Use another overload")]
-        public static void LogDebugWithData(this ILogger logger, string message, object data, Exception exception)
-        {
-            logger.LogInternal(LogLevel.Debug, message, data, exception);
-        }
 
         /// <summary>
         ///     LogRecord Message with Debug severity containing additional data after message
@@ -129,19 +103,6 @@ namespace Pipaslot.Logging
         /// <param name="logger"></param>
         /// <param name="message">Plain message to be logged</param>
         /// <param name="data">Value or data structure for serialization into log file</param>
-        /// <param name="exception">Exception to be logged</param>
-        [Obsolete("Use another overload")]
-        public static void LogInformationWithData(this ILogger logger, string message, object data, Exception exception)
-        {
-            logger.LogInternal(LogLevel.Information, message, data, exception);
-        }
-
-        /// <summary>
-        ///     LogRecord Message with Information severity containing additional data after message
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Plain message to be logged</param>
-        /// <param name="data">Value or data structure for serialization into log file</param>
         public static void LogInformationWithData(this ILogger logger, string message, object data)
         {
             logger.LogInternal(LogLevel.Information, message, data, null);
@@ -162,19 +123,6 @@ namespace Pipaslot.Logging
         #endregion
 
         #region Warning
-
-        /// <summary>
-        ///     LogRecord Message with Warning severity containing additional data after message
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Plain message to be logged</param>
-        /// <param name="data">Value or data structure for serialization into log file</param>
-        /// <param name="exception">Exception to be logged</param>
-        [Obsolete("Use another overload")]
-        public static void LogWarningWithData(this ILogger logger, string message, object data, Exception exception)
-        {
-            logger.LogInternal(LogLevel.Warning, message, data, exception);
-        }
 
         /// <summary>
         ///     LogRecord Message with Warning severity containing additional data after message
@@ -209,19 +157,6 @@ namespace Pipaslot.Logging
         /// <param name="logger"></param>
         /// <param name="message">Plain message to be logged</param>
         /// <param name="data">Value or data structure for serialization into log file</param>
-        /// <param name="exception">Exception to be logged</param>
-        [Obsolete("Use another overload")]
-        public static void LogErrorWithData(this ILogger logger, string message, object data, Exception exception)
-        {
-            logger.LogInternal(LogLevel.Error, message, data, exception);
-        }
-
-        /// <summary>
-        ///     LogRecord Message with Error severity containing additional data after message
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Plain message to be logged</param>
-        /// <param name="data">Value or data structure for serialization into log file</param>
         public static void LogErrorWithData(this ILogger logger, string message, object data)
         {
             logger.LogInternal(LogLevel.Error, message, data, null);
@@ -242,19 +177,6 @@ namespace Pipaslot.Logging
         #endregion
 
         #region Critical
-
-        /// <summary>
-        ///     LogRecord Message with Critical severity containing additional data after message
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Plain message to be logged</param>
-        /// <param name="data">Value or data structure for serialization into log file</param>
-        /// <param name="exception">Exception to be logged</param>
-        [Obsolete("Use another overload")]
-        public static void LogCriticalWithData(this ILogger logger, string message, object data, Exception exception)
-        {
-            logger.LogInternal(LogLevel.Critical, message, data, exception);
-        }
 
         /// <summary>
         ///     LogRecord Message with Critical severity containing additional data after message

@@ -53,27 +53,6 @@ namespace Pipaslot.Logging.Queues
             }
         }
 
-        /// <returns>Can be null if can not create a new queue</returns>
-        [Obsolete("Use different method overload")]
-        public GrowingQueue? GetQueue(string traceIdentifier, bool canCreate)
-        {
-            // Try read without locking to improve performance
-            // This approach is 2x faster in comparison to using concurrent dictionary
-            // ReSharper disable once InconsistentlySynchronizedField
-            if (_queues.TryGetValue(traceIdentifier, out var queue)) return queue;
-            if (canCreate){
-                lock (_queueLock){
-                    if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
-
-                    var request = new GrowingQueue(traceIdentifier);
-                    _queues.Add(traceIdentifier, request);
-                    return request;
-                }
-            }
-
-            return null;
-        }
-
         /// <summary>
         ///     Get all registered queues
         /// </summary>
