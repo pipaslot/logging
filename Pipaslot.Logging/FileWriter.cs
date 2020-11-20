@@ -34,7 +34,7 @@ namespace Pipaslot.Logging
         /// <summary>
         /// Write log to file if nto empty
         /// </summary>
-        public void WriteLog(Queue queue)
+        public void WriteLog(IQueue queue)
         {
             var log = _formatter.Format(queue);
             if (!string.IsNullOrWhiteSpace(log)){

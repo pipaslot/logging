@@ -9,7 +9,7 @@ namespace Pipaslot.Logging.Queues
     public class QueueCollection : IDisposable
     {
         private readonly object _queueLock = new object();
-        private readonly Dictionary<string, Queue> _queues = new Dictionary<string, Queue>();
+        private readonly Dictionary<string, GrowingQueue> _queues = new Dictionary<string, GrowingQueue>();
 
         public void Dispose()
         {
@@ -23,7 +23,26 @@ namespace Pipaslot.Logging.Queues
                 _queues.Remove(traceIdentifier);
             }
         }
-        public Queue GetOrCreateQueue(string traceIdentifier)
+        
+        /// <summary>
+        /// Returns existing queue or return null if does not exists
+        /// </summary>
+        /// <param name="traceIdentifier">Queue unique identifier</param>
+        public GrowingQueue? GetQueueOrNull(string traceIdentifier)
+        {
+            // ReSharper disable once InconsistentlySynchronizedField
+            if (_queues.TryGetValue(traceIdentifier, out var queue))
+            {
+                return queue;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns existing queue or create new with prevention for concurrency creation
+        /// </summary>
+        /// <param name="traceIdentifier">Queue unique identifier</param>
+        public GrowingQueue GetOrCreateQueue(string traceIdentifier)
         {
             // Try read without locking to improve performance
             // This approach is 2x faster in comparison to using concurrent dictionary
@@ -33,7 +52,7 @@ namespace Pipaslot.Logging.Queues
             {
                 if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
-                var request = new Queue(traceIdentifier);
+                var request = new GrowingQueue(traceIdentifier);
                 _queues.Add(traceIdentifier, request);
                 return request;
             }
@@ -41,7 +60,7 @@ namespace Pipaslot.Logging.Queues
         
         /// <returns>Can be null if can not create a new queue</returns>
         [Obsolete("Use different method overload")]
-        public Queue? GetQueue(string traceIdentifier, bool canCreate)
+        public GrowingQueue? GetQueue(string traceIdentifier, bool canCreate)
         {
             // Try read without locking to improve performance
             // This approach is 2x faster in comparison to using concurrent dictionary
@@ -53,7 +72,7 @@ namespace Pipaslot.Logging.Queues
                 {
                     if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
-                    var request = new Queue(traceIdentifier);
+                    var request = new GrowingQueue(traceIdentifier);
                     _queues.Add(traceIdentifier, request);
                     return request;
                 }
@@ -65,7 +84,7 @@ namespace Pipaslot.Logging.Queues
         /// Get all registered queues
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, Queue> GetAllQueues()
+        public Dictionary<string, GrowingQueue> GetAllQueues()
         {
             lock (_queueLock)
             {

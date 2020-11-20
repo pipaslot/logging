@@ -8,6 +8,6 @@ namespace Pipaslot.Logging
     /// </summary>
     public interface ILogSender
     {
-        Task SendLog(Queue queue);
+        Task SendLog(IQueue queue);
     }
 }

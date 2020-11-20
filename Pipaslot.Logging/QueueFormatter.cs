@@ -7,6 +7,9 @@ using Pipaslot.Logging.States;
 
 namespace Pipaslot.Logging
 {
+    /// <summary>
+    /// Default log file formatter
+    /// </summary>
     public class QueueFormatter
     {
         /// <summary>
@@ -14,7 +17,7 @@ namespace Pipaslot.Logging
         /// </summary>
         /// <param name="queue"></param>
         /// <returns></returns>
-        public virtual string Format(Queue queue)
+        public virtual string Format(IQueue queue)
         {
             var sb = new StringBuilder();
             sb.Append(queue.Time);

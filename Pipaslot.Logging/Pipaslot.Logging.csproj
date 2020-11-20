@@ -11,7 +11,7 @@
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
     <PackageReleaseNotes>
-      3.0.0 - Improved throughput
+      3.0.0 - Queue definition split (internal) and troughput imporvements for cases we are using multiple writers
       2.2.1 - Fix for writing logs without scope for FlatQueueAggregator and ProcessQueueAggregator
       2.2.0 - Provide customizable file name formatter with rolling interval and old file erasing
             - IFileWritterFactory signature extended

@@ -14,7 +14,7 @@ namespace Pipaslot.Logging.Filters
         }
 
 
-        public Queue Filter(Queue queue)
+        public IQueue Filter(IQueue queue)
        {
            return queue.Any(log =>
                log.Type == RecordType.Record && _minimalLogLevel <= log.Severity && log.Severity != LogLevel.None)

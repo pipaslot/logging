@@ -12,7 +12,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void WriteSingle_HigherLevel_OneMessageIsInserted()
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create(3,RecordType.Record,LogLevel.Error)
             };
@@ -26,7 +26,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void WriteScopeAndLog_LogHasLowPriority_IgnoreScope()
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information)
@@ -41,7 +41,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void WriteOnlyInfoInNestedScopes_ShouldIgnore()
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
@@ -61,7 +61,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void WriteErrorInNestedScope_ShouldWrite()
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Information),

@@ -2,25 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Pipaslot.Logging.Queues
 {
+
     /// <summary>
-    /// Set of log records collected together. Is read-only for consuming libraries
+    /// Set of log records collected together
     /// </summary>
-    public class Queue : IReadOnlyCollection<Record>
+    public class GrowingQueue : IQueue
     {
         private readonly List<Record> _logs = new List<Record>();
 
-        internal Queue(string traceIdentifier)
+        internal GrowingQueue(string traceIdentifier)
         {
             TraceIdentifier = traceIdentifier;
-        }
-        internal Queue(string traceIdentifier, DateTimeOffset time, IEnumerable<Record> logs)
-        {
-            TraceIdentifier = traceIdentifier;
-            Time = time;
-            _logs = logs.ToList();
         }
         
         /// <summary>
@@ -32,53 +28,27 @@ namespace Pipaslot.Logging.Queues
         /// First record creation date
         /// </summary>
         public DateTimeOffset Time { get; } = DateTimeOffset.Now;
-
-        /// <summary>
-        /// Collected log messages
-        /// </summary>
-        [Obsolete("Use direct enumerator on this object")]
-        public IReadOnlyCollection<Record> Logs => _logs;
-
+        
         /// <summary>
         /// Current log level depth
         /// </summary>
-        internal int Depth
-        {
-            get
-            {
-                var last = _logs.LastOrDefault();
-                if (last != null)
-                {
-                    if (last.Type == RecordType.ScopeEndIgnored)
-                    {
-                        return last.Depth - 1;
-                    }
-                    return last.Depth;
-                }
-                return 0;
-            }
-        }
+        internal int Depth { get; private set; }
 
         internal void Add(Record record)
         {
             _logs.Add(record);
+            if (record.Type != RecordType.ScopeEndIgnored)
+            {
+                Depth = record.Depth;
+            }
         }
         /// <summary>
         /// Returns true if at least one message (not a scope) is written
         /// </summary>
         /// <returns></returns>
-        internal bool HasAnyRecord()
+        public bool HasAnyRecord()
         {
             return _logs.Any(l => l.Type == RecordType.Record);
-        }
-
-        internal Queue CloneWith(IEnumerable<Record> logs)
-        {
-            return new Queue(TraceIdentifier, Time, logs);
-        }
-        internal Queue CloneEmpty()
-        {
-            return new Queue(TraceIdentifier, Time, new Record[0]);
         }
 
         public IEnumerator<Record> GetEnumerator()

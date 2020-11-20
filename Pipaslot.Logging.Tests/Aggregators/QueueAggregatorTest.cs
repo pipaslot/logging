@@ -43,7 +43,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
 
         private class NullFilter : IQueueFilter
         {
-            public Queue Filter(Queue queue)
+            public IQueue Filter(IQueue queue)
             {
                 return queue;
             }

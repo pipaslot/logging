@@ -7,21 +7,21 @@ namespace Pipaslot.Logging.Tests.Mocks
     {
         public void VerifyWriteLogIsCalledXTimesWithLogCountEqualTo(int times, int count)
         {
-            Verify(w => w.WriteLog(It.Is<Queue>(scope => scope.Count == count)), Times.Exactly(times));
+            Verify(w => w.WriteLog(It.Is<GrowingQueue>(scope => scope.Count == count)), Times.Exactly(times));
         }
         public void VerifyWriteLogIsCalledOnceWithLogCountEqualTo(int count)
         {
-            Verify(w => w.WriteLog(It.Is<Queue>(scope => scope.Count == count)), Times.Once);
+            Verify(w => w.WriteLog(It.Is<GrowingQueue>(scope => scope.Count == count)), Times.Once);
         }
 
         public void VerifyWriteLogIsNotCalled()
         {
-            Verify(w => w.WriteLog(It.IsAny<Queue>()), Times.Never);
+            Verify(w => w.WriteLog(It.IsAny<GrowingQueue>()), Times.Never);
         }
 
         public void VerifyWriteLogIsCalledOnce()
         {
-            Verify(w => w.WriteLog(It.IsAny<Queue>()), Times.Once);
+            Verify(w => w.WriteLog(It.IsAny<GrowingQueue>()), Times.Once);
         }
     }
 }

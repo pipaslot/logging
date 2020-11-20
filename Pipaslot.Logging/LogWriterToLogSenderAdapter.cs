@@ -22,7 +22,7 @@ namespace Pipaslot.Logging
         /// Write log scope to sender
         /// </summary>
         /// <param name="queue"></param>
-        public void WriteLog(Queue queue)
+        public void WriteLog(IQueue queue)
         {
             Task.Run(()=>
             {

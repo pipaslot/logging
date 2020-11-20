@@ -14,7 +14,7 @@ namespace Pipaslot.Logging
             _filter = filter;
         }
 
-        public void Process(Queue queue)
+        public void Process(IQueue queue)
         {
             var processed = _filter.Filter(queue);
             if(processed.HasAnyRecord()){

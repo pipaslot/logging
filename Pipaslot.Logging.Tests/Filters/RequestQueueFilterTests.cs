@@ -11,7 +11,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void AcceptOnlyRequestRecords()
         {
-            var queue = new Queue("request")
+            var queue = new GrowingQueue("request")
             {
                 RecordFactory.Create( 0,RecordType.Record,LogLevel.Trace)
             };
@@ -25,7 +25,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void IgnoreCliQueue()
         {
-            var queue = new Queue(Constants.CliTraceIdentifierPrefix)
+            var queue = new GrowingQueue(Constants.CliTraceIdentifierPrefix)
             {
                 RecordFactory.Create( 0,RecordType.Record,LogLevel.Critical)
             };

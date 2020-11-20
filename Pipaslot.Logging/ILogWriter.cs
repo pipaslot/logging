@@ -11,6 +11,6 @@ namespace Pipaslot.Logging
         /// Write log scope to target stream
         /// </summary>
         /// <param name="records"></param>
-        void WriteLog(Queue records);
+        void WriteLog(IQueue records);
     }
 }

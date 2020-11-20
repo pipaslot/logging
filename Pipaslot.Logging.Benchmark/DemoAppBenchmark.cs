@@ -40,8 +40,8 @@ namespace Pipaslot.Logging.Benchmark
                 services.AddSingleton<IConfiguration>(s => configuration);
                 services.AddSingleton<IFileWriterFactory, NullFileWriterFactory>();
                 lb.AddRequestLogger();
-                lb.AddProcessLogger();
-                lb.AddFlatLogger("err", LogLevel.Error);
+                // lb.AddProcessLogger();
+                // lb.AddFlatLogger("err", LogLevel.Error);
             }
 
             return services.BuildServiceProvider();
@@ -49,27 +49,27 @@ namespace Pipaslot.Logging.Benchmark
         #endregion
         
         [Benchmark]
-        public void MultipleWrites100x_NoLogging()
+        public void MultipleWrites1000x_NoLogging()
         {
-            _controllerWithoutLogging.PerformActionWithLogging(100);
+            _controllerWithoutLogging.PerformActionWithLogging(1000);
         }
-
+        
         [Benchmark]
-        public void MultipleWrites100x_Requests()
+        public void MultipleWrites1000x_Requests()
         {
-            _controllerWithRequestLogging.PerformActionWithLogging(100);
+            _controllerWithRequestLogging.PerformActionWithLogging(1000);
         }
-
+        
         [Benchmark]
-        public void SingleWrite100x_NoLogging()
+        public void SingleWrite1000x_NoLogging()
         {
-            _controllerWithoutLogging.PerformActionWithLoggingInsideScope(100);
+            _controllerWithoutLogging.PerformActionWithLoggingInsideScope(1000);
         }
-
+        
         [Benchmark]
-        public void SingleWrite100x_Requests()
+        public void SingleWrite1000x_Requests()
         {
-            _controllerWithRequestLogging.PerformActionWithLoggingInsideScope(100);
+            _controllerWithRequestLogging.PerformActionWithLoggingInsideScope(1000);
         }
 
         [Benchmark]

@@ -25,7 +25,7 @@ namespace Pipaslot.Logging.Queues
             }
         }
         
-        public Queue Filter(Queue queue)
+        public IQueue Filter(IQueue queue)
         {
             var records = new List<Record>(queue.Count);
             int? endDepth = null;

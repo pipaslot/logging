@@ -20,7 +20,8 @@ namespace Pipaslot.Logging
             _aggregator = aggregator;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        /// <inheritdoc />
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string>? formatter)
         {
             var message = eventId.Name;
             if (exception != null && formatter != null)
@@ -35,12 +36,14 @@ namespace Pipaslot.Logging
                 Write(logLevel, message, state);
         }
 
+        /// <inheritdoc />
         public bool IsEnabled(LogLevel logLevel)
         {
             return true;
         }
 
 
+        /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)
         {
             if (state is IState)

@@ -4,7 +4,7 @@ namespace Pipaslot.Logging.Benchmark.Mocks
 {
     public class NullLogWriter : ILogWriter
     {
-        public void WriteLog(Queue records)
+        public void WriteLog(IQueue records)
         {
             // Ignore operation
         }

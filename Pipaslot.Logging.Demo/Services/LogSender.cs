@@ -8,7 +8,7 @@ namespace Pipaslot.Logging.Demo.Services
     {
         private readonly QueueFormatter _formatter = new QueueFormatter();
 
-        public Task SendLog(Queue queue)
+        public Task SendLog(IQueue queue)
         {
             var log = _formatter.Format(queue);
             if (!string.IsNullOrWhiteSpace(log))

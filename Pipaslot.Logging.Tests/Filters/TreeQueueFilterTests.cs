@@ -75,7 +75,7 @@ namespace Pipaslot.Logging.Tests.Filters
 
         private void RunAndAssert(List<Record> records, int expectedCount, string expectedMessage)
         {
-            var queue = new Queue("", DateTimeOffset.Now, records);
+            var queue = new FixedSizeQueue("", DateTimeOffset.Now, records);
             var filter = new TreeQueueFilter(Categ1, Categ2);
             var result = filter.Filter(queue);
 

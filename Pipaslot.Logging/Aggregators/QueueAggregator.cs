@@ -23,14 +23,14 @@ namespace Pipaslot.Logging.Aggregators
         
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
-            var queue = _queues.GetOrCreateQueue(traceIdentifier);
-            
-            queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
-            if (queue.Count == 1)
+            var queue = _queues.GetQueueOrNull(traceIdentifier);
+            if (queue != null)
             {
-                // Remove request history from memory 
-                _queues.Remove(traceIdentifier);
-                WriteQueue(queue);
+                queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
+            }
+            else
+            {
+                WriteQueue(new FixedSizeQueue(traceIdentifier, new Record(categoryName, severity, message, state, 0, RecordType.Record)));
             }
         }
 
@@ -73,7 +73,7 @@ namespace Pipaslot.Logging.Aggregators
             _queues.Dispose();
         }
 
-        private void WriteQueue(Queue queue)
+        private void WriteQueue(IQueue queue)
         {
             foreach (var pipe in _pipes)
             {

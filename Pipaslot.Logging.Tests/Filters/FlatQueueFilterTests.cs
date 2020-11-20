@@ -17,7 +17,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [TestCase(LogLevel.Trace, 6)]
         public void RecordsOnly_FilterWithLowerPriorities(LogLevel minimalLevel, int expected)
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create( 0,RecordType.Record,LogLevel.Critical),
                 RecordFactory.Create( 0,RecordType.Record,LogLevel.Error),
@@ -41,7 +41,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [TestCase(LogLevel.Trace, 6)]
         public void ScopedRecords_FilterOnlyRecordsWithLowerPriorities(LogLevel minimalLevel, int expected)
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
                 RecordFactory.Create(1,RecordType.Record,LogLevel.Critical),
@@ -62,7 +62,7 @@ namespace Pipaslot.Logging.Tests.Filters
         [Test]
         public void NestedScopesWithRecords_KeepOnlyWithMinimalLogLevelStaringOnFirstMessageOccurrence()
         {
-            var queue = new Queue("")
+            var queue = new GrowingQueue("")
             {
                 RecordFactory.Create(0,"no ",RecordType.Record,LogLevel.Information),
 

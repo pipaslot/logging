@@ -16,7 +16,7 @@ namespace Pipaslot.Logging.Filters
             _logLevel = logLevel;
         }
 
-        public Queue Filter(Queue queue)
+        public IQueue Filter(IQueue queue)
         {
             var records = new List<Record>(queue.Count);
             foreach (var log in queue)

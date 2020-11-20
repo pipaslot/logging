@@ -7,6 +7,6 @@ namespace Pipaslot.Logging.Filters
     /// </summary>
     public interface IQueueFilter
     {
-        Queue Filter(Queue queue);
+        IQueue Filter(IQueue queue);
     }
 }
