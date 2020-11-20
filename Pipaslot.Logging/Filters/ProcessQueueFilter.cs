@@ -7,7 +7,6 @@ namespace Pipaslot.Logging.Filters
     /// </summary>
     public class ProcessQueueFilter : IQueueFilter
     {
-
         public IQueue Filter(IQueue queue)
         {
             return queue.TraceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix)

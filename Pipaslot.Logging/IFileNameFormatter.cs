@@ -3,12 +3,12 @@
 namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Provide unified file name format for log files
+    ///     Provide unified file name format for log files
     /// </summary>
     public interface IFileNameFormatter
     {
         /// <summary>
-        /// Format file name
+        ///     Format file name
         /// </summary>
         /// <param name="dateTime">Log time</param>
         /// <param name="name">Queue name</param>
@@ -17,7 +17,7 @@ namespace Pipaslot.Logging
         string Format(DateTime dateTime, string name, RollingInterval rollingInterval);
 
         /// <summary>
-        /// Get name from file name
+        ///     Get name from file name
         /// </summary>
         /// <param name="fileName"></param>
         DateTime? ParseDate(string fileName);

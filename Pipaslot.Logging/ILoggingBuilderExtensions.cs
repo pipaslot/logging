@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Pipaslot.Logging.Aggregators;
 using Pipaslot.Logging.Filters;
 using Pipaslot.Logging.Queues;
 
@@ -21,7 +20,7 @@ namespace Pipaslot.Logging
         public static void AddRequestLogger(this ILoggingBuilder builder, string name = "requests", RollingInterval rollingInterval = RollingInterval.Day)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<Pipe>(s =>
+            builder.Services.AddSingleton(s =>
             {
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
@@ -35,7 +34,7 @@ namespace Pipaslot.Logging
         public static void AddFlatLogger(this ILoggingBuilder builder, string name, LogLevel logLevel, RollingInterval rollingInterval = RollingInterval.Day)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<Pipe>(s =>
+            builder.Services.AddSingleton(s =>
             {
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
@@ -58,7 +57,7 @@ namespace Pipaslot.Logging
         public static void AddTreeLogger(this ILoggingBuilder builder, string name, RollingInterval rollingInterval, params string[] namespaceOrClass)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<Pipe>(s =>
+            builder.Services.AddSingleton(s =>
             {
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
@@ -75,7 +74,7 @@ namespace Pipaslot.Logging
             builder.AddPipaslotLoggerProvider();
             builder.Services.TryAddScoped<TLogSender>();
             builder.Services.TryAddSingleton<LogWriterToLogSenderAdapter<TLogSender>>();
-            builder.Services.AddSingleton<Pipe>(s =>
+            builder.Services.AddSingleton(s =>
             {
                 var writer = s.GetService<LogWriterToLogSenderAdapter<TLogSender>>();
                 return new Pipe(writer, new SendQueueFilter(logLevel));
@@ -88,7 +87,7 @@ namespace Pipaslot.Logging
         public static void AddProcessLogger(this ILoggingBuilder builder, string name = "processes", RollingInterval rollingInterval = RollingInterval.Day)
         {
             builder.AddPipaslotLoggerProvider();
-            builder.Services.AddSingleton<Pipe>(s =>
+            builder.Services.AddSingleton(s =>
             {
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);

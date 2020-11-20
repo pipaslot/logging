@@ -26,6 +26,7 @@ namespace Pipaslot.Logging.Queues
         public int Count => 0;
         public string TraceIdentifier { get; }
         public DateTimeOffset Time { get; }
+
         public bool HasAnyRecord()
         {
             return false;

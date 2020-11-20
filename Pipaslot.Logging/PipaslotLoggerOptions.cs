@@ -1,7 +1,5 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-using System;
-
 namespace Pipaslot.Logging
 {
     public class PipaslotLoggerOptions

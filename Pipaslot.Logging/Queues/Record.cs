@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
-    /// Single input from logger
+    ///     Single input from logger
     /// </summary>
     public class Record
     {

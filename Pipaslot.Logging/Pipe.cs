@@ -5,8 +5,8 @@ namespace Pipaslot.Logging
 {
     public class Pipe
     {
-        private readonly ILogWriter _writer;
         private readonly IQueueFilter _filter;
+        private readonly ILogWriter _writer;
 
         public Pipe(ILogWriter writer, IQueueFilter filter)
         {
@@ -17,9 +17,7 @@ namespace Pipaslot.Logging
         public void Process(IQueue queue)
         {
             var processed = _filter.Filter(queue);
-            if(processed.HasAnyRecord()){
-                _writer.WriteLog(processed);
-            }
+            if (processed.HasAnyRecord()) _writer.WriteLog(processed);
         }
     }
 }

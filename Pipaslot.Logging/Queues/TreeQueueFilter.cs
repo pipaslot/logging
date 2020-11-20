@@ -19,29 +19,22 @@ namespace Pipaslot.Logging.Queues
             var items = namespaceOrClass
                 .Select(i => i.ToLower())
                 .Distinct();
-            foreach (var item in items)
-            {
+            foreach (var item in items){
                 _classes.Add(item);
             }
         }
-        
+
         public IQueue Filter(IQueue queue)
         {
             var records = new List<Record>(queue.Count);
             int? endDepth = null;
-            foreach (var log in queue)
-            {
+            foreach (var log in queue){
                 var lowercase = log.CategoryName.ToLower() ?? "";
                 var isIncluded = _classes.Any(c => lowercase.StartsWith(c));
-                if (endDepth == null && isIncluded)
-                {
-                    endDepth = log.Depth;
-                }
-                if (endDepth != null && log.Depth >= endDepth.Value)
-                {
-                    records.Add(log);
-                }
+                if (endDepth == null && isIncluded) endDepth = log.Depth;
+                if (endDepth != null && log.Depth >= endDepth.Value) records.Add(log);
             }
+
             return queue.CloneWith(records);
         }
     }

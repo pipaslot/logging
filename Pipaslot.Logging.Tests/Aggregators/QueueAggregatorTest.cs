@@ -30,7 +30,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
             var options = new PipaslotLoggerOptionsMock();
             var pipes = new[]
             {
-                new Pipe(_writerMock.Object, new NullFilter()),
+                new Pipe(_writerMock.Object, new NullFilter())
             };
             _aggregator = new QueueAggregator(pipes, options.Object);
             return new PipaslotLogger(httpContextAccessor, _aggregator, "category");
@@ -78,10 +78,10 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_FullScope_DecreaseScopeCauseWritingWithWrappingScopeInResult()
         {
             var logger = CreateLogger();
-            using (logger.BeginScope(null))
-            {
+            using (logger.BeginScope(null)){
                 logger.Log(LogLevel.Critical, "message");
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
@@ -90,10 +90,10 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_FullMethod_DecreaseScopeCauseWritingWithWrappingMethodInResult()
         {
             var logger = CreateLogger();
-            using (logger.BeginMethod())
-            {
+            using (logger.BeginMethod()){
                 logger.Log(LogLevel.Critical, "message");
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
@@ -102,13 +102,12 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_NestedFullScopeWithRecord_DecreaseScopeCauseWritingWithWrappingScopeInResult()
         {
             var logger = CreateLogger();
-            using (logger.BeginScope(null))
-            {
-                using (logger.BeginScope(null))
-                {
+            using (logger.BeginScope(null)){
+                using (logger.BeginScope(null)){
                     logger.Log(LogLevel.Critical, "message");
                 }
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(5);
         }
@@ -117,13 +116,12 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_NestedFullMethodWithRecord_DecreaseScopeCauseWritingWithWrappingMethodInResult()
         {
             var logger = CreateLogger();
-            using (logger.BeginMethod())
-            {
-                using (logger.BeginMethod())
-                {
+            using (logger.BeginMethod()){
+                using (logger.BeginMethod()){
                     logger.Log(LogLevel.Critical, "message");
                 }
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(5);
         }
@@ -136,9 +134,9 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_FullScopeWithoutRecord_WriteIsIgnored()
         {
             var logger = CreateLogger();
-            using (logger.BeginScope(null))
-            {
+            using (logger.BeginScope(null)){
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
@@ -147,9 +145,9 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_FullMethodWithoutRecord_WriteIsIgnored()
         {
             var logger = CreateLogger();
-            using (logger.BeginMethod())
-            {
+            using (logger.BeginMethod()){
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
@@ -158,12 +156,11 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_NestedFullScopeWithoutRecord_WriteIsIgnored()
         {
             var logger = CreateLogger();
-            using (logger.BeginScope(null))
-            {
-                using (logger.BeginScope(null))
-                {
+            using (logger.BeginScope(null)){
+                using (logger.BeginScope(null)){
                 }
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
@@ -172,18 +169,17 @@ namespace Pipaslot.Logging.Tests.Aggregators
         public void ScopeEnd_NestedFullMethodWithoutRecord_WriteIsIgnored()
         {
             var logger = CreateLogger();
-            using (logger.BeginMethod())
-            {
-                using (logger.BeginMethod())
-                {
+            using (logger.BeginMethod()){
+                using (logger.BeginMethod()){
                 }
             }
+
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
         #endregion
-        
+
         #region Disposing
 
         [Test]
@@ -209,6 +205,5 @@ namespace Pipaslot.Logging.Tests.Aggregators
         }
 
         #endregion
-
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Pipaslot.Logging.Demo.Services
 {
-    
     public class FlatLoggingHostedService : IHostedService
     {
         private readonly ILogger<FlatLoggingHostedService> _logger;
@@ -18,14 +17,14 @@ namespace Pipaslot.Logging.Demo.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation(nameof(FlatLoggingHostedService)+" - Hosted service started");
+            _logger.LogInformation(nameof(FlatLoggingHostedService) + " - Hosted service started");
             await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-            _logger.LogError(nameof(FlatLoggingHostedService)+" - Some error happened on hosted service");
+            _logger.LogError(nameof(FlatLoggingHostedService) + " - Some error happened on hosted service");
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation(nameof(FlatLoggingHostedService)+" - Hosted service stopped");
+            _logger.LogInformation(nameof(FlatLoggingHostedService) + " - Hosted service stopped");
             return Task.CompletedTask;
         }
     }

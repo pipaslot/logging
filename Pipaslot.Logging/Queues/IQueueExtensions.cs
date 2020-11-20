@@ -8,6 +8,7 @@ namespace Pipaslot.Logging.Queues
         {
             return new FixedSizeQueue(queue.TraceIdentifier, queue.Time, logs);
         }
+
         public static IQueue CloneEmpty(this IQueue queue)
         {
             return new EmptyQueue(queue.TraceIdentifier, queue.Time);

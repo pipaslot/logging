@@ -11,10 +11,7 @@ namespace Pipaslot.Logging.Demo.Services
         public Task SendLog(IQueue queue)
         {
             var log = _formatter.Format(queue);
-            if (!string.IsNullOrWhiteSpace(log))
-            {
-                Console.WriteLine(nameof(LogSender) + " - " + log);
-            }
+            if (!string.IsNullOrWhiteSpace(log)) Console.WriteLine(nameof(LogSender) + " - " + log);
             return Task.CompletedTask;
         }
     }

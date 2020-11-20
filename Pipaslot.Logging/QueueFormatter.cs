@@ -8,12 +8,12 @@ using Pipaslot.Logging.States;
 namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Default log file formatter
+    ///     Default log file formatter
     /// </summary>
     public class QueueFormatter
     {
         /// <summary>
-        /// Format whole logRecord group belonging to the same scope
+        ///     Format whole logRecord group belonging to the same scope
         /// </summary>
         /// <param name="queue"></param>
         /// <returns></returns>
@@ -26,10 +26,8 @@ namespace Pipaslot.Logging
 
             var previousDepth = 0;
             var rows = 0;
-            foreach (var log in queue)
-            {
-                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin)
-                {
+            foreach (var log in queue){
+                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin){
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;
                 }
@@ -43,7 +41,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        /// Format severity
+        ///     Format severity
         /// </summary>
         /// <param name="severity">Message severity</param>
         public virtual string FormatSeverity(LogLevel severity)
@@ -63,7 +61,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        /// Format single log record message
+        ///     Format single log record message
         /// </summary>
         /// <param name="record">LogRecord record</param>
         /// <param name="previousDepth"></param>
@@ -79,8 +77,7 @@ namespace Pipaslot.Logging
             if (record.State != null && record.State is IState state) sb.Append(state.FormatMessage(record.CategoryName, record.Message));
             sb.Append(record.Message);
 
-            if (record.State != null && !(record.State is IState))
-            {
+            if (record.State != null && !(record.State is IState)){
                 var serializedData = SerializeState(record.State);
                 sb.Append(" ");
                 sb.Append(serializedData);
@@ -90,7 +87,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        /// Format depth shown between severity and message
+        ///     Format depth shown between severity and message
         /// </summary>
         /// <param name="previousDepth"></param>
         /// <param name="currentDepth"></param>
@@ -98,20 +95,15 @@ namespace Pipaslot.Logging
         protected virtual string FormatDepth(int previousDepth, int currentDepth, RecordType recordType)
         {
             var sb = new StringBuilder();
-            for (var i = 3; i < currentDepth; i++)
-            {
+            for (var i = 3; i < currentDepth; i++){
                 sb.Append("| ");
             }
-            if (currentDepth > 1)
-            {
+
+            if (currentDepth > 1){
                 if (previousDepth < currentDepth && recordType != RecordType.Record)
-                {
                     sb.Append("+ ");
-                }
                 else
-                {
                     sb.Append("| ");
-                }
             }
 
             return sb.ToString();

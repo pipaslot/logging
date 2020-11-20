@@ -24,7 +24,7 @@ namespace Pipaslot.Logging.Demo
             services.AddTransient<ServiceLevel1>();
             services.AddHostedService<FlatLoggingHostedService>();
             services.AddHostedService<DeepLoggingHostedService>();
-            
+
             // Register background process automatically removing old log files
             services.AddHostedService<LogFileEraseHostedService>();
         }
@@ -32,9 +32,7 @@ namespace Pipaslot.Logging.Demo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment()){
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
 
             app.UseRouting();

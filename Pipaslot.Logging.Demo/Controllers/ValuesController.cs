@@ -20,11 +20,11 @@ namespace Pipaslot.Logging.Demo.Controllers
         [HttpGet]
         public ActionResult<string> PerformComplexAction()
         {
-            using var methodScope = _logger.BeginMethod(new { FakeData = "Some fake" });
+            using var methodScope = _logger.BeginMethod(new {FakeData = "Some fake"});
             _logger.LogError("Fake error with code '{0}' from controller", 123);
             _serviceLevel1.LogScopeAndCriticalMessage();
-            _logger.LogInformation($"returned string value ");
-            _logger.LogInformationWithData("returned string value ", new { Message = "No Error" });
+            _logger.LogInformation("returned string value ");
+            _logger.LogInformationWithData("returned string value ", new {Message = "No Error"});
 
             // var message1 = "No Error";
             // var message2 = "Second";
@@ -48,8 +48,7 @@ namespace Pipaslot.Logging.Demo.Controllers
 
         private void ActionWitLoggerParameters(string firstParameter, string secondParameter)
         {
-            using (_logger.BeginMethod(new { firstParameter, secondParameter }))
-            {
+            using (_logger.BeginMethod(new {firstParameter, secondParameter})){
                 _logger.LogInformation("Hello from logged method");
             }
         }
@@ -65,8 +64,7 @@ namespace Pipaslot.Logging.Demo.Controllers
         [HttpGet("{repeat}/scopes")]
         public ActionResult<string> PerformActionWithLoggingInsideScope(int repeat)
         {
-            using (_logger.BeginMethod())
-            {
+            using (_logger.BeginMethod()){
                 _serviceLevel1.LogMessage(repeat);
                 return "Completed";
             }

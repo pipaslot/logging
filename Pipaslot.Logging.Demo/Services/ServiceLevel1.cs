@@ -20,10 +20,9 @@ namespace Pipaslot.Logging.Demo.Services
 
         public void LogMessage(int repeat)
         {
-            for (int i = 0; i < repeat; i++){
+            for (var i = 0; i < repeat; i++){
                 _logger.LogInformation("Operation performed");
             }
-
         }
     }
 }

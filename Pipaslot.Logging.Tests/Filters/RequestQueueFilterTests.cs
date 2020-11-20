@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Filters;
 using Pipaslot.Logging.Queues;
@@ -13,7 +12,7 @@ namespace Pipaslot.Logging.Tests.Filters
         {
             var queue = new GrowingQueue("request")
             {
-                RecordFactory.Create( 0,RecordType.Record,LogLevel.Trace)
+                RecordFactory.Create(0, RecordType.Record, LogLevel.Trace)
             };
 
             var filter = new RequestQueueFilter();
@@ -27,7 +26,7 @@ namespace Pipaslot.Logging.Tests.Filters
         {
             var queue = new GrowingQueue(Constants.CliTraceIdentifierPrefix)
             {
-                RecordFactory.Create( 0,RecordType.Record,LogLevel.Critical)
+                RecordFactory.Create(0, RecordType.Record, LogLevel.Critical)
             };
 
             var filter = new RequestQueueFilter();

@@ -17,8 +17,7 @@ namespace Pipaslot.Logging.Demo.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using (_logger.BeginMethod(new {FakeData = "FakeValue"}))
-            {
+            using (_logger.BeginMethod(new {FakeData = "FakeValue"})){
                 _logger.LogInformation(nameof(DeepLoggingHostedService) + " - Hosted service started");
                 NestedMethod();
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
@@ -26,18 +25,17 @@ namespace Pipaslot.Logging.Demo.Services
             }
         }
 
-        private void NestedMethod()
-        {
-            using (_logger.BeginMethod())
-            {
-                _logger.LogInformation(nameof(DeepLoggingHostedService) + " - Nested method");
-            }
-        }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation(nameof(DeepLoggingHostedService)+" - Hosted service stopped");
+            _logger.LogInformation(nameof(DeepLoggingHostedService) + " - Hosted service stopped");
             return Task.CompletedTask;
+        }
+
+        private void NestedMethod()
+        {
+            using (_logger.BeginMethod()){
+                _logger.LogInformation(nameof(DeepLoggingHostedService) + " - Nested method");
+            }
         }
     }
 }

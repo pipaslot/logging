@@ -33,6 +33,7 @@ namespace Pipaslot.Logging.Queues
         public int Count => _records.Count();
         public string TraceIdentifier { get; }
         public DateTimeOffset Time { get; }
+
         public bool HasAnyRecord()
         {
             return this.Any(l => l.Type == RecordType.Record);

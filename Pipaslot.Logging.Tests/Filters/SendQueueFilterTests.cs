@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Pipaslot.Logging.Filters;
 using Pipaslot.Logging.Queues;
-using Pipaslot.Logging.Tests.Mocks;
 
 namespace Pipaslot.Logging.Tests.Filters
 {
@@ -14,7 +12,7 @@ namespace Pipaslot.Logging.Tests.Filters
         {
             var queue = new GrowingQueue("")
             {
-                RecordFactory.Create(3,RecordType.Record,LogLevel.Error)
+                RecordFactory.Create(3, RecordType.Record, LogLevel.Error)
             };
 
             var filter = new SendQueueFilter(LogLevel.Error);
@@ -28,8 +26,8 @@ namespace Pipaslot.Logging.Tests.Filters
         {
             var queue = new GrowingQueue("")
             {
-                RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
-                RecordFactory.Create(1,RecordType.Record,LogLevel.Information)
+                RecordFactory.Create(1, RecordType.ScopeBeginIgnored),
+                RecordFactory.Create(1, RecordType.Record, LogLevel.Information)
             };
 
             var filter = new SendQueueFilter(LogLevel.Error);
@@ -43,13 +41,13 @@ namespace Pipaslot.Logging.Tests.Filters
         {
             var queue = new GrowingQueue("")
             {
-                RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
-                RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(2,RecordType.ScopeBeginIgnored),
-                RecordFactory.Create(2,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(2,RecordType.ScopeEndIgnored),
-                RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(1,RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1, RecordType.ScopeBeginIgnored),
+                RecordFactory.Create(1, RecordType.Record, LogLevel.Information),
+                RecordFactory.Create(2, RecordType.ScopeBeginIgnored),
+                RecordFactory.Create(2, RecordType.Record, LogLevel.Information),
+                RecordFactory.Create(2, RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1, RecordType.Record, LogLevel.Information),
+                RecordFactory.Create(1, RecordType.ScopeEndIgnored)
             };
 
             var filter = new SendQueueFilter(LogLevel.Error);
@@ -63,13 +61,13 @@ namespace Pipaslot.Logging.Tests.Filters
         {
             var queue = new GrowingQueue("")
             {
-                RecordFactory.Create(1,RecordType.ScopeBeginIgnored),
-                RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(2,RecordType.ScopeBeginIgnored),
-                RecordFactory.Create(2,RecordType.Record,LogLevel.Error),
-                RecordFactory.Create(2,RecordType.ScopeEndIgnored),
-                RecordFactory.Create(1,RecordType.Record,LogLevel.Information),
-                RecordFactory.Create(1,RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1, RecordType.ScopeBeginIgnored),
+                RecordFactory.Create(1, RecordType.Record, LogLevel.Information),
+                RecordFactory.Create(2, RecordType.ScopeBeginIgnored),
+                RecordFactory.Create(2, RecordType.Record, LogLevel.Error),
+                RecordFactory.Create(2, RecordType.ScopeEndIgnored),
+                RecordFactory.Create(1, RecordType.Record, LogLevel.Information),
+                RecordFactory.Create(1, RecordType.ScopeEndIgnored)
             };
 
             var filter = new SendQueueFilter(LogLevel.Error);

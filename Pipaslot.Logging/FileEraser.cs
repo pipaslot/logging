@@ -6,8 +6,8 @@ namespace Pipaslot.Logging
 {
     public class FileEraser
     {
-        private readonly IOptions<PipaslotLoggerOptions> _options;
         private readonly IFileNameFormatter _nameFormatter;
+        private readonly IOptions<PipaslotLoggerOptions> _options;
 
         public FileEraser(IOptions<PipaslotLoggerOptions> options, IFileNameFormatter nameFormatter)
         {
@@ -16,16 +16,14 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        /// Erase files by date
+        ///     Erase files by date
         /// </summary>
         /// <param name="minAge">Minimal file age to be removed</param>
         /// <returns></returns>
         public int Run(TimeSpan minAge)
         {
             var directory = _options.Value.OutputPath;
-            if (!Directory.Exists(directory)){
-                return 0;
-            }
+            if (!Directory.Exists(directory)) return 0;
 
             var erased = 0;
             var minDate = DateTime.Now - minAge;

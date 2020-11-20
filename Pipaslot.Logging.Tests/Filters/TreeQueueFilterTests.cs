@@ -49,23 +49,23 @@ namespace Pipaslot.Logging.Tests.Filters
         public void IgnoreWrappingNotSpecifiedCategory()
         {
             var records = new List<Record>();
-            
+
             records.Add(RecordFactory.Create(Ignore, 0, "no ", RecordType.Record, LogLevel.Critical));
             records.Add(RecordFactory.Create(Ignore, 1, "no ", RecordType.ScopeBeginIgnored));
             records.Add(RecordFactory.Create(Ignore, 1, "no ", RecordType.Record, LogLevel.Critical));
 
             records.Add(RecordFactory.Create(Categ1, 2, "yes", RecordType.ScopeBeginIgnored));
             records.Add(RecordFactory.Create(Categ1, 2, "yes", RecordType.Record, LogLevel.Critical));
-            
+
             records.Add(RecordFactory.Create(Categ2, 2, "yes", RecordType.Record, LogLevel.Critical));
             records.Add(RecordFactory.Create(Categ2, 3, "yes", RecordType.ScopeBeginIgnored));
             records.Add(RecordFactory.Create(Categ2, 3, "yes", RecordType.Record, LogLevel.Critical));
             records.Add(RecordFactory.Create(Categ2, 3, "yes", RecordType.ScopeEndIgnored));
             records.Add(RecordFactory.Create(Categ2, 2, "yes", RecordType.Record, LogLevel.Critical));
-            
+
             records.Add(RecordFactory.Create(Categ1, 2, "yes", RecordType.Record, LogLevel.Critical));
             records.Add(RecordFactory.Create(Categ1, 2, "yes", RecordType.ScopeEndIgnored));
-            
+
             records.Add(RecordFactory.Create(Ignore, 1, "no ", RecordType.Record, LogLevel.Critical));
             records.Add(RecordFactory.Create(Ignore, 1, "no ", RecordType.ScopeEndIgnored));
             records.Add(RecordFactory.Create(Ignore, 0, "no ", RecordType.Record, LogLevel.Critical));

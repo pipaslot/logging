@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Pipaslot.Logging.Queues
 {
-
     /// <summary>
-    /// Set of log records collected together
+    ///     Set of log records collected together
     /// </summary>
     public class GrowingQueue : IQueue
     {
@@ -18,32 +16,24 @@ namespace Pipaslot.Logging.Queues
         {
             TraceIdentifier = traceIdentifier;
         }
-        
+
         /// <summary>
-        /// Request or process trace identifier
+        ///     Current log level depth
+        /// </summary>
+        internal int Depth { get; private set; }
+
+        /// <summary>
+        ///     Request or process trace identifier
         /// </summary>
         public string TraceIdentifier { get; }
 
         /// <summary>
-        /// First record creation date
+        ///     First record creation date
         /// </summary>
         public DateTimeOffset Time { get; } = DateTimeOffset.Now;
-        
-        /// <summary>
-        /// Current log level depth
-        /// </summary>
-        internal int Depth { get; private set; }
 
-        internal void Add(Record record)
-        {
-            _logs.Add(record);
-            if (record.Type != RecordType.ScopeEndIgnored)
-            {
-                Depth = record.Depth;
-            }
-        }
         /// <summary>
-        /// Returns true if at least one message (not a scope) is written
+        ///     Returns true if at least one message (not a scope) is written
         /// </summary>
         /// <returns></returns>
         public bool HasAnyRecord()
@@ -60,9 +50,16 @@ namespace Pipaslot.Logging.Queues
         {
             return GetEnumerator();
         }
+
         /// <summary>
-        /// Amount of records written into queue
+        ///     Amount of records written into queue
         /// </summary>
         public int Count => _logs.Count;
+
+        internal void Add(Record record)
+        {
+            _logs.Add(record);
+            if (record.Type != RecordType.ScopeEndIgnored) Depth = record.Depth;
+        }
     }
 }

@@ -6,16 +6,16 @@ using Pipaslot.Logging.Queues;
 namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Default file writer implementation containing locking for unique access
+    ///     Default file writer implementation containing locking for unique access
     /// </summary>
     public class FileWriter : ILogWriter
     {
         private readonly object _fileLock = new object();
+        private readonly IFileNameFormatter _fileNameFormatter;
+        private readonly QueueFormatter _formatter;
         private readonly string _name;
         private readonly IOptions<PipaslotLoggerOptions> _options;
-        private readonly QueueFormatter _formatter;
         private readonly RollingInterval _rollingInterval;
-        private readonly IFileNameFormatter _fileNameFormatter;
 
         public FileWriter(IOptions<PipaslotLoggerOptions> options, string name, RollingInterval rollingInterval, IFileNameFormatter fileNameFormatter) : this(options, name,
             rollingInterval, fileNameFormatter, new QueueFormatter())
@@ -32,7 +32,7 @@ namespace Pipaslot.Logging
         }
 
         /// <summary>
-        /// Write log to file if nto empty
+        ///     Write log to file if nto empty
         /// </summary>
         public void WriteLog(IQueue queue)
         {

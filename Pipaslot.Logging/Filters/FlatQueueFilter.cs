@@ -19,15 +19,13 @@ namespace Pipaslot.Logging.Filters
         public IQueue Filter(IQueue queue)
         {
             var records = new List<Record>(queue.Count);
-            foreach (var log in queue)
-            {
-                if (log.Type == RecordType.Record && _logLevel <= log.Severity)
-                {
+            foreach (var log in queue){
+                if (log.Type == RecordType.Record && _logLevel <= log.Severity){
                     records.Add(log);
                 }
             }
+
             return queue.CloneWith(records);
         }
-
     }
 }

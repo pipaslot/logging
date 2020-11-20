@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Pipaslot.Logging.States
+﻿namespace Pipaslot.Logging.States
 {
     public class IncreaseMethodState : IncreaseScopeState
     {

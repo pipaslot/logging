@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Pipaslot.Logging.Queues
 {
     /// <summary>
-    /// Queue collection carrying about concurrent queue creating
+    ///     Queue collection carrying about concurrent queue creating
     /// </summary>
     public class QueueCollection : IDisposable
     {
@@ -18,28 +18,24 @@ namespace Pipaslot.Logging.Queues
 
         public void Remove(string traceIdentifier)
         {
-            lock (_queueLock)
-            {
+            lock (_queueLock){
                 _queues.Remove(traceIdentifier);
             }
         }
-        
+
         /// <summary>
-        /// Returns existing queue or return null if does not exists
+        ///     Returns existing queue or return null if does not exists
         /// </summary>
         /// <param name="traceIdentifier">Queue unique identifier</param>
         public GrowingQueue? GetQueueOrNull(string traceIdentifier)
         {
             // ReSharper disable once InconsistentlySynchronizedField
-            if (_queues.TryGetValue(traceIdentifier, out var queue))
-            {
-                return queue;
-            }
+            if (_queues.TryGetValue(traceIdentifier, out var queue)) return queue;
             return null;
         }
 
         /// <summary>
-        /// Returns existing queue or create new with prevention for concurrency creation
+        ///     Returns existing queue or create new with prevention for concurrency creation
         /// </summary>
         /// <param name="traceIdentifier">Queue unique identifier</param>
         public GrowingQueue GetOrCreateQueue(string traceIdentifier)
@@ -48,8 +44,7 @@ namespace Pipaslot.Logging.Queues
             // This approach is 2x faster in comparison to using concurrent dictionary
             // ReSharper disable once InconsistentlySynchronizedField
             if (_queues.TryGetValue(traceIdentifier, out var queue)) return queue;
-            lock (_queueLock)
-            {
+            lock (_queueLock){
                 if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
                 var request = new GrowingQueue(traceIdentifier);
@@ -57,7 +52,7 @@ namespace Pipaslot.Logging.Queues
                 return request;
             }
         }
-        
+
         /// <returns>Can be null if can not create a new queue</returns>
         [Obsolete("Use different method overload")]
         public GrowingQueue? GetQueue(string traceIdentifier, bool canCreate)
@@ -66,10 +61,8 @@ namespace Pipaslot.Logging.Queues
             // This approach is 2x faster in comparison to using concurrent dictionary
             // ReSharper disable once InconsistentlySynchronizedField
             if (_queues.TryGetValue(traceIdentifier, out var queue)) return queue;
-            if (canCreate)
-            {
-                lock (_queueLock)
-                {
+            if (canCreate){
+                lock (_queueLock){
                     if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
                     var request = new GrowingQueue(traceIdentifier);
@@ -77,17 +70,17 @@ namespace Pipaslot.Logging.Queues
                     return request;
                 }
             }
+
             return null;
         }
 
         /// <summary>
-        /// Get all registered queues
+        ///     Get all registered queues
         /// </summary>
         /// <returns></returns>
         public Dictionary<string, GrowingQueue> GetAllQueues()
         {
-            lock (_queueLock)
-            {
+            lock (_queueLock){
                 return _queues;
             }
         }

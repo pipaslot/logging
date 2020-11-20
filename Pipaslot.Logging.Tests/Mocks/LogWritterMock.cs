@@ -9,6 +9,7 @@ namespace Pipaslot.Logging.Tests.Mocks
         {
             Verify(w => w.WriteLog(It.Is<GrowingQueue>(scope => scope.Count == count)), Times.Exactly(times));
         }
+
         public void VerifyWriteLogIsCalledOnceWithLogCountEqualTo(int count)
         {
             Verify(w => w.WriteLog(It.Is<GrowingQueue>(scope => scope.Count == count)), Times.Once);

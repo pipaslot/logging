@@ -9,9 +9,9 @@ namespace Pipaslot.Logging
 {
     public class PipaslotLoggerProvider : ILoggerProvider
     {
+        private readonly QueueAggregator _aggregator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ConcurrentDictionary<string, PipaslotLogger> _sessions = new ConcurrentDictionary<string, PipaslotLogger>();
-        private readonly QueueAggregator _aggregator;
 
         public PipaslotLoggerProvider(IHttpContextAccessor httpContextAccessor, IEnumerable<Pipe> pipes, IOptions<PipaslotLoggerOptions> options)
         {
@@ -29,7 +29,7 @@ namespace Pipaslot.Logging
         /// </summary>
         public ILogger CreateLogger(string categoryName)
         {
-            return _sessions.GetOrAdd(categoryName, name => new PipaslotLogger( _httpContextAccessor, _aggregator, categoryName));
+            return _sessions.GetOrAdd(categoryName, name => new PipaslotLogger(_httpContextAccessor, _aggregator, categoryName));
         }
     }
 }

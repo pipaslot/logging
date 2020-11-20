@@ -7,12 +7,12 @@ using Pipaslot.Logging.States;
 namespace Pipaslot.Logging.Aggregators
 {
     /// <summary>
-    /// Basic abstraction of Queue handling messages and scopes
+    ///     Basic abstraction of Queue handling messages and scopes
     /// </summary>
     public class QueueAggregator
     {
-        private readonly IEnumerable<Pipe> _pipes;
         private readonly IOptions<PipaslotLoggerOptions> _options;
+        private readonly IEnumerable<Pipe> _pipes;
         private readonly QueueCollection _queues = new QueueCollection();
 
         public QueueAggregator(IEnumerable<Pipe> pipes, IOptions<PipaslotLoggerOptions> options)
@@ -20,18 +20,14 @@ namespace Pipaslot.Logging.Aggregators
             _pipes = pipes;
             _options = options;
         }
-        
+
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
         {
             var queue = _queues.GetQueueOrNull(traceIdentifier);
             if (queue != null)
-            {
                 queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
-            }
             else
-            {
                 WriteQueue(new FixedSizeQueue(traceIdentifier, new Record(categoryName, severity, message, state, 0, RecordType.Record)));
-            }
         }
 
         public virtual void WriteScopeChange<TState>(string traceIdentifier, string categoryName, TState state)
@@ -50,10 +46,8 @@ namespace Pipaslot.Logging.Aggregators
                 depth--;
             }
             else
-            {
                 queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
-            }
-            
+
 
             // LogRecord or finish
             if (depth <= 0){
@@ -75,24 +69,17 @@ namespace Pipaslot.Logging.Aggregators
 
         private void WriteQueue(IQueue queue)
         {
-            foreach (var pipe in _pipes)
-            {
+            foreach (var pipe in _pipes){
                 pipe.Process(queue);
             }
         }
-        
+
         private static RecordType GetLogType<TState>(PipaslotLoggerOptions options)
         {
             var stateType = typeof(TState);
-            if (stateType == typeof(IncreaseScopeState)){
-                return options.IncludeScopes ? RecordType.ScopeBegin : RecordType.ScopeBeginIgnored;
-            }
-            if (stateType == typeof(IncreaseMethodState)){
-                return options.IncludeMethods ? RecordType.ScopeBegin : RecordType.ScopeBeginIgnored;
-            }
-            if (stateType == typeof(DecreaseScopeState)){
-                return RecordType.ScopeEndIgnored;
-            }
+            if (stateType == typeof(IncreaseScopeState)) return options.IncludeScopes ? RecordType.ScopeBegin : RecordType.ScopeBeginIgnored;
+            if (stateType == typeof(IncreaseMethodState)) return options.IncludeMethods ? RecordType.ScopeBegin : RecordType.ScopeBeginIgnored;
+            if (stateType == typeof(DecreaseScopeState)) return RecordType.ScopeEndIgnored;
             return RecordType.Record;
         }
     }

@@ -9,8 +9,8 @@ namespace Pipaslot.Logging
 {
     public class PipaslotLogger : ILogger
     {
-        private readonly string _categoryName;
         private readonly QueueAggregator _aggregator;
+        private readonly string _categoryName;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public PipaslotLogger(IHttpContextAccessor httpContextAccessor, QueueAggregator aggregator, string categoryName)
@@ -66,7 +66,6 @@ namespace Pipaslot.Logging
             var context = _httpContextAccessor.HttpContext;
             var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
             _aggregator.WriteScopeChange(identifier, _categoryName, state);
-            
         }
 
         private string GetProcessIdentifier()

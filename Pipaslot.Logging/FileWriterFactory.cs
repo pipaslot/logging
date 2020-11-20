@@ -3,12 +3,12 @@
 namespace Pipaslot.Logging
 {
     /// <summary>
-    /// Default file writer factory implementation
+    ///     Default file writer factory implementation
     /// </summary>
     public class FileWriterFactory : IFileWriterFactory
     {
-        private readonly IOptions<PipaslotLoggerOptions> _options;
         private readonly IFileNameFormatter _fileNameFormatter;
+        private readonly IOptions<PipaslotLoggerOptions> _options;
 
         public FileWriterFactory(IOptions<PipaslotLoggerOptions> options, IFileNameFormatter fileNameFormatter)
         {

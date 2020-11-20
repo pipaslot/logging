@@ -8,7 +8,7 @@ namespace Pipaslot.Logging
     public interface ILogWriter
     {
         /// <summary>
-        /// Write log scope to target stream
+        ///     Write log scope to target stream
         /// </summary>
         /// <param name="records"></param>
         void WriteLog(IQueue records);

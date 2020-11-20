@@ -10,9 +10,9 @@ namespace Pipaslot.Logging.Demo.Services
     public class LogFileEraseHostedService : BackgroundService
     {
         private readonly ILogger<LogFileEraseHostedService> _logger;
-        private readonly IServiceProvider _serviceProvider;
         private readonly TimeSpan _maxAge = TimeSpan.FromDays(1);
         private readonly TimeSpan _repeatInterval = TimeSpan.FromDays(1);
+        private readonly IServiceProvider _serviceProvider;
 
         public LogFileEraseHostedService(ILogger<LogFileEraseHostedService> logger, IServiceProvider serviceProvider)
         {
@@ -28,6 +28,7 @@ namespace Pipaslot.Logging.Demo.Services
                     var erasedCount = eraser.Run(_maxAge);
                     _logger.LogInformation("Erased {0} log files", erasedCount);
                 }
+
                 await Task.Delay(_repeatInterval, stoppingToken);
             }
         }
