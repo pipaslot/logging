@@ -11,7 +11,9 @@
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
     <PackageReleaseNotes>
-      3.0.0 - Queue definition split (internal) and troughput imporvements for cases we are using multiple writers
+      3.0.0 - Queue definition split (internal) 
+            - Troughput imporvements for cases we are using multiple writers
+            - Fix definition of log level filters for Pipaslot logger provider
       2.2.1 - Fix for writing logs without scope for FlatQueueAggregator and ProcessQueueAggregator
       2.2.0 - Provide customizable file name formatter with rolling interval and old file erasing
             - IFileWritterFactory signature extended
