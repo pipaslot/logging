@@ -45,7 +45,7 @@ namespace Pipaslot.Logging.Aggregators
             }
             else if (logType == RecordType.ScopeEndIgnored)
             {
-                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType), depth -1);
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType), depth - 1);
             }
             else
                 queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));

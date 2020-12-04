@@ -82,7 +82,6 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 logger.Log(LogLevel.Critical, "message");
             }
 
-            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
 
@@ -94,7 +93,6 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 logger.Log(LogLevel.Critical, "message");
             }
 
-            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
 
@@ -108,7 +106,6 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 }
             }
 
-            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(5);
         }
 
@@ -122,7 +119,6 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 }
             }
 
-            _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(5);
         }
 
@@ -137,7 +133,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
             using (logger.BeginScope(null)){
             }
 
-            _aggregator.Dispose();
+            _aggregator.Dispose();// Ignore event if dispose is called
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
@@ -148,7 +144,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
             using (logger.BeginMethod()){
             }
 
-            _aggregator.Dispose();
+            _aggregator.Dispose();// Ignore event if dispose is called
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
@@ -161,7 +157,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 }
             }
 
-            _aggregator.Dispose();
+            _aggregator.Dispose();// Ignore event if dispose is called
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
@@ -174,7 +170,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
                 }
             }
 
-            _aggregator.Dispose();
+            _aggregator.Dispose();// Ignore event if dispose is called
             _writerMock.VerifyWriteLogIsNotCalled();
         }
 
