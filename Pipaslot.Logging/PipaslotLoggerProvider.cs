@@ -8,6 +8,7 @@ using Pipaslot.Logging.Configuration;
 
 namespace Pipaslot.Logging
 {
+    [ProviderAlias("Pipaslot")]
     public class PipaslotLoggerProvider : ILoggerProvider
     {
         private readonly QueueAggregator _aggregator;
