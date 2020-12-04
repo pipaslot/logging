@@ -26,7 +26,7 @@ namespace Pipaslot.Logging.Aggregators
         {
             var queue = _queues.GetQueueOrNull(traceIdentifier);
             if (queue != null)
-                queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record));
+                queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record), queue.Depth);
             else
                 WriteQueue(new FixedSizeQueue(traceIdentifier, new Record(categoryName, severity, message, state, 0, RecordType.Record)));
         }
@@ -38,20 +38,21 @@ namespace Pipaslot.Logging.Aggregators
             // Update depth
             var depth = queue.Depth;
             var logType = GetLogType<TState>(_options.Value);
-            if (logType == RecordType.ScopeBegin || logType == RecordType.ScopeBeginIgnored){
+            if (logType == RecordType.ScopeBegin || logType == RecordType.ScopeBeginIgnored)
+            {
                 depth++;
-                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType), depth);
             }
-            else if (logType == RecordType.ScopeEndIgnored){
-                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
-                depth--;
+            else if (logType == RecordType.ScopeEndIgnored)
+            {
+                queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType), depth -1);
             }
             else
                 queue.Add(new Record(categoryName, LogLevel.None, "", state, depth, logType));
 
 
             // LogRecord or finish
-            if (depth <= 0){
+            if (queue.Depth <= 0){
                 // Remove request history from memory 
                 _queues.Remove(traceIdentifier);
                 WriteQueue(queue);

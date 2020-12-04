@@ -56,10 +56,13 @@ namespace Pipaslot.Logging.Queues
         /// </summary>
         public int Count => _logs.Count;
 
-        internal void Add(Record record)
+        internal void Add(Record record, int? queueDepth = null)
         {
             _logs.Add(record);
-            if (record.Type != RecordType.ScopeEndIgnored) Depth = record.Depth;
+            if (queueDepth.HasValue)
+            {
+                Depth = queueDepth.Value;
+            }
         }
     }
 }
