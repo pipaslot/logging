@@ -30,14 +30,17 @@ and provide logging options in your `appsettings.json` file:
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Warning", // Define standard log filtering 
-      "MyApp": "Information", // Log all informations from our application (includes nested namespaces like MyApp.Libs...)
-      "Microsoft.AspNetCore.Hosting.Diagnostics": "Information" // Log HTTP requests
+      "Default": "Information" // Use standard logging configuration
     },
     "Pipaslot": {
       "OutputPath": "./logs",
       "IncludeScopes": false, // Log scopes created by ILogger<>.BeginScope()
-      "IncludeMethods": true  // Log method calls created by ILogger<>.BeginMethod()
+      "IncludeMethods": true,  // Log method calls created by ILogger<>.BeginMethod()
+      "LogLevel": {
+        "Default": "Warning", // Define default minimal log level
+        "MyApp": "Information", // Log all informations from our application (includes nested namespaces like MyApp.Libs...)
+        "Microsoft.AspNetCore.Hosting.Diagnostics": "Information" // Log HTTP requests
+      }
     }
   }
 }
