@@ -13,7 +13,7 @@ namespace Pipaslot.Logging
         private readonly string _categoryName;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PipaslotLogger(IHttpContextAccessor httpContextAccessor, QueueAggregator aggregator, string categoryName)
+        internal PipaslotLogger(IHttpContextAccessor httpContextAccessor, QueueAggregator aggregator, string categoryName)
         {
             _httpContextAccessor = httpContextAccessor;
             _categoryName = categoryName;
@@ -46,12 +46,9 @@ namespace Pipaslot.Logging
         /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)
         {
-            if (state is IState)
-                WriteScopeChange(state);
-            else
-                WriteScopeChange(new IncreaseScopeState("", state));
-
-            return new DisposeCallback(() => { WriteScopeChange(new DecreaseScopeState()); });
+            return state is IState state1 
+                ? WriteScopeChange(state1) 
+                : WriteScopeChange(new IncreaseScopeState("", state));
         }
 
         private void Write<TState>(LogLevel severity, string message, TState state)
@@ -61,11 +58,12 @@ namespace Pipaslot.Logging
             _aggregator.WriteLog(identifier, _categoryName, severity, message, state);
         }
 
-        private void WriteScopeChange<TState>(TState state)
+        private IDisposable WriteScopeChange(IState state)
         {
             var context = _httpContextAccessor.HttpContext;
             var identifier = context?.TraceIdentifier ?? GetProcessIdentifier();
             _aggregator.WriteScopeChange(identifier, _categoryName, state);
+            return new DisposeCallback(() => { WriteScopeChange(new DecreaseScopeState(state)); });
         }
 
         private string GetProcessIdentifier()

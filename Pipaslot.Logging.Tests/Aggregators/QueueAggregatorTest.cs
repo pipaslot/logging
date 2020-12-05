@@ -51,7 +51,7 @@ namespace Pipaslot.Logging.Tests.Aggregators
 
         #endregion
 
-        #region Scope Only - ignored
+        #region ScopeBegin Only - ignored
 
         [Test]
         public void ScopeOnly_OnlyIncreaseScopeIsLogged_IgnoreScope()
@@ -68,6 +68,34 @@ namespace Pipaslot.Logging.Tests.Aggregators
             logger.BeginMethod();
 
             _writerMock.VerifyWriteLogIsNotCalled();
+        }
+
+        #endregion
+
+        #region Missing ScopeEnd in nested scopes - Cause write
+
+        [Test]
+        public void MissingScopeEndInNestedScopes_ScopeEndIsMissing_WriteScope()
+        {
+            var logger = CreateLogger();
+            using (logger.BeginScope(null))
+            {
+                logger.BeginScope(null);
+                logger.Log(LogLevel.Critical, "message");
+            }
+            _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(4);
+        }
+
+        [Test]
+        public void MissingMethodEndInNestedScopes_ScopeEndIsMissing_WriteScope()
+        {
+            var logger = CreateLogger();
+            using (logger.BeginMethod())
+            {
+                logger.BeginMethod();
+                logger.Log(LogLevel.Critical, "message");
+            }
+            _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(4);
         }
 
         #endregion
