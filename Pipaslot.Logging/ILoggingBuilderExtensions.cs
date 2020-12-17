@@ -104,7 +104,11 @@ namespace Pipaslot.Logging
             builder.Services.TryAddSingleton<IFileWriterFactory, FileWriterFactory>();
             builder.Services.TryAddSingleton<IFileNameFormatter, DefaultFileNameFormatter>();
             builder.Services.TryAddTransient<FileEraser>();
-            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider))) builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>();
+            if (builder.Services.All(s => s.ImplementationType != typeof(PipaslotLoggerProvider)))
+            {
+                builder.Services.AddSingleton<PipaslotLoggerProvider>();
+                builder.Services.AddSingleton<ILoggerProvider, PipaslotLoggerProvider>(s=>s.GetService<PipaslotLoggerProvider>());
+            }
         }
     }
 }

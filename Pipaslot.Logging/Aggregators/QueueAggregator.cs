@@ -11,8 +11,9 @@ namespace Pipaslot.Logging.Aggregators
     /// <summary>
     ///     Basic abstraction of Queue handling messages and scopes
     /// </summary>
-    internal class QueueAggregator
+    public class QueueAggregator
     {
+        internal static bool CanCreateQueueFromScopes = true;
         private readonly IOptions<PipaslotLoggerOptions> _options;
         private readonly IEnumerable<Pipe> _pipes;
         private readonly QueueCollection _queues = new QueueCollection();
@@ -23,19 +24,58 @@ namespace Pipaslot.Logging.Aggregators
             _options = options;
         }
 
-        public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
+        /// <summary>
+        /// Force queue creation
+        /// </summary>
+        internal void BeginQueue(string traceIdentifier)
+        {
+            _queues.CreateQueue(traceIdentifier);
+        }
+
+        /// <summary>
+        ///  Force queue finishing. Write all logs aggregated for specified trace identifier
+        /// </summary>
+        internal void EndQueue(string traceIdentifier)
         {
             var queue = _queues.GetQueueOrNull(traceIdentifier);
+            if (queue == null)
+            {
+                return;
+            }
+
+            _queues.Remove(traceIdentifier);
+            WriteQueue(queue);
+        }
+
+        public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
+        {
+            var writeScopesByInternalDetection = CanWriteScopesByInternalDetection(traceIdentifier);
+            var queue = _queues.GetQueueOrNull(traceIdentifier);
             if (queue != null)
+            {
                 queue.Add(new Record(categoryName, severity, message, state, queue.Depth, RecordType.Record), queue.Depth);
-            else
+            }
+            else if (writeScopesByInternalDetection)
+            {
                 WriteQueue(new FixedSizeQueue(traceIdentifier, new Record(categoryName, severity, message, state, 0, RecordType.Record)));
+            }
         }
 
         internal virtual void WriteScopeChange(string traceIdentifier, string categoryName, IState state)
         {
-            var queue = _queues.GetOrCreateQueue(traceIdentifier);
-
+            var queue = _queues.GetQueueOrNull(traceIdentifier);
+            var writeScopesByInternalDetection = CanWriteScopesByInternalDetection(traceIdentifier);
+            if (queue == null)
+            {
+                if (writeScopesByInternalDetection)
+                {
+                    queue = _queues.CreateQueue(traceIdentifier);
+                }
+                else
+                {
+                    return;
+                }
+            }
             // Update depth
             var depth = queue.Depth;
             var logType = GetLogType(state.GetType(), _options.Value);
@@ -46,7 +86,7 @@ namespace Pipaslot.Logging.Aggregators
             }
             else if (logType == RecordType.ScopeEndIgnored)
             {
-                if (queue.IncreaseScopeState == ((DecreaseScopeState) state).IncreaseScopeState)
+                if (queue.IncreaseScopeState == ((DecreaseScopeState)state).IncreaseScopeState)
                 {
                     // Some decrease scope was missing but we detected end of first scope
                     depth = 1;
@@ -59,12 +99,17 @@ namespace Pipaslot.Logging.Aggregators
 
 
             // LogRecord or finish
-            if (queue.Depth <= 0)
+            if (queue.Depth <= 0 && writeScopesByInternalDetection)
             {
                 // Remove request history from memory 
                 _queues.Remove(traceIdentifier);
                 WriteQueue(queue);
             }
+        }
+
+        private bool CanWriteScopesByInternalDetection(string traceIdentifier)
+        {
+            return CanCreateQueueFromScopes || traceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix);
         }
 
         public virtual void Dispose()

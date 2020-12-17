@@ -3,6 +3,12 @@
 Logging provider enriching [Microsoft.Extensions.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Loggin) by aggregated HTTP request logging. 
 Supports multiple file writers for grouping by requests, priorities, service calls or processes. Contains adapter for notification sending.
 
+When to use this nuget?
+- when you want easy solution for your WEB application to make structured log files with representation how the application flows through your services.
+
+When to do NOT use this nuget?
+- when your application contains lot of parallelism. In that case the log flow will be mixed as threads writes int one per-request queue of logs
+
 Register logger services by `AddRequestLogger`:
 ```
 public class Program
@@ -153,6 +159,29 @@ namespace Pipaslot.Logging.Demo.Services
                 await Task.Delay(_repeatInterval, stoppingToken);
             }
         }
+    }
+}
+```
+
+## FAQ
+### Requests are not written into log file
+This library detects end of request by scopes provided by logger and usually used by .NET framweork frapping your application execution. You can force whne scope is written in case that these scopes does not works properly in your solution.
+
+Register middleware into your request pipeline. Always register requestLogging middleware as first in pipeline to be sure that logs from next/nested pipelines will be written into log file as well
+
+```
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // ... Your services
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRequestLogging(); 
+        
+        // ... Other method pipelines
     }
 }
 ```

@@ -38,12 +38,10 @@ namespace Pipaslot.Logging.Queues
         ///     Returns existing queue or create new with prevention for concurrency creation
         /// </summary>
         /// <param name="traceIdentifier">Queue unique identifier</param>
-        public GrowingQueue GetOrCreateQueue(string traceIdentifier)
+        public GrowingQueue CreateQueue(string traceIdentifier)
         {
             // Try read without locking to improve performance
             // This approach is 2x faster in comparison to using concurrent dictionary
-            // ReSharper disable once InconsistentlySynchronizedField
-            if (_queues.TryGetValue(traceIdentifier, out var queue)) return queue;
             lock (_queueLock){
                 if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 

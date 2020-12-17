@@ -18,14 +18,18 @@ namespace Pipaslot.Logging.Tests.Aggregators
         [SetUp]
         public void Setup()
         {
+            QueueAggregator.CanCreateQueueFromScopes = true;
             _writerMock = new LogWritterMock();
         }
 
-        private PipaslotLogger CreateLogger()
+        private PipaslotLogger CreateLogger(string defaultTraceIdentifier = "Request123")
         {
             var httpContextAccessor = new HttpContextAccessor
             {
                 HttpContext = new DefaultHttpContext()
+                {
+                    TraceIdentifier = defaultTraceIdentifier
+                }
             };
             var options = new PipaslotLoggerOptionsMock();
             var pipes = new[]
@@ -226,6 +230,48 @@ namespace Pipaslot.Logging.Tests.Aggregators
 
             _aggregator.Dispose();
             _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(2);
+        }
+
+        #endregion
+
+        #region RequestLoggerMiddleware integration
+
+        [Test]
+        public void RequestLoggerMiddleware_LogScopeWithoutScopeBeginCalled_IgnoreScope()
+        {
+            var traceIdentifier = "Request123";
+            QueueAggregator.CanCreateQueueFromScopes = false;
+            var logger = CreateLogger(traceIdentifier);
+            using(logger.BeginScope(null)){
+                logger.Log(LogLevel.Critical, "message");
+            }
+            _writerMock.VerifyWriteLogIsNotCalled();
+        }
+
+        [Test]
+        public void RequestLoggerMiddleware_LogScopeWithScopeBeginCalled_WriteScope()
+        {
+            var traceIdentifier = "Request123";
+            QueueAggregator.CanCreateQueueFromScopes = false;
+            var logger = CreateLogger(traceIdentifier);
+            _aggregator.BeginQueue(traceIdentifier);
+            using(logger.BeginScope(null)){
+                logger.Log(LogLevel.Critical, "message");
+            }
+            _aggregator.EndQueue(traceIdentifier);
+            _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
+        }
+
+        [Test]
+        public void RequestLoggerMiddleware_LogScopeWithoutScopeBeginCalledButLoggingProcessData_WriteScope()
+        {
+            var traceIdentifier = Constants.CliTraceIdentifierPrefix+"123";
+            QueueAggregator.CanCreateQueueFromScopes = false;
+            var logger = CreateLogger(traceIdentifier);
+            using(logger.BeginScope(null)){
+                logger.Log(LogLevel.Critical, "message");
+            }
+            _writerMock.VerifyWriteLogIsCalledOnceWithLogCountEqualTo(3);
         }
 
         #endregion

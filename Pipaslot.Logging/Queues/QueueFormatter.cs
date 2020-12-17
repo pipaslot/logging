@@ -29,9 +29,8 @@ namespace Pipaslot.Logging.Queues
                 if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin){
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;
+                    previousDepth = log.Depth;
                 }
-
-                previousDepth = log.Depth;
             }
 
             if (rows > 0) return sb.ToString();
@@ -94,7 +93,7 @@ namespace Pipaslot.Logging.Queues
         protected virtual string FormatDepth(int previousDepth, int currentDepth, RecordType recordType)
         {
             var sb = new StringBuilder();
-            for (var i = 3; i < currentDepth; i++){
+            for (var i = 2; i < currentDepth; i++){
                 sb.Append("| ");
             }
 

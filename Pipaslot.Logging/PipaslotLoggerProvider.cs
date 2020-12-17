@@ -33,5 +33,7 @@ namespace Pipaslot.Logging
         {
             return _sessions.GetOrAdd(categoryName, name => new PipaslotLogger(_httpContextAccessor, _aggregator, categoryName));
         }
+
+        internal QueueAggregator GetAggregator() => _aggregator;
     }
 }
