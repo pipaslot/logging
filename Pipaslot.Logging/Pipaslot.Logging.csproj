@@ -11,16 +11,22 @@
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
     <PackageReleaseNotes>
-      3.0.0 - Breaking change:Queue definition split (internal) 
-            - Added: app.UseRequestLogging middleware which can be registered into pipeline in case that logging scopes does not works properly in your solution
-            - Improvement:Troughput imporvements for cases we are using multiple writers
-            - Improvement: Detect missing nested scope ends to prevent memory leaking
-            - Fix: definition of log level filters for Pipaslot logger provider
-      2.2.1 - Fix: for writing logs without scope for FlatQueueAggregator and ProcessQueueAggregator
-      2.2.0 - Provide customizable file name formatter with rolling interval and old file erasing
-            - IFileWritterFactory signature extended
-      2.1.0 - Extended ILogger API with method overloads
-      2.0.0 - Provide full queue output to IWriter and exposed QueuFormater
+      3.0.0
+      - Breaking change:Queue definition split (internal) 
+      - Added: app.UseRequestLogging middleware which can be registered into pipeline in case that logging scopes does not works properly in your solution
+      - Added: Hosted service removing old files
+      - Improvement:Troughput imporvements for cases we are using multiple writers
+      - Improvement: Detect missing nested scope ends to prevent memory leaking
+      - Fix: definition of log level filters for Pipaslot logger provider
+      2.2.1 
+      - Fix: for writing logs without scope for FlatQueueAggregator and ProcessQueueAggregator
+      2.2.0 
+      - Provide customizable file name formatter with rolling interval and old file erasing
+      - IFileWritterFactory signature extended
+      2.1.0 
+      - Extended ILogger API with method overloads
+      2.0.0 
+      - Provide full queue output to IWriter and exposed QueuFormater
     </PackageReleaseNotes>
   </PropertyGroup>
 
