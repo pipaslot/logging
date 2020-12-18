@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pipaslot.Logging.Configuration;
@@ -45,6 +46,7 @@ namespace Pipaslot.Logging.Aggregators
 
             _queues.Remove(traceIdentifier);
             WriteQueue(queue);
+            WriteUnfinishedQueues();
         }
 
         public virtual void WriteLog<TState>(string traceIdentifier, string categoryName, LogLevel severity, string message, TState state)
@@ -104,12 +106,27 @@ namespace Pipaslot.Logging.Aggregators
                 // Remove request history from memory 
                 _queues.Remove(traceIdentifier);
                 WriteQueue(queue);
+
+                WriteUnfinishedQueues();
             }
         }
-
+        
         private bool CanWriteScopesByInternalDetection(string traceIdentifier)
         {
             return CanCreateQueueFromScopes || traceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix);
+        }
+
+        private void WriteUnfinishedQueues()
+        {
+            var maxAxe = DateTimeOffset.Now - TimeSpan.FromHours(1);
+            var queues = _queues.GetAllQueues()
+                .Where(pair => pair.Value.Time < maxAxe)
+                .Take(3);// Take only limited amount to prevent huge slowdown of actual program
+            foreach (var pair in queues)
+            {
+                _queues.Remove(pair.Key);
+                WriteQueue(pair.Value);
+            }
         }
 
         public virtual void Dispose()
