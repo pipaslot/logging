@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,13 +27,13 @@ namespace Pipaslot.Logging.Demo
             services.AddHostedService<DeepLoggingHostedService>();
 
             // Register background process automatically removing old log files
-            services.AddHostedService<LogFileEraseHostedService>();
+            services.AddLogFileEraseHostedService(o => o.MaxAge = TimeSpan.FromDays(2));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //app.UseRequestLogging();
+            app.UseRequestLogging();
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
 

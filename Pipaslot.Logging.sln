@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pipaslot.Logging", "Pipaslo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pipaslot.Logging.Benchmark", "Pipaslot.Logging.Benchmark\Pipaslot.Logging.Benchmark.csproj", "{6A5D14B9-AC95-4FB1-9708-0D544E9248E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pipaslot.Logging.Tests", "Pipaslot.Logging.Tests\Pipaslot.Logging.Tests.csproj", "{AEBDEC76-E73E-443C-8533-497A30852755}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pipaslot.Logging.Tests", "Pipaslot.Logging.Tests\Pipaslot.Logging.Tests.csproj", "{AEBDEC76-E73E-443C-8533-497A30852755}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

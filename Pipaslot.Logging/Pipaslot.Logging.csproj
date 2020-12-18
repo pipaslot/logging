@@ -23,6 +23,7 @@
       2.0.0 - Provide full queue output to IWriter and exposed QueuFormater
     </PackageReleaseNotes>
   </PropertyGroup>
+
   <ItemGroup>
     <None Include="../LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)" />
     <None Include="../README.md" Pack="true" PackagePath="." />
@@ -38,6 +39,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting;" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
