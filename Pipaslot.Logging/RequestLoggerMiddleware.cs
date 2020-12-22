@@ -25,7 +25,7 @@ namespace Pipaslot.Logging
             aggregator.BeginQueue(traceIdentifier);
             var timer = new Stopwatch();
             timer.Start();
-            _logger.LogInformation($"Request starting {context.Request.Protocol} {context.Request.Method} {context.Request.Scheme}://{context.Request.Host}{context.Request.Path}");
+            _logger.LogInformation($"Request starting {context.Request.Protocol} {context.Request.Method} {context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}");
             try
             {
                 await _next(context);
