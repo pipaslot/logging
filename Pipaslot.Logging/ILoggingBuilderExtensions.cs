@@ -16,17 +16,18 @@ namespace Pipaslot.Logging
     /// </summary>
     public static class LoggingBuilderExtensions
     {
+        
         /// <summary>
         ///     LogRecord all messages grouped by HTTP requests into file
         /// </summary>
-        public static void AddRequestLogger(this ILoggingBuilder builder, string name = "requests", RollingInterval rollingInterval = RollingInterval.Day)
+        public static void AddRequestLogger(this ILoggingBuilder builder, string name = "requests", RollingInterval rollingInterval = RollingInterval.Day, LogLevel minLogLevel = LogLevel.Trace)
         {
             builder.AddPipaslotLoggerProvider();
             builder.Services.AddSingleton(s =>
             {
                 var logWriterFactory = s.GetService<IFileWriterFactory>();
                 var writer = logWriterFactory.Create(name, rollingInterval);
-                return new Pipe(writer, new RequestQueueFilter());
+                return new Pipe(writer, new RequestQueueFilter(minLogLevel));
             });
         }
 
