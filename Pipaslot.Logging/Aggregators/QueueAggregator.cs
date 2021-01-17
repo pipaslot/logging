@@ -116,12 +116,11 @@ namespace Pipaslot.Logging.Aggregators
             return CanCreateQueueFromScopes || traceIdentifier.StartsWith(Constants.CliTraceIdentifierPrefix);
         }
 
-        private void WriteUnfinishedQueues()
+        internal void WriteUnfinishedQueues()
         {
             var maxAxe = DateTimeOffset.Now - TimeSpan.FromHours(1);
-            var queues = _queues.GetAllQueues()
-                .Where(pair => pair.Value.Time < maxAxe)
-                .Take(3);// Take only limited amount to prevent huge slowdown of actual program
+            var queues = _queues.GetQueues(3, maxAxe);
+                
             foreach (var pair in queues)
             {
                 _queues.Remove(pair.Key);

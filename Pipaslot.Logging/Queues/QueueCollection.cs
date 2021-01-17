@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Pipaslot.Logging.Queues
 {
@@ -18,7 +20,8 @@ namespace Pipaslot.Logging.Queues
 
         public void Remove(string traceIdentifier)
         {
-            lock (_queueLock){
+            lock (_queueLock)
+            {
                 _queues.Remove(traceIdentifier);
             }
         }
@@ -42,7 +45,8 @@ namespace Pipaslot.Logging.Queues
         {
             // Try read without locking to improve performance
             // This approach is 2x faster in comparison to using concurrent dictionary
-            lock (_queueLock){
+            lock (_queueLock)
+            {
                 if (_queues.TryGetValue(traceIdentifier, out var queue2)) return queue2;
 
                 var request = new GrowingQueue(traceIdentifier);
@@ -55,11 +59,26 @@ namespace Pipaslot.Logging.Queues
         ///     Get all registered queues
         /// </summary>
         /// <returns></returns>
+        public IReadOnlyDictionary<string, GrowingQueue> GetQueues(int maxAmount, DateTimeOffset maxAxe)
+        {
+            lock (_queueLock)
+            {
+                return _queues
+                    .Where(pair => pair.Value.Time < maxAxe)
+                    .Take(maxAmount)
+                    .ToDictionary(d => d.Key, d => d.Value);
+            }
+        }
+
+        /// <summary>
+        ///     Get all registered queues
+        /// </summary>
+        /// <returns></returns>
         public IReadOnlyDictionary<string, GrowingQueue> GetAllQueues()
         {
             lock (_queueLock)
             {
-                return new Dictionary<string, GrowingQueue>(_queues);
+                return new ReadOnlyDictionary<string, GrowingQueue>(_queues);
             }
         }
     }
