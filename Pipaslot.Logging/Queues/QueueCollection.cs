@@ -55,10 +55,11 @@ namespace Pipaslot.Logging.Queues
         ///     Get all registered queues
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, GrowingQueue> GetAllQueues()
+        public IReadOnlyDictionary<string, GrowingQueue> GetAllQueues()
         {
-            lock (_queueLock){
-                return _queues;
+            lock (_queueLock)
+            {
+                return new Dictionary<string, GrowingQueue>(_queues);
             }
         }
     }
