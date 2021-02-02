@@ -23,17 +23,25 @@ namespace Pipaslot.Logging
         /// <inheritdoc />
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string>? formatter)
         {
-            var message = eventId.Name;
-            if (exception != null && formatter != null)
-                message = formatter(state, exception) + "\n" + exception;
-            else if (exception != null) message = exception.ToString();
+            try
+            {
+                var message = eventId.Name;
+                if (exception != null && formatter != null)
+                    message = formatter(state, exception) + "\n" + exception;
+                else if (exception != null) message = exception.ToString();
 
-            if (string.IsNullOrWhiteSpace(message)){
-                message = state?.ToString() ?? "";
-                Write<object?>(logLevel, message, null);
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    message = state?.ToString() ?? "";
+                    Write<object?>(logLevel, message, null);
+                }
+                else
+                    Write(logLevel, message, state);
             }
-            else
-                Write(logLevel, message, state);
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"{nameof(PipaslotLogger)}.{nameof(BeginScope)} Exception catch: {e.Message} on {Environment.NewLine} {e.StackTrace}");
+            }
         }
 
         /// <inheritdoc />
@@ -46,9 +54,17 @@ namespace Pipaslot.Logging
         /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)
         {
-            return state is IState state1 
-                ? WriteScopeChange(state1) 
-                : WriteScopeChange(new IncreaseScopeState("", state));
+            try
+            {
+                return state is IState state1
+                    ? WriteScopeChange(state1)
+                    : WriteScopeChange(new IncreaseScopeState("", state));
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"{nameof(PipaslotLogger)}.{nameof(BeginScope)} Exception catch: {e.Message} on {Environment.NewLine} {e.StackTrace}");
+                return new DisposeCallback(() => { });
+            }
         }
 
         private void Write<TState>(LogLevel severity, string message, TState state)
