@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -25,8 +26,10 @@ namespace Pipaslot.Logging.Queues
 
             var previousDepth = 0;
             var rows = 0;
-            foreach (var log in queue){
-                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin){
+            foreach (var log in queue)
+            {
+                if (log.Type == RecordType.Record || log.Type == RecordType.ScopeBegin)
+                {
                     sb.AppendLine(FormatRecord(log, previousDepth, log.Depth));
                     rows++;
                     previousDepth = log.Depth;
@@ -75,7 +78,8 @@ namespace Pipaslot.Logging.Queues
             if (record.State != null && record.State is IState state) sb.Append(state.FormatMessage(record.CategoryName, record.Message));
             sb.Append(record.Message);
 
-            if (record.State != null && !(record.State is IState)){
+            if (record.State != null && !(record.State is IState))
+            {
                 var serializedData = SerializeState(record.State);
                 sb.Append(" ");
                 sb.Append(serializedData);
@@ -93,11 +97,13 @@ namespace Pipaslot.Logging.Queues
         protected virtual string FormatDepth(int previousDepth, int currentDepth, RecordType recordType)
         {
             var sb = new StringBuilder();
-            for (var i = 2; i < currentDepth; i++){
+            for (var i = 2; i < currentDepth; i++)
+            {
                 sb.Append("| ");
             }
 
-            if (currentDepth > 1){
+            if (currentDepth > 1)
+            {
                 if (previousDepth < currentDepth && recordType != RecordType.Record)
                     sb.Append("+ ");
                 else
@@ -113,7 +119,14 @@ namespace Pipaslot.Logging.Queues
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
-            return JsonConvert.SerializeObject(data, settings);
+            try
+            {
+                return JsonConvert.SerializeObject(data, settings);
+            }
+            catch (Exception e)
+            {
+                return "Data serialization failed: "+e.Message;
+            }
         }
     }
 }
